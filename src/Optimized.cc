@@ -1,0 +1,5 @@
+#include "comFramework.cpp"
+#include "com/BinaryString.cpp"
+#include "com/Guid.cpp"
+#include "win/RegistryApi.cpp"
+#include "win/RegistryKey.cpp"
