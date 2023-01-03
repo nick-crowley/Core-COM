@@ -3,10 +3,11 @@
 
 namespace com
 {
-	struct Boolean
+	class Boolean
 	{
 		bool value;
 		
+	public:
 		constexpr 
 		explicit 
 		Boolean(bool expr) : value{expr}
