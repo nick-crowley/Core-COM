@@ -1,7 +1,7 @@
 #pragma once
 #include "comFramework.h"
 
-namespace com
+namespace win
 {
 	struct Boolean
 	{
@@ -14,9 +14,9 @@ namespace com
 		}
 
 		implicit operator 
-		HRESULT() const 
+		BOOL() const 
 		{
-			return this->value ? S_OK : S_FALSE;
+			return this->value ? TRUE : FALSE;
 		}
 	};
 }
