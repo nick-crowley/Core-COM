@@ -22,7 +22,8 @@ namespace com
 			IsDefaultConstructible_noexcept,
 			NotCopyable,
 			NotEqualityComparable,
-			NotSortable
+			NotSortable,
+			virtual IsDestructible
 		);
 
 	public:
