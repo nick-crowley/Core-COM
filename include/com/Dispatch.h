@@ -36,7 +36,7 @@ namespace com
             static classVer = coclass_traits<CoClass>::class_version;
 
             Guid const 
-            static libGuid = library_traits<CoClass::library_type>::library_id;
+            static libGuid = library_traits<CoClass::library_type>::library_guid;
 
             shared_ptr<::ITypeLib>  typeLibrary{ loadRegTypeLib(libGuid, classVer.Major, classVer.Minor, 0) };
             this->m_typeInfo = getTypeInfoOfGuid(*typeLibrary,__uuidof(interface_t));

@@ -14,6 +14,6 @@ namespace com
 		static library_version = Library::library_version;
 
 		auto const
-		inline static library_id = Guid{ __uuidof(Library) }; 
+		inline static library_guid = Guid{ __uuidof(Library) }; 
 	};
 }
