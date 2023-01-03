@@ -15,25 +15,25 @@ static formatMessage(int err)
 	return msg;
 }
 
-[[noreturn]] void 
+void 
 com::throw_exception(::HRESULT hr, std::source_location loc)
 {
 	throw std::runtime_error{formatMessage(hr)};
 }
 
-[[noreturn]] void 
+void 
 nt::throw_exception(::NTSTATUS r)
 {
 	throw std::runtime_error{formatMessage(::LsaNtStatusToWinError(r))};
 }
 
-[[noreturn]] void 
+void 
 win::throw_exception(::LRESULT r)
 {
 	throw std::runtime_error{formatMessage(r)};
 }
 
-[[noreturn]] void 
+void 
 win::throw_exception(::LRESULT r, std::string message)
 {
 	throw std::runtime_error{message + "." + formatMessage(r)};

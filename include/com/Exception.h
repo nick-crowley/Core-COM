@@ -38,6 +38,7 @@ namespace com
 		}
 	};
 	
-	[[noreturn]] void 
+	[[noreturn]] 
+	void 
 	throw_exception(::HRESULT hr, std::source_location loc = std::source_location::current());
 }

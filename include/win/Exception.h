@@ -5,9 +5,11 @@
 
 namespace win
 {
-	[[noreturn]] void 
+	[[noreturn]] 
+	void 
 	throw_exception(::LRESULT r);
 
-	[[noreturn]] void 
+	[[noreturn]] 
+	void 
 	throw_exception(::LRESULT r, std::string message);
 }
