@@ -71,7 +71,8 @@ add_definitions(-D_ATL_ATTRIBUTES
 	-D_CRT_SECURE_NO_WARNINGS
 	-D_SCL_SECURE_NO_WARNINGS
 	-D${GSL_ASSERTION_BEHAVIOUR}
-	-D_UNICODE)
+	-D_UNICODE
+	-DNOMINMAX)
 
 # Set global include folders: 
 # $ENV{BOOST_ROOT}	:	Boost headers

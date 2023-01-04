@@ -12,7 +12,6 @@
 // set the _WIN32_WINNT macro to the platform you wish to support before including SDKDDKVer.h.
 #include <SDKDDKVer.h>
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <Windows.h>
 
 #include <Objbase.h>
