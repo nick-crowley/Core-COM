@@ -50,7 +50,9 @@ namespace com
         }
         
         ::HRESULT 
-        __stdcall GetTypeInfo(::UINT iTInfo, ::LCID lcid, retval_t<::ITypeInfo*> ppv) override
+        __stdcall GetTypeInfo(::UINT                 iTInfo, 
+                              ::LCID                 lcid, 
+                              retval_t<::ITypeInfo*> ppv) override
         {
             if (iTInfo == 0) {
                 return E_INVALIDARG;
@@ -60,20 +62,24 @@ namespace com
         }
         
         ::HRESULT
-        __stdcall GetIDsOfNames(REFIID riid, in_t<wchar_t*> rgszNames, ::UINT cNames, ::LCID lcid, retval_t<::DISPID> rgDispId) override
+        __stdcall GetIDsOfNames(::GUID const&      riid, 
+                                in_t<wchar_t*>     rgszNames, 
+                                ::UINT             cNames, 
+                                ::LCID             lcid, 
+                                retval_t<::DISPID> rgDispId) override
         {
             return this->m_typeInfo->GetIDsOfNames(rgszNames,cNames,rgDispId);
         }
         
         ::HRESULT 
-        __stdcall Invoke(::DISPID dispIdMember, 
-                         REFIID riid, 
-                         ::LCID lcid, 
-                         ::WORD wFlags, 
+        __stdcall Invoke(::DISPID            dispIdMember, 
+                         ::GUID const&       riid, 
+                         ::LCID              lcid, 
+                         ::WORD              wFlags, 
                          out_t<::DISPPARAMS> pDispParams, 
-                         out_t<::VARIANT> pVarResult, 
-                         out_t<::EXCEPINFO> pExcepInfo, 
-                         out_t<::UINT> puArgErr) override
+                         out_t<::VARIANT>    pVarResult, 
+                         out_t<::EXCEPINFO>  pExcepInfo, 
+                         out_t<::UINT>       puArgErr) override
         {
             return this->m_typeInfo->Invoke(static_cast<interface_t*>(this), dispIdMember, wFlags,
                 pDispParams, pVarResult, pExcepInfo, puArgErr);
