@@ -36,19 +36,21 @@ namespace std
 	}
 }
 
-template <typename T> 
-std::add_rvalue_reference_t<T>
+namespace meta 
+{
+	template <typename T> 
+	concept EmptyCompatible = requires(T&& value) 
+	{ 
+		empty(std::forward<T>(value)); 
+	};
+}
+
+template <meta::EmptyCompatible T> 
+decltype(auto) 
 inline ThrowIfEmptyImpl(T&& value, char const* argName, std::source_location loc = std::source_location::current())
 {
 	using std::empty;
 	using ::empty;
-
-	/*BUG: static_assert(meta::EmptyCompatible<int*&>);
-	BUG: static_assert(meta::EmptyCompatible<wchar_t **&>);
-	BUG: static_assert(meta::EmptyCompatible<unsigned long *&>);
-	BUG: static_assert(meta::EmptyCompatible<std::shared_ptr<void>&>);
-
-	static_assert(meta::EmptyCompatible<T>);*/
 
 	if (empty(value))
 		throw std::invalid_argument{std::format("{}(..) Empty '{}' argument", loc.function_name(), argName)};

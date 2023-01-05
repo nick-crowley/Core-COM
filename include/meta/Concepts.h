@@ -23,12 +23,6 @@ namespace meta
 	template <typename T>
 	concept ConvertibleFromHResult = std::is_arithmetic_v<T> && !is_any_of_v<T,bool,::HRESULT>;
 	
-	template <typename T> 
-	concept EmptyCompatible = requires(T&& value) 
-	{ 
-		empty(std::forward<T>(value)); 
-	};
-
 	template <typename From, typename To>
 	concept ExplicitlyConvertible = requires(From&& f)
 	{
