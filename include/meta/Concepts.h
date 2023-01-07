@@ -23,9 +23,18 @@ namespace meta
 	template <typename T>
 	concept ConvertibleFromHResult = std::is_arithmetic_v<T> && !is_any_of_v<T,bool,::HRESULT>;
 	
+	template <typename T>
+	concept Enumeration = std::is_enum_v<T>;
+
 	template <typename From, typename To>
 	concept ExplicitlyConvertible = requires(From&& f)
 	{
 		static_cast<To>(f);
 	};
+
+	template <typename T>
+	concept IntegralOrEnum = std::is_integral_v<T> || Enumeration<T>;
+	
+	template <typename T>
+	concept RealNumber = std::is_arithmetic_v<T> && !Character<T>;
 }
