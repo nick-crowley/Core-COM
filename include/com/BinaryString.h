@@ -6,6 +6,14 @@
 #include "com/HeapAllocator.h"
 #include "com/NoopAllocator.h"
 
+struct adopt_t
+{ 
+	constexpr adopt_t() noexcept = default;
+}
+
+constexpr 
+inline adopt;
+
 namespace com 
 {
 	namespace detail 
@@ -169,7 +177,7 @@ namespace com
 		 * @param alloc		[optional] Allocator used to allocate character buffer
 		*/
 		constexpr 
-		explicit BinaryString(character_t const* const & str, Allocator alloc = Allocator{}) noexcept
+		explicit BinaryString(character_t const* str, Allocator alloc = Allocator{}) noexcept
 		  : BinaryString{str, str+wcslen(str), alloc}
         {
 		}
@@ -181,7 +189,7 @@ namespace com
 		 * @param alloc		[optional] Allocator used to allocate character buffer
 		*/
 		constexpr 
-		explicit BinaryString(character_t const* const && str, Allocator alloc = Allocator{}) noexcept
+		explicit BinaryString(adopt_t, character_t const* str, Allocator alloc = Allocator{}) noexcept
 		  : base{static_cast<uint32_t>(wcslen(str)),const_cast<character_t*>(str)}, m_alloc{alloc}
         {
 		}
