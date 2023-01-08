@@ -6,15 +6,6 @@
 #include "com/HeapAllocator.h"
 #include "com/NoopAllocator.h"
 
-struct adopt_t
-{ 
-	satisfies(adopt_t,
-		constexpr IsDefaultConstructible_noexcept
-	);
-}
-constexpr 
-inline adopt;
-
 namespace com 
 {
 	namespace detail 
@@ -28,15 +19,6 @@ namespace com
 			uint32_t  Length;
 			wchar_t*  Buffer;
 		};
-
-		struct hidden_t
-		{
-			satisfies(hidden_t,
-				constexpr IsDefaultConstructible_noexcept
-			);
-		}
-		constexpr  
-		inline hidden;
 
 		template <typename InputIterator>
 		bool 
@@ -190,7 +172,7 @@ namespace com
 		 * @param alloc		[optional] Allocator used to allocate character buffer
 		*/
 		constexpr 
-		explicit BinaryString(adopt_t, character_t const* str, Allocator alloc = Allocator{}) noexcept
+		explicit BinaryString(meta::adopt_t, character_t const* str, Allocator alloc = Allocator{}) noexcept
 		  : base{static_cast<uint32_t>(wcslen(str)),const_cast<character_t*>(str)}, m_alloc{alloc}
         {
 		}
@@ -598,7 +580,7 @@ namespace com
 		
 		//! @brief	Private constructor for literal operators
 		constexpr 
-		BinaryString(detail::hidden_t, character_t const* str, size_type len) noexcept
+		BinaryString(meta::hidden_t, character_t const* str, size_type len) noexcept
 		  : BinaryString{str, str+len}
 		{
 		}
@@ -616,7 +598,7 @@ namespace com
 			constexpr BinaryString<NoopAllocator<wchar_t>> 
 			operator""_bstr(wchar_t const* ws, size_t n) noexcept
 			{
-				return {detail::hidden, ws, static_cast<uint32_t>(n)};
+				return {meta::hidden, ws, static_cast<uint32_t>(n)};
 			}
 		}
 	}

@@ -3,18 +3,6 @@
 
 namespace nstd
 {	
-    namespace detail
-    {
-        struct use_default_t 
-        {
-            satisfies(use_default_t,
-		        constexpr IsDefaultConstructible_noexcept
-	        );
-        } 
-        constexpr inline 
-        use_default;
-    }
-
     template <typename Input, typename Output>
     class out_ptr_t
     {
@@ -69,9 +57,9 @@ namespace nstd
      * 
      * @return  Temporary wrapper; do not save
     */
-    template <typename Input = detail::use_default_t, 
+    template <typename Input = meta::use_default_t, 
               typename Output = void, 
-              typename _Input = std::conditional_t<std::is_same_v<Input,detail::use_default_t>,Output,Input>>
+              typename _Input = std::conditional_t<std::is_same_v<Input,meta::use_default_t>,Output,Input>>
     out_ptr_t<_Input,Output> constexpr
     inline out_ptr(Output& ptr) 
     { 

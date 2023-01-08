@@ -4,24 +4,6 @@
 #include "win/RegistryValue.h"
 #include "win/RegistryApi.h"
 
-struct open_existing_t
-{ 
-	satisfies(open_existing_t,
-		constexpr IsDefaultConstructible_noexcept
-	);
-}
-constexpr 
-inline open_existing;
-
-struct create_new_t
-{ 
-	satisfies(create_new_t,
-		constexpr IsDefaultConstructible_noexcept
-	);
-}
-constexpr 
-inline create_new;
-
 namespace win
 {
 	SharedRegistryKey const 
@@ -41,27 +23,27 @@ namespace win
 
 	public:
 		//! @brief	Open existing key
-		RegistryKey(open_existing_t, SharedRegistryKey handle, REGSAM rights, 
+		RegistryKey(meta::open_existing_t, SharedRegistryKey handle, REGSAM rights, 
 			std::shared_ptr<RegistryApi> api = std::make_shared<RegistryApi>());
 
 		//! @brief	Open existing key
-		RegistryKey(open_existing_t, RegistryKey const& key, REGSAM rights, 
+		RegistryKey(meta::open_existing_t, RegistryKey const& key, REGSAM rights, 
 			std::shared_ptr<RegistryApi> api = std::make_shared<RegistryApi>());
 
 		//! @brief	Open child of existing key
-		RegistryKey(open_existing_t, SharedRegistryKey parent, std::wstring_view child, REGSAM rights, 
+		RegistryKey(meta::open_existing_t, SharedRegistryKey parent, std::wstring_view child, REGSAM rights, 
 			std::shared_ptr<RegistryApi> api = std::make_shared<RegistryApi>());
 
 		//! @brief	Open child of existing key
-		RegistryKey(open_existing_t, RegistryKey const& parent, std::wstring_view child, REGSAM rights, 
+		RegistryKey(meta::open_existing_t, RegistryKey const& parent, std::wstring_view child, REGSAM rights, 
 			std::shared_ptr<RegistryApi> api = std::make_shared<RegistryApi>());
 
 		//! @brief	Create child of existing key
-		RegistryKey(create_new_t, SharedRegistryKey parent, std::wstring_view child, REGSAM rights, 
+		RegistryKey(meta::create_new_t, SharedRegistryKey parent, std::wstring_view child, REGSAM rights, 
 			std::shared_ptr<RegistryApi> api = std::make_shared<RegistryApi>());
 		
 		//! @brief	Create child of existing key
-		RegistryKey(create_new_t, RegistryKey const& parent, std::wstring_view child, REGSAM rights, 
+		RegistryKey(meta::create_new_t, RegistryKey const& parent, std::wstring_view child, REGSAM rights, 
 			std::shared_ptr<RegistryApi> api = std::make_shared<RegistryApi>());
 
 		RegistryKey 
