@@ -184,6 +184,7 @@ target_include_directories(appCoreCOM BEFORE
 # Set linker dependencies
 target_link_libraries(appCoreCOM
 	libCoreCOM
+	libCorePlatform
 	)
 
 # Set compiler & linker flags
@@ -194,7 +195,8 @@ set_target_properties(appCoreCOM PROPERTIES
 
 # Set project dependencies
 add_dependencies(appCoreCOM
-	libCoreCOM)
+	libCoreCOM
+	libCorePlatform)
 
 
 #################################################################################
