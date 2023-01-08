@@ -1,3 +1,4 @@
+#include "ComFramework.h"
 #include "win/DWord.h"
 #include "com/Exception.h"
 #include "nt/Exception.h"

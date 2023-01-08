@@ -1,5 +1,7 @@
 #pragma once
-//#include "comFramework.h"       // Warning: To avoid circular dependency, include <comFramework.h> directly
+#ifndef ComFramework_h_included
+#	error Including this header directly may cause a circular dependency; include <comFramework.h> directly
+#endif
 #include "meta/TypeTraits.h"
 
 template <typename T> 
