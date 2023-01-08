@@ -2,7 +2,6 @@
 #include "comFramework.h"
 #include "com/Implements.h"
 #include "com/Guid.h"
-#include "meta/Tuple.h"
 
 namespace com::detail
 {

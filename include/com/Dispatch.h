@@ -7,7 +7,6 @@
 #include "com/CoClassTraits.h"
 #include "com/LibraryTraits.h"
 #include "nstd/OutPtr.h"
-#include "meta/Tuple.h"
 
 namespace com
 {

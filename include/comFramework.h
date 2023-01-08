@@ -16,6 +16,7 @@
 #include "meta/TagTypes.h"
 #include "meta/TypeTraits.h"
 #include "meta/Concepts.h"
+#include "meta/Tuple.h"
 
 #include "win/DWord.h"
 #include "win/Exception.h"

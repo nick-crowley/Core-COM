@@ -1,6 +1,5 @@
 #pragma once
 #include "comFramework.h"
-#include "meta/Tuple.h"
 
 namespace detail
 {

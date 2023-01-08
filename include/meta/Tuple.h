@@ -1,5 +1,9 @@
 #pragma once
-#include "comFramework.h"
+#ifndef ComFramework_h_included
+#	error Including this header directly may cause a circular dependency; include <comFramework.h> directly
+#endif
+#include "../src/StdLibrary.h"
+#include "../src/libBoost.h"
 
 namespace meta
 {
