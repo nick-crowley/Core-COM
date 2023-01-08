@@ -8,9 +8,10 @@
 
 struct adopt_t
 { 
-	constexpr adopt_t() noexcept = default;
+	satisfies(adopt_t,
+		constexpr IsDefaultConstructible_noexcept
+	);
 }
-
 constexpr 
 inline adopt;
 
@@ -30,10 +31,10 @@ namespace com
 
 		struct hidden_t
 		{
-			constexpr
-			hidden_t() noexcept = default;
+			satisfies(hidden_t,
+				constexpr IsDefaultConstructible_noexcept
+			);
 		}
-
 		constexpr  
 		inline hidden;
 

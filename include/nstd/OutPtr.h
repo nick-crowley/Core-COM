@@ -7,9 +7,10 @@ namespace nstd
     {
         struct use_default_t 
         {
-            constexpr use_default_t() = default;
+            satisfies(use_default_t,
+		        constexpr IsDefaultConstructible_noexcept
+	        );
         } 
-
         constexpr inline 
         use_default;
     }

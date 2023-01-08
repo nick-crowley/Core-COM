@@ -6,17 +6,19 @@
 
 struct open_existing_t
 { 
-	constexpr open_existing_t() noexcept = default;
+	satisfies(open_existing_t,
+		constexpr IsDefaultConstructible_noexcept
+	);
 }
-
 constexpr 
 inline open_existing;
 
 struct create_new_t
 { 
-	constexpr create_new_t() noexcept = default;
+	satisfies(create_new_t,
+		constexpr IsDefaultConstructible_noexcept
+	);
 }
-
 constexpr 
 inline create_new;
 
