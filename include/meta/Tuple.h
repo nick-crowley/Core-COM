@@ -7,51 +7,43 @@
 
 namespace meta
 {
-	// identity
-	template <typename T> 
-	struct identity { using type = T; };
-
-	template <typename T> 
-	using identity_t = typename identity<T>::type;
-
-
 	// tuple_first_n
 	template <size_t N, typename Tuple>
-	struct tuple_first_n : identity<void> {};
+	struct tuple_first_n : std::type_identity<void> {};
 
 	template <size_t N, typename Tuple>
 	using tuple_first_n_t = typename tuple_first_n<N,Tuple>::type;
 
 	// template <typename T0, ..., typename Tn, typename... Rest> 
-	// struct tuple_first_n<1..N, std::tuple<T0,..,Tn,Rest...>> : identity<std::tuple<T0,..,Tn>> {};
+	// struct tuple_first_n<1..N, std::tuple<T0,..,Tn,Rest...>> : std::type_identity<std::tuple<T0,..,Tn>> {};
 #define tuple_first_n__definition(obj, n, unused)											\
 	template <BOOST_PP_ENUM_PARAMS(n,typename T), typename... Rest> 						\
 	struct tuple_first_n<n,std::tuple<BOOST_PP_ENUM_PARAMS(n,T),Rest...>> 					\
-		: identity<std::tuple<BOOST_PP_ENUM_PARAMS(n,T)>> {};
+		: std::type_identity<std::tuple<BOOST_PP_ENUM_PARAMS(n,T)>> {};
 	// Define operations for 1 <= N <= 15
-	// template <typename T0, typename T1, typename... Rest> struct tuple_first_n<2,std::tuple<T0, T1, Rest...>> : identity<std::tuple<T0, T1>> {};
+	// template <typename T0, typename T1, typename... Rest> struct tuple_first_n<2,std::tuple<T0, T1, Rest...>> : std::type_identity<std::tuple<T0, T1>> {};
 	BOOST_PP_REPEAT_FROM_TO(1, 16, tuple_first_n__definition, ~);
 #undef tuple_first_n__definition
 
 
 	// tuple_reverse
 	template <typename Tuple>
-	struct tuple_reverse : identity<void> {};
+	struct tuple_reverse : std::type_identity<void> {};
 
 	template <typename Tuple>
 	using tuple_reverse_t = typename tuple_reverse<Tuple>::type;
 
 	// template <typename T0, ..., typename Tn>
-	// struct tuple_reverse<std::tuple<T0,..,Tn>> : identity<std::tuple<Tn,...,T0>> {};
+	// struct tuple_reverse<std::tuple<T0,..,Tn>> : std::type_identity<std::tuple<Tn,...,T0>> {};
 #define tuple_reverse__definition(dummy, n, unused)														\
 	template <BOOST_PP_ENUM_PARAMS(n,typename T)>														\
 	struct tuple_reverse<std::tuple<BOOST_PP_ENUM_PARAMS(n,T)>>											\
-	  : identity<std::tuple<BOOST_PP_REPEAT(n,tuple_reverse__decrementing_type,BOOST_PP_DEC(n))>> {};
+	  : std::type_identity<std::tuple<BOOST_PP_REPEAT(n,tuple_reverse__decrementing_type,BOOST_PP_DEC(n))>> {};
 	// [,] T(idx-n)
 #define tuple_reverse__decrementing_type(dummy, n, count)												\
 	BOOST_PP_COMMA_IF(n) BOOST_PP_CAT(T,BOOST_PP_SUB(count,n))
 	// Define operations for 1 <= N <= 15
-	// eg. template <typename T0, typename T1> struct tuple_reverse<std::tuple<T0, T1>> : identity<std::tuple<T1, T0>> {};
+	// eg. template <typename T0, typename T1> struct tuple_reverse<std::tuple<T0, T1>> : std::type_identity<std::tuple<T1, T0>> {};
 	BOOST_PP_REPEAT_FROM_TO(1, 16, tuple_reverse__definition, ~);
 #undef tuple_reverse__definition
 #undef tuple_reverse__decrementing_type
@@ -67,24 +59,24 @@ namespace meta
 
 	// tuple_transform
 	template <typename Tuple, template <typename> typename UnaryFunction>
-	struct tuple_transform : identity<void> {};
+	struct tuple_transform : std::type_identity<void> {};
 
 	template <typename Tuple, template <typename> typename UnaryFunction>
 	using tuple_transform_t = typename tuple_transform<Tuple,UnaryFunction>::type;
 
 	// template <typename T0, ... , typename Tn, template <typename> typename UnaryMetaFunction>
 	// struct tuple_transform<std::tuple<T0,...,Tn>, UnaryMetaFunction> 
-	//   : identity<std::tuple<UnaryMetaFunction<T0>,...,UnaryMetaFunction<Tn>>> {};
+	//   : std::type_identity<std::tuple<UnaryMetaFunction<T0>,...,UnaryMetaFunction<Tn>>> {};
 #define tuple_transform__definition(dummy, n, unused)												\
 	template <BOOST_PP_ENUM_PARAMS(n,typename T), template <typename> typename UnaryMetaFunction>	\
 	struct tuple_transform<std::tuple<BOOST_PP_ENUM_PARAMS(n,T)>,UnaryMetaFunction>					\
-		: identity<std::tuple<BOOST_PP_REPEAT(n,tuple_transform__functor,unused)>> {};
+		: std::type_identity<std::tuple<BOOST_PP_REPEAT(n,tuple_transform__functor,unused)>> {};
 	// [, ] UnaryMetaFunction<Tn>
 #define tuple_transform__functor(dummy, n, unused)													\
 	BOOST_PP_COMMA_IF(n) UnaryMetaFunction<BOOST_PP_CAT(T,n)>
 	// Define operations for 1 <= N <= 15
 	// eg. template <typename T0, template <typename> typename UnaryMetaFunction> 
-	//     struct tuple_transform<std::tuple<T0>,UnaryMetaFunction> : identity<std::tuple<UnaryMetaFunction<T0>>> {};
+	//     struct tuple_transform<std::tuple<T0>,UnaryMetaFunction> : std::type_identity<std::tuple<UnaryMetaFunction<T0>>> {};
 	BOOST_PP_REPEAT_FROM_TO(1, 16, tuple_transform__definition, ~);
 #undef tuple_transform__functor
 #undef tuple_transform__definition
@@ -92,14 +84,14 @@ namespace meta
 	
 	// tuple_front
 	template <typename Tuple>
-	struct tuple_front : identity<std::tuple_element_t<0,Tuple>> {};
+	struct tuple_front : std::type_identity<std::tuple_element_t<0,Tuple>> {};
 	
 	template <typename Tuple>
 	using tuple_front_t = typename tuple_front<Tuple>::type;
 
 	// tuple_back
 	template <typename Tuple>
-	struct tuple_back : identity<std::tuple_element_t<std::tuple_size_v<Tuple>-1,Tuple>> {};
+	struct tuple_back : std::type_identity<std::tuple_element_t<std::tuple_size_v<Tuple>-1,Tuple>> {};
 	
 	template <typename Tuple>
 	using tuple_back_t = typename tuple_back<Tuple>::type;
@@ -110,7 +102,7 @@ namespace meta
 	struct tuple_push_front;
 
 	template <typename... Items, typename Item>
-	struct tuple_push_front<std::tuple<Items...>,Item> : meta::identity<std::tuple<Item,Items...>>
+	struct tuple_push_front<std::tuple<Items...>,Item> : std::type_identity<std::tuple<Item,Items...>>
 	{};
 
 	template <typename Tuple, typename Item>
