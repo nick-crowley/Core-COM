@@ -9,7 +9,7 @@
 #include "com/InitializeSentry.h"
 #include "com/Exception.h"
 #include "com/LibraryTraits.h"
-#include "core/ConstantString.h"
+#include "core/LiteralString.h"
 #include "CustomLib.h"
 #include <comutil.h>
 using namespace std::string_view_literals;
@@ -43,7 +43,7 @@ public:
 	using library_type = CustomLib_t;
 
 	auto constexpr 
-	static class_name = ConstantString{L"CoCustom"};
+	static class_name = LiteralString{L"CoCustom"};
 
 	auto constexpr 
 	static class_version = com::version{1,0};
@@ -183,12 +183,12 @@ int main()
 
 	// Test constexpr string
 	wchar_t buf[10] {L"abcdfeg"};
-	ConstantString cs{buf};
+	LiteralString cs{buf};
 
 	wchar_t constexpr lhs[10] {L"abcdfeg"};
 	wchar_t constexpr rhs[10] {L"abcdfeg"};
-	auto constexpr cs2 = ConstantString{lhs} + ConstantString{rhs};
-	auto constexpr cs3 = ConstantString{lhs} + L'x';
+	auto constexpr cs2 = LiteralString{lhs} + LiteralString{rhs};
+	auto constexpr cs3 = LiteralString{lhs} + L'x';
 
 	// Test make_com() func
 	auto ptr = com::make_shared<CoCustom,ICustom>();
