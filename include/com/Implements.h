@@ -19,8 +19,9 @@ namespace com
 
 	public:
 		satisfies(implements,
-			IsDefaultConstructible_noexcept,
-			NotCopyable,
+			IsDefaultConstructible noexcept,
+			NotCopyConstructible,	//FIXME: NotCopyable,
+			NotCopyAssignable,
 			NotEqualityComparable,
 			NotSortable,
 			virtual IsDestructible

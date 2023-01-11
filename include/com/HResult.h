@@ -10,8 +10,9 @@ namespace com
 	public:
 		satisfies(HResult,
 			NotDefaultConstructible,
-			IsCopyable_noexcept,
-			IsEqualityComparable_noexcept,
+            IsCopyAssignable noexcept,	//FIXME: IsCopyable noexcept,
+            IsCopyConstructible noexcept,
+			IsEqualityComparable noexcept,
 			NotSortable
 		);
 
@@ -74,8 +75,9 @@ namespace com
 	public:
 		satisfies(ThrowingHResult,
 			NotDefaultConstructible,
-			NotCopyable,
-			IsEqualityComparable_noexcept,
+			NotCopyConstructible,	//FIXME: NotCopyable,
+			NotCopyAssignable,
+			IsEqualityComparable noexcept,
 			NotSortable
 		);
 

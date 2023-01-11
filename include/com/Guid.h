@@ -18,10 +18,10 @@ namespace com
 		Guid(::GUID const& g) noexcept;
 		
 		satisfies(Guid,
-			constexpr IsDefaultConstructible_noexcept,
-			constexpr IsCopyConstructible_noexcept,
-			constexpr IsCopyAssignable_noexcept,
-			constexpr IsDestructible_noexcept,
+			constexpr IsDefaultConstructible noexcept,
+			constexpr IsCopyConstructible noexcept,
+			constexpr IsCopyAssignable noexcept,
+			constexpr IsDestructible noexcept,
 			constexpr NotSortable
 		);
 		

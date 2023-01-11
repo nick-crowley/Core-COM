@@ -28,10 +28,10 @@ namespace com
 
     public:
         satisfies(HeapAllocator,
-            constexpr IsDefaultConstructible_noexcept,
-            constexpr IsCopyConstructible_noexcept,
-            constexpr IsCopyAssignable_noexcept,
-            constexpr IsDestructible_noexcept
+            constexpr IsDefaultConstructible noexcept,
+            constexpr IsCopyConstructible noexcept,
+            constexpr IsCopyAssignable noexcept,
+            constexpr IsDestructible noexcept
         );
 
         template <class U>
@@ -119,10 +119,10 @@ namespace com
         
     public:
         satisfies(HeapAllocator,
-            constexpr IsDefaultConstructible_noexcept,
-            constexpr IsCopyConstructible_noexcept,
-            constexpr IsCopyAssignable_noexcept,
-            constexpr IsDestructible_noexcept
+            constexpr IsDefaultConstructible noexcept,
+            constexpr IsCopyConstructible noexcept,
+            constexpr IsCopyAssignable noexcept,
+            constexpr IsDestructible noexcept
         );
 
         template <class U>

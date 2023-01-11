@@ -18,8 +18,8 @@ namespace com
 
 	public:
 		satisfies(shared_ptr,
-			IsDefaultConstructible_noexcept,
-			IsEqualityComparable_noexcept
+			IsDefaultConstructible noexcept,
+			IsEqualityComparable noexcept
 		);
 		
 		explicit
