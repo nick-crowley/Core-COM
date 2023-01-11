@@ -10,8 +10,7 @@ namespace com
 	public:
 		satisfies(HResult,
 			NotDefaultConstructible,
-            IsCopyAssignable noexcept,	//FIXME: IsCopyable noexcept,
-            IsCopyConstructible noexcept,
+            IsCopyable noexcept,
 			IsEqualityComparable noexcept,
 			NotSortable
 		);
