@@ -28,8 +28,7 @@ namespace com
 	public:
 		satisfies(ClassFactory,
 			IsDefaultConstructible noexcept,
-            NotCopyAssignable,	//FIXME: NotCopyable,
-            NotCopyConstructible,
+            NotCopyable,
 			NotEqualityComparable,
 			NotSortable
 		);

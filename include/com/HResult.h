@@ -74,8 +74,7 @@ namespace com
 	public:
 		satisfies(ThrowingHResult,
 			NotDefaultConstructible,
-			NotCopyConstructible,	//FIXME: NotCopyable,
-			NotCopyAssignable,
+			NotCopyable,
 			IsEqualityComparable noexcept,
 			NotSortable
 		);
