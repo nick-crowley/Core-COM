@@ -39,22 +39,22 @@ namespace com
 		::GetModuleFileNameW(reinterpret_cast<HMODULE>(hModule), modulePath, MAX_PATH);
 
 		// Insert class-id registration
-		win::RegistryKey allClassIds{open_existing, win::ClassesRoot, L"CLSID"sv, KEY_ALL_ACCESS};
-		win::RegistryKey ourClassId{create_new, allClassIds, traits::class_guid.str(), KEY_ALL_ACCESS};
+		win::RegistryKey allClassIds{open_existing, win::ClassesRoot, L"CLSID"sv, win::KeyRight::All};
+		win::RegistryKey ourClassId{create_new, allClassIds, traits::class_guid.str(), win::KeyRight::All};
 		ourClassId.setValue(traits::class_name);
-		win::RegistryKey ourClassIdServer{create_new, ourClassId, L"InProcServer32"sv, KEY_ALL_ACCESS};
+		win::RegistryKey ourClassIdServer{create_new, ourClassId, L"InProcServer32"sv, win::KeyRight::All};
 		ourClassIdServer.setValue(std::wstring_view{modulePath});
 		ourClassIdServer.setValue(L"ThreadingModel"sv, L"Apartment"sv);
 
 		// Insert program-id registration
-		win::RegistryKey allClasses{open_existing, win::ClassesRoot, KEY_ALL_ACCESS};
-		win::RegistryKey ourProgId{create_new, allClasses, traits::program_id, KEY_ALL_ACCESS};
+		win::RegistryKey allClasses{open_existing, win::ClassesRoot, win::KeyRight::All};
+		win::RegistryKey ourProgId{create_new, allClasses, traits::program_id, win::KeyRight::All};
 		ourProgId.setValue(traits::class_name);
 		
 		// Link the two ids
-		win::RegistryKey ourClassIdProgId{create_new, ourClassId, L"ProgId"sv, KEY_ALL_ACCESS};
+		win::RegistryKey ourClassIdProgId{create_new, ourClassId, L"ProgId"sv, win::KeyRight::All};
 		ourClassIdProgId.setValue(traits::program_id);
-		win::RegistryKey ourProgIdClassId{create_new, ourProgId, L"CLSID"sv, KEY_ALL_ACCESS};
+		win::RegistryKey ourProgIdClassId{create_new, ourProgId, L"CLSID"sv, win::KeyRight::All};
 		ourProgIdClassId.setValue(traits::class_guid.str());
 
 		return S_OK;
@@ -72,18 +72,18 @@ namespace com
 		using namespace std::literals;
 
 		// Remove class-id registration
-		win::RegistryKey allClassIds{open_existing, win::ClassesRoot, L"CLSID"sv, KEY_ALL_ACCESS};
+		win::RegistryKey allClassIds{open_existing, win::ClassesRoot, L"CLSID"sv, win::KeyRight::All};
 		{
-			win::RegistryKey ourClassId{open_existing, allClassIds, traits::class_guid.str(), KEY_ALL_ACCESS};
+			win::RegistryKey ourClassId{open_existing, allClassIds, traits::class_guid.str(), win::KeyRight::All};
 			ourClassId.deleteSubKey(L"ProgId"sv);
 			ourClassId.deleteSubKey(L"InProcServer32"sv);
 		}
 		allClassIds.deleteSubKey(traits::class_guid.str());
 		
 		// Remove program-id registration
-		win::RegistryKey allClasses{open_existing, win::ClassesRoot, KEY_ALL_ACCESS};
+		win::RegistryKey allClasses{open_existing, win::ClassesRoot, win::KeyRight::All};
 		{
-			win::RegistryKey ourProgId{open_existing, allClasses, traits::program_id, KEY_ALL_ACCESS};
+			win::RegistryKey ourProgId{open_existing, allClasses, traits::program_id, win::KeyRight::All};
 			ourProgId.deleteSubKey(L"CLSID"sv);
 		}
 		allClasses.deleteSubKey(traits::program_id);
