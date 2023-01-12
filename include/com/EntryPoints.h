@@ -32,30 +32,27 @@ namespace com
 	registerServer(HANDLE hModule) 
 	try {
 		using traits = coclass_traits<CoClass>;
-		using namespace std::literals;
+		using namespace win;
 
 		// Get module path
 		wchar_t modulePath[MAX_PATH] {};
 		::GetModuleFileNameW(reinterpret_cast<HMODULE>(hModule), modulePath, MAX_PATH);
 
 		// Insert class-id registration
-		win::RegistryKey allClassIds{open_existing, win::ClassesRoot, L"CLSID"sv, win::KeyRight::All};
-		win::RegistryKey ourClassId{create_new, allClassIds, traits::class_guid.str(), win::KeyRight::All};
-		ourClassId.setValue(traits::class_name);
-		win::RegistryKey ourClassIdServer{create_new, ourClassId, L"InProcServer32"sv, win::KeyRight::All};
-		ourClassIdServer.setValue(std::wstring_view{modulePath});
-		ourClassIdServer.setValue(L"ThreadingModel"sv, L"Apartment"sv);
+		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
+		RegistryKey ourClassId = CLSID.subkey(create_new, traits::class_guid.str());
+		ourClassId[meta::use_default] = traits::class_name;
+		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
+		ourServerPath[meta::use_default] = std::wstring_view{modulePath};
+		ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Apartment"};
 
 		// Insert program-id registration
-		win::RegistryKey allClasses{open_existing, win::ClassesRoot, win::KeyRight::All};
-		win::RegistryKey ourProgId{create_new, allClasses, traits::program_id, win::KeyRight::All};
-		ourProgId.setValue(traits::class_name);
+		RegistryKey ourProgId{create_new, win::ClassesRoot, traits::program_id, KeyRight::All};
+		ourProgId[meta::use_default] = traits::class_name;
 		
 		// Link the two ids
-		win::RegistryKey ourClassIdProgId{create_new, ourClassId, L"ProgId"sv, win::KeyRight::All};
-		ourClassIdProgId.setValue(traits::program_id);
-		win::RegistryKey ourProgIdClassId{create_new, ourProgId, L"CLSID"sv, win::KeyRight::All};
-		ourProgIdClassId.setValue(traits::class_guid.str());
+		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[meta::use_default] = traits::program_id;
+		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[meta::use_default] = traits::class_guid.str();
 
 		return S_OK;
 	}
@@ -69,24 +66,24 @@ namespace com
 	unregisterServer() 
 	try {
 		using traits = coclass_traits<CoClass>;
-		using namespace std::literals;
+		using namespace win;
 
 		// Remove class-id registration
-		win::RegistryKey allClassIds{open_existing, win::ClassesRoot, L"CLSID"sv, win::KeyRight::All};
+		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		{
-			win::RegistryKey ourClassId{open_existing, allClassIds, traits::class_guid.str(), win::KeyRight::All};
-			ourClassId.deleteSubKey(L"ProgId"sv);
-			ourClassId.deleteSubKey(L"InProcServer32"sv);
+			auto ourClassId = CLSID.subkey(traits::class_guid.str());
+			ourClassId.removeKey(L"ProgId");
+			ourClassId.removeKey(L"InProcServer32");
 		}
-		allClassIds.deleteSubKey(traits::class_guid.str());
+		CLSID.removeKey(traits::class_guid.str());
 		
 		// Remove program-id registration
-		win::RegistryKey allClasses{open_existing, win::ClassesRoot, win::KeyRight::All};
+		RegistryKey allClasses{win::ClassesRoot, KeyRight::All};
 		{
-			win::RegistryKey ourProgId{open_existing, allClasses, traits::program_id, win::KeyRight::All};
-			ourProgId.deleteSubKey(L"CLSID"sv);
+			RegistryKey ourProgId{allClasses, traits::program_id, KeyRight::All};
+			ourProgId.removeKey(L"CLSID");
 		}
-		allClasses.deleteSubKey(traits::program_id);
+		allClasses.removeKey(traits::program_id);
 		return S_OK;
 	}
 	catch (std::exception const& /*e*/)
