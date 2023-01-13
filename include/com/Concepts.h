@@ -4,7 +4,7 @@
 #endif
 #include "meta/TypeTraits.h"
 
-namespace meta
+namespace core::meta
 {
 	template <typename T>
 	concept ConvertibleToHResult = std::is_arithmetic_v<T> && !std::is_same_v<T,::HRESULT>;

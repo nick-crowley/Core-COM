@@ -1,7 +1,7 @@
 #pragma once
 #include "comFramework.h"
 
-namespace com
+namespace core::com
 {
     template <typename ValueType>
     using retval_t = std::add_pointer_t<ValueType>;

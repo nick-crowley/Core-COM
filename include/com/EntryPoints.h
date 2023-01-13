@@ -5,7 +5,7 @@
 #include "com/Boolean.h"
 #include "com/Function.h"
 
-namespace com
+namespace core::com
 {
 	extern std::atomic_long g_numInstances;
 
@@ -32,7 +32,7 @@ namespace com
 	registerServer(HANDLE hModule) 
 	try {
 		using traits = coclass_traits<CoClass>;
-		using namespace win;
+		using namespace core::win;
 
 		// Get module path
 		wchar_t modulePath[MAX_PATH] {};
@@ -66,7 +66,7 @@ namespace com
 	unregisterServer() 
 	try {
 		using traits = coclass_traits<CoClass>;
-		using namespace win;
+		using namespace core::win;
 
 		// Remove class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};

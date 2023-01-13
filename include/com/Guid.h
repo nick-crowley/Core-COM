@@ -2,7 +2,7 @@
 #include "comFramework.h"
 #include "com/BinaryString.h"
 
-namespace com
+namespace core::com
 {
 	class Guid
 	{
@@ -73,13 +73,13 @@ namespace com
 }
 
 bool 
-operator==(::GUID const& l, com::Guid const& r) noexcept;
+operator==(::GUID const& l, core::com::Guid const& r) noexcept;
 
 bool 
-operator!=(::GUID const& l, com::Guid const& r) noexcept;
+operator!=(::GUID const& l, core::com::Guid const& r) noexcept;
 
 bool 
-operator==(com::Guid const& l, ::GUID const& r) noexcept;
+operator==(core::com::Guid const& l, ::GUID const& r) noexcept;
 
 bool 
-operator!=(com::Guid const& l, ::GUID const& r) noexcept;
+operator!=(core::com::Guid const& l, ::GUID const& r) noexcept;

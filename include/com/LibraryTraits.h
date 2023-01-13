@@ -2,7 +2,7 @@
 #include "comFramework.h"
 #include "com/Guid.h"
 
-namespace com
+namespace core::com
 {
 	template <typename Library>
 	struct library_traits

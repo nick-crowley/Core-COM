@@ -4,7 +4,7 @@
 #include "com/CoClassTraits.h"
 #include "nstd/OutPtr.h"
 
-namespace com
+namespace core::com
 {
 	template <typename CoClass, typename Interface>
 	class Exception

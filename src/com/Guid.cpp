@@ -1,6 +1,6 @@
 #include "com/Guid.h"
 #include "com/Function.h"
-using com::Guid;
+using namespace core;
 
 namespace
 {
@@ -18,7 +18,7 @@ namespace
 }
 
 constexpr 
-Guid::Guid(::GUID const& g) noexcept 
+com::Guid::Guid(::GUID const& g) noexcept 
   : m_value{g}
 {
 }
@@ -39,38 +39,38 @@ Guid::Guid(::GUID const& g) noexcept
 //}
 
 		
-Guid 
-Guid::FromProgId(std::wstring_view str)
+com::Guid 
+com::Guid::FromProgId(std::wstring_view str)
 {
 	return Guid{ clsIdFromProgId(str.data()) };
 }
 
-Guid 
-Guid::FromString(std::wstring_view str)
+com::Guid 
+com::Guid::FromString(std::wstring_view str)
 {
 	return Guid{ clsIdFromString(str.data()) };
 }
 
-Guid
-Guid::Generate()
+com::Guid
+com::Guid::Generate()
 {
 	return Guid{ coCreateGuid() };
 }
 
 com::wstring
-Guid::str() const
+com::Guid::str() const
 {
     return wstring{ stringFromCLSID(this->m_value) };
 }
 
 bool 
-Guid::operator==(type const& r) const noexcept 
+com::Guid::operator==(type const& r) const noexcept 
 {
 	return ::IsEqualGUID(this->m_value, r.m_value);
 }
 
 bool 
-Guid::operator!=(type const& r) const noexcept 
+com::Guid::operator!=(type const& r) const noexcept 
 {
 	return !(*this == r);
 }

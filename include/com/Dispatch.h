@@ -8,7 +8,7 @@
 #include "com/LibraryTraits.h"
 #include "nstd/OutPtr.h"
 
-namespace com
+namespace core::com
 {
     template <meta::DispInterface... Interfaces>
 	class Dispatch : public implements<Interfaces...>
@@ -85,4 +85,4 @@ namespace com
         }
 	};
     
-}	// namespace com
+}	// namespace core::com

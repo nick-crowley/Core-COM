@@ -4,7 +4,7 @@
 #include "com/ClassFactory.h"
 #include "com/Version.h"
 
-namespace com
+namespace core::com
 {
 	template <meta::CoClass CoClass>
 	struct coclass_traits

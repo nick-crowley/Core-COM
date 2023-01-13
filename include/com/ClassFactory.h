@@ -3,7 +3,7 @@
 #include "com/Implements.h"
 #include "com/Guid.h"
 
-namespace com::detail
+namespace core::com::detail
 {
 #if UNUSED
 	template <typename InterfaceTuple>
@@ -18,7 +18,7 @@ namespace com::detail
 #endif
 }
 
-namespace com 
+namespace core::com 
 {
 	template <meta::CoClass CoClass>
 	class ClassFactory : public implements<IClassFactory>

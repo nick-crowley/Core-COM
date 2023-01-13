@@ -2,7 +2,7 @@
 #include "comFramework.h"
 #include "com/Exception.h"
 
-namespace com
+namespace core::com
 {
 	class HResult
 	{

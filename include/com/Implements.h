@@ -2,7 +2,7 @@
 #include "comFramework.h"
 #include "meta/Concepts.h"
 
-namespace com 
+namespace core::com 
 {
 	extern std::atomic_long g_numInstances;
 	
@@ -87,4 +87,4 @@ namespace com
 	template <typename T>
 	using interface_tuple_t = typename T::interface_tuple;
 
-}  // namespace com
+}  // namespace core::com

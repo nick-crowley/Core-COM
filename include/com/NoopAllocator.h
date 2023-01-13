@@ -1,7 +1,7 @@
 #pragma once
 #include "comFramework.h"
 
-namespace com 
+namespace core::com 
 {
     //! @brief  Allocator which constructs/destructs but nothing when asked to perform allocation/deallocation
     template <typename T>
@@ -157,4 +157,4 @@ namespace com
     NoopAllocator<void> constexpr
     inline allocNoop;
 
-} // namespace com
+} // namespace core::com

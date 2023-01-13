@@ -1,5 +1,6 @@
 #include "comFramework.h"
 #include "com/Exception.h"
+using namespace core;
 
 std::string 
 extern formatMessage(int err);

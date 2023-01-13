@@ -1,6 +1,6 @@
 #pragma once
 
-namespace com
+namespace core::com
 {
 	struct version
 	{

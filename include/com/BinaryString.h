@@ -6,7 +6,7 @@
 #include "com/HeapAllocator.h"
 #include "com/NoopAllocator.h"
 
-namespace com 
+namespace core::com 
 {
 	namespace detail 
 	{

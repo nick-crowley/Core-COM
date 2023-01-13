@@ -2,7 +2,7 @@
 #include "comFramework.h"
 #include "com/Function.h"
 
-namespace com
+namespace core::com
 {
 	class InitializeSentry
 	{

@@ -13,6 +13,7 @@
 #include "CustomLib.h"
 #include <comutil.h>
 using namespace std::string_view_literals;
+using namespace core;
 
 std::atomic_long 
 com::g_numInstances = 0;

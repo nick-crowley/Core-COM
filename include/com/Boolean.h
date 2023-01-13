@@ -1,7 +1,7 @@
 #pragma once
 #include "comFramework.h"
 
-namespace com
+namespace core::com
 {
 	class Boolean
 	{

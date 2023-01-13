@@ -3,7 +3,7 @@
 #include "nstd/OutPtr.h"
 #include "com/Function.h"
 
-namespace com
+namespace core::com
 {
 	template <meta::Interface Interface>
 	class shared_ptr

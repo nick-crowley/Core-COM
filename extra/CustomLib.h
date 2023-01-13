@@ -7,8 +7,8 @@
 struct CustomLib_t
 {
 	auto constexpr 
-	static library_name = LiteralString{L"CustomLib"};
+	static library_name = core::LiteralString{L"CustomLib"};
 
 	auto constexpr 
-	static library_version = com::version{1,0};
+	static library_version = core::com::version{1,0};
 };
