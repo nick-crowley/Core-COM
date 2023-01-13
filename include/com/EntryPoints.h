@@ -41,18 +41,18 @@ namespace com
 		// Insert class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		RegistryKey ourClassId = CLSID.subkey(create_new, traits::class_guid.str());
-		ourClassId[meta::use_default] = traits::class_name;
+		ourClassId[use_default] = traits::class_name;
 		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
-		ourServerPath[meta::use_default] = std::wstring_view{modulePath};
+		ourServerPath[use_default] = std::wstring_view{modulePath};
 		ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Apartment"};
 
 		// Insert program-id registration
 		RegistryKey ourProgId{create_new, win::ClassesRoot, traits::program_id, KeyRight::All};
-		ourProgId[meta::use_default] = traits::class_name;
+		ourProgId[use_default] = traits::class_name;
 		
 		// Link the two ids
-		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[meta::use_default] = traits::program_id;
-		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[meta::use_default] = traits::class_guid.str();
+		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[use_default] = traits::program_id;
+		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[use_default] = traits::class_guid.str();
 
 		return S_OK;
 	}
