@@ -7,7 +7,7 @@
 #include "com/EntryPoints.h"
 #include "com/BinaryString.h"
 #include "com/InitializeSentry.h"
-#include "com/Exception.h"
+#include "com/SetLastError.h"
 #include "com/LibraryTraits.h"
 #include "core/LiteralString.h"
 #include "CustomLib.h"
@@ -68,7 +68,7 @@ public:
 		*out = 42;
 
 		if (b == 12)
-			return com::Exception<CoCustom,ICustom>(E_FAIL, L"Example exception message");
+			return com::SetLastError<CoCustom>(E_FAIL, L"Example exception message");
 
 		std::wcout << "CoCustom::Method2(" << a << ", " << b << ") => S_OK (" << (long)*out << ")" << std::endl;
 		return S_OK;
