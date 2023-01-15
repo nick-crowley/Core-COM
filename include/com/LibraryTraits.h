@@ -1,5 +1,5 @@
 #pragma once
-#include "comFramework.h"
+#include "library/core.COM.h"
 #include "com/Guid.h"
 
 namespace core::com

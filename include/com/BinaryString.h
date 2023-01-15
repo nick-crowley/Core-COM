@@ -1,5 +1,5 @@
 #pragma once
-#include "comFramework.h"
+#include "library/core.COM.h"
 #if ATL_STRING_SUPPORT
 #	include <atlstr.h>
 #endif

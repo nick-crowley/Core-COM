@@ -1,5 +1,5 @@
 #pragma once
-#include "comFramework.h"
+#include "library/core.COM.h"
 #include "com/CoClassTraits.h"
 #include "win/RegistryKey.h"
 #include "com/Boolean.h"

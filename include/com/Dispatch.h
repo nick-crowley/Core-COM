@@ -1,5 +1,5 @@
 #pragma once
-#include "comFramework.h"
+#include "library/core.COM.h"
 #include "com/Implements.h"
 #include "com/Function.h"
 #include "com/SharedPtr.h"

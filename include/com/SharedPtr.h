@@ -1,5 +1,5 @@
 #pragma once
-#include "comFramework.h"
+#include "library/core.COM.h"
 #include "nstd/OutPtr.h"
 #include "com/Function.h"
 

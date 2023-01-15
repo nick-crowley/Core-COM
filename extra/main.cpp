@@ -1,4 +1,4 @@
-#include "comFramework.h"
+#include "library/core.COM.h"
 #include "com/Function.h"
 #include "com/Implements.h"
 #include "win/RegistryKey.h"
