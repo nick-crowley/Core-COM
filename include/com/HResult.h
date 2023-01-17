@@ -1,6 +1,6 @@
 #pragma once
 #include "library/core.COM.h"
-#include "com/Exception.h"
+#include "win/SystemError.h"
 
 namespace core::com
 {
@@ -88,7 +88,7 @@ namespace core::com
 		  : m_value{value}
 		{
 			if (FAILED(value))
-				throw_exception(value, loc);
+				throw win::system_error{value};
 		}
 		
 		std::wstring
