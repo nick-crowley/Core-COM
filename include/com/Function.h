@@ -39,11 +39,10 @@ namespace core::com
 			return hr;
 		};
 
-		return core::detail::makeCallAdapter<
-			NumResults, sizeof...(Parameters), decltype(callable), Parameters...
-		>(
-			std::move(callable)
-		);
+		return core::detail::makeCallAdapter<NumResults, 
+		                                     sizeof...(Parameters), 
+		                                     decltype(callable), 
+		                                     Parameters...>(std::move(callable));
 	}
 
 	template <unsigned NumResults = 0, typename Interface, typename... Parameters>
@@ -51,11 +50,10 @@ namespace core::com
 	method(::HRESULT (__stdcall Interface::*method)(Parameters...)) noexcept
 	{
 		auto callable = ComMethodFunctor{method};
-		return core::detail::makeCallAdapter<
-			NumResults, sizeof...(Parameters), decltype(callable), Parameters...
-		>(
-			std::move(callable)
-		);
+		return core::detail::makeCallAdapter<NumResults, 
+			                                 sizeof...(Parameters), 
+			                                 decltype(callable), 
+			                                 Parameters...>(std::move(callable));
 	}
 }  // namespace core::com
 
