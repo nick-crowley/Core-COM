@@ -16,7 +16,7 @@ namespace core::com
         static_assert(sizeof...(Interfaces) == 1, 
             "Currently IDispatch implementation is limited to only 1 interface");
 
-        using interface_t = meta::tuple_front_t<std::tuple<Interfaces...>>;
+        using interface_t = nstd::tuple_front_t<std::tuple<Interfaces...>>;
 
     private:
 		shared_ptr<::ITypeInfo> m_typeInfo;
