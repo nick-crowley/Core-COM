@@ -3,7 +3,7 @@
 #include "core/CallAdapter.h"
 #include "com/HResult.h"
 
-namespace core::com
+namespace core::com::detail
 {
 	template <meta::Interface Interface, typename... Parameters>
 	class ComMethodFunctor 
@@ -28,7 +28,16 @@ namespace core::com
 			return hr;
 		}
 	};
+}
 
+namespace core::detail 
+{
+	template <meta::Interface Interface, typename... Parameters>
+	bool constexpr is_method_v<com::detail::ComMethodFunctor<Interface,Parameters...>> = true;
+}
+
+namespace core::com 
+{
 	template <unsigned NumResults = 0, typename... Parameters>
 	auto constexpr
 	function(::HRESULT (__stdcall *fx)(Parameters...)) noexcept
@@ -49,16 +58,10 @@ namespace core::com
 	auto constexpr
 	method(::HRESULT (__stdcall Interface::*method)(Parameters...)) noexcept
 	{
-		auto callable = ComMethodFunctor{method};
+		auto callable = detail::ComMethodFunctor{method};
 		return core::detail::makeCallAdapter<NumResults, 
 			                                 sizeof...(Parameters), 
 			                                 decltype(callable), 
 			                                 Parameters...>(std::move(callable));
 	}
 }  // namespace core::com
-
-namespace core::detail 
-{
-	template <meta::Interface Interface, typename... Parameters>
-	bool constexpr is_method_v<com::ComMethodFunctor<Interface,Parameters...>> = true;
-}
