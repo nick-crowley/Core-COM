@@ -33,13 +33,13 @@ namespace core::com
 		}
 
 		Guid 
-		static FromProgId(std::wstring_view str);
+		static fromProgId(std::wstring_view str);
 
 		Guid 
-		static FromString(std::wstring_view str);
+		static fromString(std::wstring_view str);
 
 		Guid 
-		static Generate();
+		static generate();
 
 		wstring 
 		str() const;

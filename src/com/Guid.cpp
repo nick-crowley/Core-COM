@@ -40,19 +40,19 @@ com::Guid::Guid(::GUID const& g) noexcept
 
 		
 com::Guid 
-com::Guid::FromProgId(std::wstring_view str)
+com::Guid::fromProgId(std::wstring_view str)
 {
 	return Guid{ clsIdFromProgId(str.data()) };
 }
 
 com::Guid 
-com::Guid::FromString(std::wstring_view str)
+com::Guid::fromString(std::wstring_view str)
 {
 	return Guid{ clsIdFromString(str.data()) };
 }
 
 com::Guid
-com::Guid::Generate()
+com::Guid::generate()
 {
 	return Guid{ coCreateGuid() };
 }
@@ -85,7 +85,7 @@ com::to_wstring(Guid const& g)
 com::Guid
 com::literals::operator""_guid(wchar_t const* guid, size_t count)
 {
-	return Guid::FromString({guid, guid+count});
+	return Guid::fromString({guid, guid+count});
 }
 
 bool 
