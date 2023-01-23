@@ -13,9 +13,18 @@ namespace core::com
 		Boolean(bool expr) : value{expr}
 		{
 		}
+		
+		satisfies(Boolean,
+			NotDefaultConstructible,
+            constexpr IsCopyable noexcept,
+			constexpr IsEqualityComparable noexcept,
+			NotSortable
+		);
 
+	public:
+		constexpr
 		implicit operator 
-		HRESULT() const 
+		::HRESULT() const 
 		{
 			return this->value ? S_OK : S_FALSE;
 		}
