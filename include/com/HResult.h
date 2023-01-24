@@ -70,11 +70,12 @@ namespace core::com
 	
 	class ThrowingHResult
 	{
-		::HRESULT m_value;
+		::HRESULT m_value = S_OK;
 	public:
 		satisfies(ThrowingHResult,
-			NotDefaultConstructible,
-			NotCopyable,
+			IsDefaultConstructible,
+			NotCopyConstructible,
+			IsCopyAssignable,
 			IsEqualityComparable noexcept,
 			NotSortable
 		);
