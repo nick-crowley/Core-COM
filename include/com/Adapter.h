@@ -5,7 +5,7 @@
 
 namespace core::com
 {
-	template <typename Interface>
+	template <meta::Interface Interface>
 	class adapter {
 		Interface& m_object;
 	

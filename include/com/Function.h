@@ -54,7 +54,7 @@ namespace core::com
 		                                     Parameters...>(std::move(callable));
 	}
 
-	template <unsigned NumResults = 0, typename Interface, typename... Parameters>
+	template <unsigned NumResults = 0, meta::Interface Interface, typename... Parameters>
 	auto constexpr
 	method(::HRESULT (__stdcall Interface::*method)(Parameters...)) noexcept
 	{

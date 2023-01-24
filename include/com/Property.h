@@ -4,7 +4,7 @@
 
 namespace core::com::detail
 {
-	template <typename ValueType, typename CoClass, typename Getter, typename Setter>
+	template <typename ValueType, meta::Interface CoClass, meta::Invocable_r<ValueType,CoClass&> Getter, std::invocable<CoClass&,ValueType> Setter>
 	class MutablePropertyProxy
 	{
 		using type = MutablePropertyProxy<ValueType,CoClass,Getter,Setter>;
@@ -64,14 +64,14 @@ namespace core::com::detail
 		);
 
 	public:
-		template <typename CoClass>
+		template <meta::Interface CoClass>
 		auto constexpr
 		operator()(CoClass& obj) const {
 			return MutablePropertyProxy<ValueType,CoClass,Getter,Setter>{obj, this->m_get, this->m_set};
 		}
 	};
 
-	template <typename ValueType, typename CoClass, typename Getter>
+	template <typename ValueType, meta::Interface CoClass, meta::Invocable_r<ValueType,CoClass&> Getter>
 	class ReadOnlyPropertyProxy
 	{
 		using type = ReadOnlyPropertyProxy<ValueType,CoClass,Getter>;
@@ -127,7 +127,7 @@ namespace core::com::detail
 		);
 
 	public:
-		template <typename CoClass>
+		template <meta::Interface CoClass>
 		auto constexpr
 		operator()(CoClass& obj) const {
 			return ReadOnlyPropertyProxy<ValueType,CoClass,Getter>{obj, this->m_get};
@@ -137,7 +137,7 @@ namespace core::com::detail
 
 namespace core::com
 {
-	template <typename ValueType, typename Interface>
+	template <typename ValueType, meta::Interface Interface>
 	auto constexpr
 	property(::HRESULT (__stdcall Interface::*get)(ValueType*), ::HRESULT (__stdcall Interface::*set)(ValueType))
 		-> detail::MutablePropertyFunctor<ValueType,decltype(com::method<1>(get)),decltype(com::method(set))>
@@ -145,7 +145,7 @@ namespace core::com
 		return { com::method<1>(get), com::method(set) };
 	}
 
-	template <typename ValueType, typename Interface>
+	template <typename ValueType, meta::Interface Interface>
 	auto constexpr
 	property(::HRESULT (__stdcall Interface::*get)(ValueType*))
 	{
