@@ -71,4 +71,9 @@ namespace core::com
 			                                 decltype(callable), 
 			                                 Parameters...>(std::move(callable));
 	}
+
+	//! @brief	Type of COM method wrapper (which can be quite complicated to determine)
+	template <unsigned NumResults, meta::Interface Interface, typename... Parameters>
+	using method_t = decltype(method<NumResults>(std::declval<method_pointer_t<Interface,Parameters...>>()));
+
 }  // namespace core::com
