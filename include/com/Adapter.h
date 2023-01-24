@@ -18,18 +18,18 @@ namespace core::com
 
 	protected:
 		template <unsigned NumReturnParameters = 0, typename... Parameters>
-		auto method(::HRESULT (__stdcall Interface::*method)(Parameters...), auto... args) {
+		auto method(::HRESULT (__stdcall Interface::*method)(Parameters...), auto... args) const {
 			return com::method<NumReturnParameters>(method)(this->m_object, args...);
 		}
 
 		template <typename ValueType>
-		auto property(::HRESULT (__stdcall Interface::*get)(ValueType*)) {
+		auto property(::HRESULT (__stdcall Interface::*get)(ValueType*)) const {
 			return com::property(get)(this->m_object);
 		}
 		
 		template <typename ValueType>
 		auto property(::HRESULT (__stdcall Interface::*get)(ValueType*), 
-		              ::HRESULT (__stdcall Interface::*set)(ValueType)) {
+		              ::HRESULT (__stdcall Interface::*set)(ValueType)) const {
 			return com::property(get, set)(this->m_object);
 		}
 	};
