@@ -3,19 +3,26 @@
 #include "core/CallAdapter.h"
 #include "com/HResult.h"
 
+namespace core::com
+{
+	template <typename... Parameters>
+	using function_pointer_t = ::HRESULT (__stdcall *)(Parameters...);
+
+	template <meta::Interface Interface, typename... Parameters>
+	using method_pointer_t = ::HRESULT (__stdcall Interface::*)(Parameters...);
+}
+
 namespace core::com::detail
 {
 	template <meta::Interface Interface, typename... Parameters>
 	class ComMethodFunctor 
 	{
-		using signature_t = ::HRESULT (__stdcall Interface::*)(Parameters...);
-
-		signature_t  m_method;
+		method_pointer_t<Interface,Parameters...>  m_method;
 
 	public:
 		constexpr 
-		ComMethodFunctor(signature_t signature) noexcept
-			: m_method{signature}
+		ComMethodFunctor(method_pointer_t<Interface,Parameters...> mx) noexcept
+			: m_method{mx}
 		{}
 
 		template <typename CoClass>
@@ -40,7 +47,7 @@ namespace core::com
 {
 	template <unsigned NumResults = 0, typename... Parameters>
 	auto constexpr
-	function(::HRESULT (__stdcall *fx)(Parameters...)) noexcept
+	function(function_pointer_t<Parameters...> fx) noexcept
 	{
 		auto const callable = [fx](Parameters... args) -> ::HRESULT
 		{
@@ -56,7 +63,7 @@ namespace core::com
 
 	template <unsigned NumResults = 0, meta::Interface Interface, typename... Parameters>
 	auto constexpr
-	method(::HRESULT (__stdcall Interface::*method)(Parameters...)) noexcept
+	method(method_pointer_t<Interface,Parameters...> method) noexcept
 	{
 		auto callable = detail::ComMethodFunctor{method};
 		return core::detail::makeCallAdapter<NumResults, 

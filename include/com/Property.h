@@ -139,7 +139,7 @@ namespace core::com
 {
 	template <typename ValueType, meta::Interface Interface>
 	auto constexpr
-	property(::HRESULT (__stdcall Interface::*get)(ValueType*), ::HRESULT (__stdcall Interface::*set)(ValueType))
+	property(method_pointer_t<Interface,ValueType*> get, method_pointer_t<Interface,ValueType> set)
 		-> detail::MutablePropertyFunctor<ValueType,decltype(com::method<1>(get)),decltype(com::method(set))>
 	{
 		return { com::method<1>(get), com::method(set) };
@@ -147,8 +147,10 @@ namespace core::com
 
 	template <typename ValueType, meta::Interface Interface>
 	auto constexpr
-	property(::HRESULT (__stdcall Interface::*get)(ValueType*))
+	property(method_pointer_t<Interface,ValueType*> get)
+		-> detail::ReadOnlyPropertyFunctor<ValueType,decltype(com::method<1>(get))>
 	{
-		return detail::ReadOnlyPropertyFunctor<ValueType,decltype(com::method<1>(get))>{ com::method<1>(get) };
+		using read_only_property_t = decltype(property(get));
+		return read_only_property_t{ com::method<1>(get) };
 	}
 }
