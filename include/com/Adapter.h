@@ -2,11 +2,15 @@
 #include "library/core.COM.h"
 #include "com/Function.h"
 #include "com/Property.h"
+#include "com/SharedPtr.h"
 
 namespace core::com
 {
 	template <meta::Interface Interface>
 	class adapter {
+		using type = adapter<Interface>;
+
+	private:
 		Interface& m_object;
 	
 	protected:
@@ -18,15 +22,21 @@ namespace core::com
 		template <typename ValueType>
 		using mutable_property_t = detail::MutablePropertyProxy<ValueType,interface_type>; 
 
+		template <unsigned NumResult, typename... Parameters>
+		using method_t = decltype(std::bind_front(
+			std::declval<com::method_t<NumResult,interface_type,Parameters...>>(),
+			std::declval<std::reference_wrapper<Interface>>()
+		));
+
 	protected:
 		adapter(interface_type& obj) : m_object{obj}
 		{}
 
 	protected:
 		template <unsigned NumReturnParameters = 0, typename... Parameters>
-		auto
-		method(method_pointer_t<Interface,Parameters...> method, auto... args) const {
-			return com::method<NumReturnParameters>(method)(this->m_object, args...);
+		auto	
+		method(method_pointer_t<Interface,Parameters...> method) const {
+			return std::bind_front(com::method<NumReturnParameters>(method), std::ref( const_cast<Interface&>(this->m_object) ));
 		}
 
 		template <typename ValueType>

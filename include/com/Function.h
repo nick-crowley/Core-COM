@@ -29,9 +29,10 @@ namespace core::com::detail
 		::HRESULT constexpr 
 		operator()(CoClass& object, Parameters... args) const
 		{
-			static_assert(std::is_base_of_v<Interface,CoClass>, "Type 'CoClass' must implement 'Interface'");
+			static_assert(std::is_base_of_v<Interface,CoClass> || std::is_convertible_v<CoClass,Interface&>, 
+				"Type 'CoClass' must implement 'Interface'");
 
-			ThrowingHResult hr = (object.*this->m_method)(args...);
+			ThrowingHResult hr = (static_cast<Interface&>(object).*this->m_method)(args...);
 			return hr;
 		}
 	};
