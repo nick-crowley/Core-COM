@@ -10,9 +10,6 @@ namespace core::com
 	class adapter {
 		using type = adapter<Interface>;
 
-	private:
-		Interface& m_object;
-	
 	protected:
 		using interface_type = Interface;
 
@@ -27,28 +24,31 @@ namespace core::com
 			std::declval<com::method_t<NumResult,interface_type,Parameters...>>(),
 			std::declval<std::reference_wrapper<Interface>>()
 		));
-
+		
+	private:
+		com::shared_ptr<Interface> m_object;
+	
 	protected:
-		adapter(interface_type& obj) : m_object{obj}
+		adapter(com::shared_ptr<Interface> ptr) : m_object{std::move(ptr)}
 		{}
 
 	protected:
 		template <unsigned NumReturnParameters = 0, typename... Parameters>
 		auto	
 		method(method_pointer_t<Interface,Parameters...> method) const {
-			return std::bind_front(com::method<NumReturnParameters>(method), std::ref( const_cast<Interface&>(this->m_object) ));
+			return std::bind_front(com::method<NumReturnParameters>(method), std::ref(const_cast<Interface&>(*this->m_object)));
 		}
 
 		template <typename ValueType>
 		const_property_t<ValueType>
 		property(method_pointer_t<Interface,ValueType*> get) const {
-			return com::property(get)(this->m_object);
+			return com::property(get)(*this->m_object);
 		}
 		
 		template <typename ValueType>
 		mutable_property_t<ValueType> 
 		property(method_pointer_t<Interface,ValueType*> get, method_pointer_t<Interface,ValueType> set) const {
-			return com::property(get, set)(this->m_object);
+			return com::property(get, set)(*this->m_object);
 		}
 	};
 
