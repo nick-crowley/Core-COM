@@ -130,9 +130,11 @@ namespace core::com
 		auto constexpr 
 		static coCreateInstance = function<1>(::CoCreateInstance);
 
-		return shared_ptr<Interface>{
+		auto r = shared_ptr<Interface>{
 			static_cast<Interface*>( coCreateInstance(ClassId, nullptr, context, __uuidof(Interface)) )
 		};
+		r->Release();
+		return r;
 	}
 	
 	template </*meta::CoClass*/ typename CoClass, meta::Interface Interface>
