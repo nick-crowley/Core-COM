@@ -135,7 +135,7 @@ namespace core::com
 		};
 	}
 	
-	template <meta::CoClass CoClass, meta::Interface Interface>
+	template </*meta::CoClass*/ typename CoClass, meta::Interface Interface>
 	auto 
 	make_shared(DWORD context = CLSCTX_INPROC_SERVER|CLSCTX_LOCAL_SERVER)
 	{
