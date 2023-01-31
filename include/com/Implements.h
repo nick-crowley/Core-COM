@@ -15,7 +15,7 @@ namespace core::com
 		using interface_tuple = std::tuple<Interfaces...>;
 
 	private:
-		std::atomic_long m_refCount = 1;
+		std::atomic_long m_refCount = 0;
 
 	public:
 		satisfies(implements,
@@ -67,9 +67,8 @@ namespace core::com
 		{
 			if (__uuidof(Interface) == id) 
 			{
-				auto* inst = static_cast<Interface*>(this);
-				inst->AddRef();
-				*out = inst;
+				*out = static_cast<Interface*>(this);
+				this->AddRef();
 				return S_OK;
 			}
 

@@ -65,8 +65,8 @@ namespace core::com
 		{
 			if ((... || (Guid(iid) == __uuidof(Interfaces))))
 			{
-				*ppv = new CoClass{};
-				return S_OK;
+				auto* inst = new CoClass{};
+				return inst->QueryInterface(iid,ppv);
 			}
 
 			*ppv = nullptr;
