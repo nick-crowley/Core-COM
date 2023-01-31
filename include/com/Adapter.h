@@ -32,6 +32,12 @@ namespace core::com
 		adapter(com::shared_ptr<Interface> ptr) : m_object{std::move(ptr)}
 		{}
 
+	public:
+		implicit operator
+		interface_type*() const {
+			return this->m_object;
+		}
+
 	protected:
 		template <unsigned NumReturnParameters = 0, typename... Parameters>
 		auto	
