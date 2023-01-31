@@ -60,7 +60,7 @@ com::Guid::generate()
 com::wstring
 com::Guid::str() const
 {
-    return wstring{ stringFromCLSID(this->m_value) };
+    return wstring{adopt, stringFromCLSID(this->m_value)};
 }
 
 bool 
