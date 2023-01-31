@@ -1,6 +1,7 @@
 #pragma once
 #include "library/core.COM.h"
 #include "nstd/OutPtr.h"
+#include "com/Guid.h"
 #include "com/Function.h"
 
 namespace core::com
