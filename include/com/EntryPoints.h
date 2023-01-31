@@ -4,6 +4,7 @@
 #include "win/RegistryKey.h"
 #include "com/Boolean.h"
 #include "com/Function.h"
+#include "com/SharedPtr.h"
 
 namespace core::com
 {
@@ -13,12 +14,13 @@ namespace core::com
 	HRESULT 
 	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
 	{
-		static typename coclass_traits<CoClass>::factory_type factory;
-
+		using factory_type = typename coclass_traits<CoClass>::factory_type;
+		
 		if (clsId != __uuidof(CoClass))
 			return CLASS_E_CLASSNOTAVAILABLE;
 
-		return factory.CreateInstance(nullptr,iid,ppv);
+		shared_ptr<::IClassFactory> factory{new factory_type{}};
+		return factory->CreateInstance(nullptr,iid,ppv);
 	}
 
 	HRESULT 
