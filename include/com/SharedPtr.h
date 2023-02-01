@@ -140,6 +140,8 @@ namespace core::com
 		};
 	}
 	
+	// FIXME: Consider refactoring com::make_shared<T>() overloads so the non-type overloads with CLSID/IID calls CoCreateInstance() and the typed one calls class constructor
+
 	template </*meta::CoClass*/ typename CoClass, meta::Interface Interface>
 	auto 
 	make_shared(DWORD context = CLSCTX_INPROC_SERVER|CLSCTX_LOCAL_SERVER)
