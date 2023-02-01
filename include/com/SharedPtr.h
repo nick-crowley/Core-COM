@@ -32,7 +32,7 @@ namespace core::com
 		}
 		
 		explicit
-		shared_ptr(adopt_t, Interface* ptr) noexcept 
+		shared_ptr(meta::adopt_t, Interface* ptr) noexcept 
 		  : m_object{ptr}
 		{
 		}
