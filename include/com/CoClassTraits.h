@@ -1,5 +1,6 @@
 #pragma once
 #include "library/core.COM.h"
+#include "core/LiteralString.h"
 #include "com/Guid.h"
 #include "com/ClassFactory.h"
 #include "com/Version.h"
@@ -16,16 +17,16 @@ namespace core::com
 		ThreadingModel constexpr 
 		static apartment = CoClass::apartment;
 
-		auto constexpr 
+		LiteralString constexpr 
 		static class_name = CoClass::class_name;
 
-		auto constexpr 
+		version constexpr 
 		static class_version = CoClass::class_version;
 
-		auto const 
-		inline static class_guid = Guid{ __uuidof(CoClass) };
+		Guid const 
+		inline static class_guid { __uuidof(CoClass) };
 		
-		auto constexpr 
+		LiteralString constexpr 
 		static program_id = library_type::library_name + L'.' + CoClass::class_name;
 	};
 }
