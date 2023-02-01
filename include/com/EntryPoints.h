@@ -8,10 +8,12 @@
 
 namespace core::com
 {
-	extern std::atomic_long g_numInstances;
+	std::atomic_long 
+	extern g_numInstances;
+
 
 	template <meta::CoClass CoClass>
-	HRESULT 
+	::HRESULT 
 	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
 	{
 		using factory_type = typename coclass_traits<CoClass>::factory_type;
@@ -23,22 +25,22 @@ namespace core::com
 		return factory->CreateInstance(nullptr,iid,ppv);
 	}
 
-	HRESULT 
+	::HRESULT 
 	canUnloadNow()
 	{
 		return Boolean{g_numInstances == 0};
 	}
 
 	template <meta::CoClass CoClass>
-	HRESULT
-	registerServer(HANDLE hModule) 
+	::HRESULT
+	registerServer(::HANDLE hModule) 
 	try {
 		using traits = coclass_traits<CoClass>;
 		using namespace core::win;
 
 		// Get module path
 		wchar_t modulePath[MAX_PATH] {};
-		::GetModuleFileNameW(reinterpret_cast<HMODULE>(hModule), modulePath, MAX_PATH);
+		::GetModuleFileNameW(reinterpret_cast<::HMODULE>(hModule), modulePath, MAX_PATH);
 
 		// Insert class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
@@ -68,7 +70,7 @@ namespace core::com
 	}
 	
 	template <meta::CoClass CoClass>
-	HRESULT
+	::HRESULT
 	unregisterServer() 
 	try {
 		using traits = coclass_traits<CoClass>;
