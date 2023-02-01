@@ -28,9 +28,7 @@ namespace core::com
 		  : m_object{ptr}
 		{
 			if (this->m_object)
-			{
 				this->m_object->AddRef();
-			}
 		}
 		
 		explicit
@@ -48,9 +46,7 @@ namespace core::com
 		shared_ptr(shared_ptr<Other> const& r) noexcept 
 		{
 			if (r.m_object)
-			{
 				r.m_object->QueryInterface(__uuidof(Interface), nstd::out_ptr<void*>(this->m_object));
-			}
 		}
 
 		type& 
