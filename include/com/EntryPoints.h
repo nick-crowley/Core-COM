@@ -46,8 +46,12 @@ namespace core::com
 		ourClassId[use_default] = traits::class_name;
 		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
 		ourServerPath[use_default] = std::wstring_view{modulePath};
-		ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Apartment"};
-
+		switch (traits::apartment) {
+		case ThreadingModel::Isolated: ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Apartment"}; break;
+		case ThreadingModel::Shared:   ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Free"};      break;
+		case ThreadingModel::Any:      ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Both"};      break;
+		}
+		
 		// Insert program-id registration
 		RegistryKey ourProgId{create_new, win::ClassesRoot, traits::program_id, KeyRight::All};
 		ourProgId[use_default] = traits::class_name;

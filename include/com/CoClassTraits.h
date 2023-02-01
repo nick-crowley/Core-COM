@@ -3,6 +3,7 @@
 #include "com/Guid.h"
 #include "com/ClassFactory.h"
 #include "com/Version.h"
+#include "com/ThreadingModel.h"
 
 namespace core::com
 {
@@ -11,6 +12,9 @@ namespace core::com
 	{
 		using factory_type = ClassFactory<CoClass>;
 		using library_type = typename CoClass::library_type;
+
+		ThreadingModel constexpr 
+		static apartment = CoClass::apartment;
 
 		auto constexpr 
 		static class_name = CoClass::class_name;
