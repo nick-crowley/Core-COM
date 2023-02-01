@@ -32,7 +32,13 @@ namespace core::com
 				this->m_object->AddRef();
 			}
 		}
-	
+		
+		explicit
+		shared_ptr(adopt_t, Interface* ptr) noexcept 
+		  : m_object{ptr}
+		{
+		}
+		
 		shared_ptr(type const& r) noexcept 
 		  : shared_ptr{r.m_object}
 		{
@@ -131,11 +137,9 @@ namespace core::com
 		auto constexpr 
 		static coCreateInstance = function<1>(::CoCreateInstance);
 
-		auto r = shared_ptr<Interface>{
-			static_cast<Interface*>( coCreateInstance(ClassId, nullptr, context, __uuidof(Interface)) )
+		return shared_ptr<Interface>{
+			adopt, static_cast<Interface*>(coCreateInstance(ClassId, nullptr, context, __uuidof(Interface)))
 		};
-		r->Release();
-		return r;
 	}
 	
 	template </*meta::CoClass*/ typename CoClass, meta::Interface Interface>
