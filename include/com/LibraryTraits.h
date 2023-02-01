@@ -12,7 +12,7 @@ namespace core::com
 		LiteralString constexpr 
 		static library_name = Library::library_name;
 
-		version constexpr 
+		Version constexpr 
 		static library_version = Library::library_version;
 
 		Guid const

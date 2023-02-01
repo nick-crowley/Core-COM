@@ -2,10 +2,10 @@
 
 namespace core::com
 {
-	struct version
+	struct Version
 	{
 		unsigned Major, Minor;
 
-		auto operator<=>(version const&) const = default;
+		auto operator<=>(Version const&) const = default;
 	};
 }

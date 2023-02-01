@@ -10,5 +10,5 @@ struct CustomLib_t
 	static library_name = core::LiteralString{L"CustomLib"};
 
 	auto constexpr 
-	static library_version = core::com::version{1,0};
+	static library_version = core::com::Version{1,0};
 };

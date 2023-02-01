@@ -31,7 +31,7 @@ namespace core::com
             auto constexpr
             static getTypeInfoOfGuid = com::method<1>(&::ITypeLib::GetTypeInfoOfGuid);
 
-            version constexpr 
+            Version constexpr 
             static classVer = coclass_traits<CoClass>::class_version;
 
             Guid const 

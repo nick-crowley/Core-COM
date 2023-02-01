@@ -20,7 +20,7 @@ namespace core::com
 		LiteralString constexpr 
 		static class_name = CoClass::class_name;
 
-		version constexpr 
+		Version constexpr 
 		static class_version = CoClass::class_version;
 
 		Guid const 

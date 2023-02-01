@@ -47,7 +47,7 @@ public:
 	static class_name = LiteralString{L"CoCustom"};
 
 	auto constexpr 
-	static class_version = com::version{1,0};
+	static class_version = com::Version{1,0};
 
 public:
 	CoCustom() 
