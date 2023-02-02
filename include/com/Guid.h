@@ -72,6 +72,9 @@ namespace core::com
 	}
 }
 
+std::wstring 
+to_wstring(::GUID const& g);
+
 bool 
 operator==(::GUID const& l, core::com::Guid const& r) noexcept;
 

@@ -88,6 +88,92 @@ com::literals::operator""_guid(wchar_t const* guid, size_t count)
 	return Guid::fromString({guid, guid+count});
 }
 
+std::wstring 
+to_wstring(::GUID const& g)
+{
+#define _makeIfStatement(iid)  if (g == iid) return TEXT(#iid)
+	_makeIfStatement(IID_AsyncIMultiQI);
+	_makeIfStatement(IID_AsyncIPipeByte);
+	_makeIfStatement(IID_AsyncIPipeDouble);
+	_makeIfStatement(IID_AsyncIPipeLong);
+	_makeIfStatement(IID_IActivationFilter);
+	_makeIfStatement(IID_IAddrExclusionControl);
+	_makeIfStatement(IID_IAddrTrackingControl);
+	_makeIfStatement(IID_IAgileObject);
+	_makeIfStatement(IID_IAgileReference);
+	_makeIfStatement(IID_IAgileReference);
+	_makeIfStatement(IID_IAsyncManager);
+	_makeIfStatement(IID_IAsyncRpcChannelBuffer);
+	_makeIfStatement(IID_IBindCtx);
+	_makeIfStatement(IID_ICallbackWithNoReentrancyToApplicationSTA);
+	_makeIfStatement(IID_ICallFactory);
+	_makeIfStatement(IID_ICancelMethodCalls);
+	_makeIfStatement(IID_IChannelHook);
+	_makeIfStatement(IID_IClassFactory);
+	_makeIfStatement(IID_IClassFactory2);
+	_makeIfStatement(IID_IClientSecurity);
+	_makeIfStatement(IID_IComThreadingInfo);
+	_makeIfStatement(IID_IEnumString);
+	_makeIfStatement(IID_IEnumUnknown);
+	_makeIfStatement(IID_IExternalConnection);
+	_makeIfStatement(IID_IFastRundown);
+	_makeIfStatement(IID_IGlobalInterfaceTable);
+	_makeIfStatement(IID_IGlobalOptions);
+	_makeIfStatement(IID_IDfReserved1);
+	_makeIfStatement(IID_IDfReserved2);
+	_makeIfStatement(IID_IDfReserved3);
+	_makeIfStatement(IID_IInternalMoniker);
+	_makeIfStatement(IID_IInternalUnknown);
+	_makeIfStatement(IID_ILockBytes);
+	_makeIfStatement(IID_IMachineGlobalObjectTable);
+	_makeIfStatement(IID_IMalloc);
+	_makeIfStatement(IID_IMarshal);
+	_makeIfStatement(IID_IMarshal2);
+	_makeIfStatement(IID_IMarshalingStream);
+	_makeIfStatement(IID_IMessageFilter);
+	_makeIfStatement(IID_IMoniker);
+	_makeIfStatement(IID_IMultiQI);
+	_makeIfStatement(IID_INoMarshal);
+	_makeIfStatement(IID_IPipeByte);
+	_makeIfStatement(IID_IPipeDouble);
+	_makeIfStatement(IID_IPipeLong);
+	_makeIfStatement(IID_IProcessInitControl);
+	_makeIfStatement(IID_IPSFactory);
+	_makeIfStatement(IID_IPSFactoryBuffer);
+	_makeIfStatement(IID_IReleaseMarshalBuffers);
+	_makeIfStatement(IID_IRpcChannel);
+	_makeIfStatement(IID_IRpcChannelBuffer);
+	_makeIfStatement(IID_IRpcChannelBuffer2);
+	_makeIfStatement(IID_IRpcChannelBuffer3);
+	_makeIfStatement(IID_IRpcHelper);
+	_makeIfStatement(IID_IRpcOptions);
+	_makeIfStatement(IID_IRpcProxy);
+	_makeIfStatement(IID_IRpcProxyBuffer);
+	_makeIfStatement(IID_IProxyManager);
+	_makeIfStatement(IID_IRootStorage);
+	_makeIfStatement(IID_IRpcStub);
+	_makeIfStatement(IID_IRpcStubBuffer);
+	_makeIfStatement(IID_IRpcSyntaxNegotiate);
+	_makeIfStatement(IID_IRunningObjectTable);
+	_makeIfStatement(IID_ISequentialStream);
+	_makeIfStatement(IID_IServerSecurity);
+	_makeIfStatement(IID_IStdMarshalInfo);
+	_makeIfStatement(IID_IStorage);
+	_makeIfStatement(IID_IStream);
+	_makeIfStatement(IID_IStubManager);
+	_makeIfStatement(IID_ISupportAllowLowerTrustActivation);
+	_makeIfStatement(IID_ISurrogate);
+	_makeIfStatement(IID_ISynchronize);
+	_makeIfStatement(IID_ISynchronizeContainer);
+	_makeIfStatement(IID_ISynchronizeEvent);
+	_makeIfStatement(IID_ISynchronizeHandle);
+	_makeIfStatement(IID_ISynchronizeMutex);
+	_makeIfStatement(IID_IUnknown);
+	_makeIfStatement(IID_IWaitMultiple);
+#undef _makeIfStatement
+    return core::com::to_wstring(core::com::Guid{g});
+}
+
 bool 
 operator==(::GUID const& l, com::Guid const& r) noexcept
 {
