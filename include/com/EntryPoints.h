@@ -16,12 +16,10 @@ namespace core::com
 	::HRESULT 
 	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
 	{
-		using factory_type = typename coclass_traits<CoClass>::factory_type;
-		
 		if (clsId != __uuidof(CoClass))
 			return CLASS_E_CLASSNOTAVAILABLE;
 
-		shared_ptr<::IClassFactory> factory{new factory_type{}};
+		shared_ptr<::IClassFactory> factory{new factory_type_t<CoClass>{}};
 		return factory->CreateInstance(nullptr,iid,ppv);
 	}
 

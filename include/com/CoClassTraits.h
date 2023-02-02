@@ -29,4 +29,7 @@ namespace core::com
 		LiteralString constexpr 
 		static program_id = library_type::library_name + L'.' + CoClass::class_name;
 	};
+	
+	template <meta::CoClass CoClass>
+	using factory_type_t = typename coclass_traits<CoClass>::factory_type;
 }
