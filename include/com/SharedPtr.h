@@ -87,9 +87,23 @@ namespace core::com
 		{
 			return this->m_object == nullptr;
 		}
-
-		// FIXME: Add 2x reset() overloads to com::shared_ptr for use with std::out_ptr()
-
+		
+	public:
+		void
+		reset() {
+			type{}.swap(*this);
+		}
+		
+		void
+		reset(Interface* ptr) {
+			type{ptr}.swap(*this);
+		}
+		
+		void
+		reset(meta::adopt_t, Interface* ptr) {
+			type{ptr,adopt}.swap(*this);
+		}
+		
 		void 
 		swap(type& r) noexcept
 		{
