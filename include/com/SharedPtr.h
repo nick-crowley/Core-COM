@@ -30,14 +30,12 @@ namespace core::com
 				this->m_object->AddRef();
 		}
 		
-		explicit
 		shared_ptr(meta::adopt_t, Interface* ptr) noexcept 
 		  : m_object{ptr}
 		{
 		}
 		
 		// DUP: std::out_ptr() supports appending, not prepending, arguments
-		explicit
 		shared_ptr(Interface* ptr, meta::adopt_t) noexcept 
 		  : shared_ptr{adopt,ptr}
 		{}
@@ -48,6 +46,7 @@ namespace core::com
 		}
 	
 		template <meta::Interface Other> 
+		explicit
 		shared_ptr(shared_ptr<Other> const& r) noexcept 
 		{
 			if (r.m_object)
