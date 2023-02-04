@@ -154,7 +154,7 @@ namespace core::com
 	}
 
 	template <::GUID const& ClassID, meta::Interface Interface>
-	auto 
+	shared_ptr<Interface> 
 	make_shared(DWORD context = CLSCTX_INPROC_SERVER|CLSCTX_LOCAL_SERVER)
 	{
 		shared_ptr<Interface> object;
@@ -163,7 +163,7 @@ namespace core::com
 	}
 	
 	template <meta::CoClass CoClass, meta::Interface Interface>
-	auto 
+	shared_ptr<Interface> 
 	make_shared(auto&&... args)
 	{
 		return shared_ptr<Interface>{
