@@ -1,6 +1,5 @@
 #pragma once
 #include "library/core.COM.h"
-#include "nstd/OutPtr.h"
 #include "com/Guid.h"
 #include "com/Function.h"
 
@@ -52,7 +51,7 @@ namespace core::com
 		shared_ptr(shared_ptr<Other> const& r) noexcept 
 		{
 			if (r.m_object)
-				r.m_object->QueryInterface(__uuidof(Interface), nstd::out_ptr<void*>(this->m_object));
+				r.m_object->QueryInterface(__uuidof(Interface), std::out_ptr<Interface*>(this->m_object));
 		}
 
 		type& 
@@ -154,16 +153,13 @@ namespace core::com
 		return ptr.empty();
 	}
 
-	template <CLSID const& ClassId, meta::Interface Interface>
+	template <::GUID const& ClassID, meta::Interface Interface>
 	auto 
 	make_shared(DWORD context = CLSCTX_INPROC_SERVER|CLSCTX_LOCAL_SERVER)
 	{
-		auto constexpr 
-		static coCreateInstance = function<1>(::CoCreateInstance);
-
-		return shared_ptr<Interface>{
-			adopt, static_cast<Interface*>(coCreateInstance(ClassId, nullptr, context, __uuidof(Interface)))
-		};
+		shared_ptr<Interface> object;
+		ThrowingHResult hr = ::CoCreateInstance(ClassID, nullptr, context, guid_v<Interface>, std::out_ptr<Interface*>(object,adopt));
+		return object;
 	}
 	
 	// FIXME: Consider refactoring com::make_shared<T>() overloads so the non-type overloads with CLSID/IID calls CoCreateInstance() and the typed one calls class constructor
