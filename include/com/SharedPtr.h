@@ -37,6 +37,12 @@ namespace core::com
 		{
 		}
 		
+		// DUP: std::out_ptr() supports appending, not prepending, arguments
+		explicit
+		shared_ptr(Interface* ptr, meta::adopt_t) noexcept 
+		  : shared_ptr{adopt,ptr}
+		{}
+		
 		shared_ptr(type const& r) noexcept 
 		  : shared_ptr{r.m_object}
 		{
@@ -101,6 +107,12 @@ namespace core::com
 		
 		void
 		reset(meta::adopt_t, Interface* ptr) {
+			type{ptr,adopt}.swap(*this);
+		}
+		
+		// DUP: std::out_ptr() supports appending, not prepending, arguments
+		void
+		reset(Interface* ptr, meta::adopt_t) {
 			type{ptr,adopt}.swap(*this);
 		}
 		
