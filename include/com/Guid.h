@@ -40,9 +40,9 @@ namespace core::com
 
 		Guid 
 		static generate();
-
+		
 		wstring 
-		str() const;
+		wstr() const;
 		
 		constexpr 
 		implicit operator 
@@ -58,19 +58,25 @@ namespace core::com
 		operator!=(type const& r) const noexcept;
 	};
 	
+	std::string
+	to_string(Guid const& g);
+
 	std::wstring
-	to_wstring(Guid const& g);
+	to_wstring(Guid const&);
 
 	template <typename T>
 	Guid const
 	inline guid_v { __uuidof(T) };
 
 	namespace literals
-	{		
+	{
 		com::Guid
-		operator""_guid(wchar_t const* guid, size_t count);
+		operator""_guid(gsl::cwzstring guid, size_t count);
 	}
 }
+
+std::string 
+to_string(::GUID const& g);
 
 std::wstring 
 to_wstring(::GUID const& g);

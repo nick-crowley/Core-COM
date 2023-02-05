@@ -25,12 +25,12 @@ namespace core::com
 		{
 		}
 		
-		std::wstring
+		std::string
 		str() const {
-#define _makeSwitch(value)  case value: return TEXT(#value)
+#define _makeSwitch(value)  case value: return #value
 			switch (this->m_value)
 			{
-			default: return L"0x" + std::to_wstring((uintptr_t)this->m_value);
+			default: return "0x" + std::to_string(static_cast<uintptr_t>(this->m_value));
 			_makeSwitch(S_FALSE);
 			_makeSwitch(S_OK);
 			_makeSwitch(E_UNEXPECTED);
@@ -62,11 +62,14 @@ namespace core::com
 		T() const = delete;
 	};
 
-	std::wstring
-	inline to_wstring(HResult const& hr)
+	std::string
+	inline to_string(HResult const& hr)
 	{
 		return hr.str();
 	}
+	
+	std::wstring
+	to_wstring(HResult const&) = delete;
 	
 	class ThrowingHResult
 	{
@@ -92,7 +95,7 @@ namespace core::com
 				throw win::system_error{value};
 		}
 		
-		std::wstring
+		std::string
 		str() const {
 			return HResult{this->m_value}.str();
 		}
@@ -112,9 +115,12 @@ namespace core::com
 		T() const = delete;
 	};
 
-	std::wstring
-	inline to_wstring(ThrowingHResult const& hr)
+	std::string
+	inline to_string(ThrowingHResult const& hr)
 	{
 		return hr.str();
 	}
+
+	std::wstring
+	to_wstring(ThrowingHResult const&) = delete;
 }

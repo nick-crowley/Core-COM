@@ -1,5 +1,6 @@
 #include "com/Guid.h"
 #include "com/Function.h"
+#include "core/ToString.h"
 using namespace core;
 
 namespace
@@ -58,7 +59,7 @@ com::Guid::generate()
 }
 
 com::wstring
-com::Guid::str() const
+com::Guid::wstr() const
 {
     return wstring{adopt, stringFromCLSID(this->m_value)};
 }
@@ -75,22 +76,40 @@ com::Guid::operator!=(type const& r) const noexcept
 	return !(*this == r);
 }
 
+std::string
+com::to_string(Guid const& g)
+{
+	return core::to_string(static_cast<std::wstring_view>(g.wstr()));
+}
+
 std::wstring
 com::to_wstring(Guid const& g)
 {
-	auto s = g.str();
-	return {s.begin(), s.end()};
+	return std::wstring{static_cast<std::wstring_view>(g.wstr())};
 }
 
 com::Guid
-com::literals::operator""_guid(wchar_t const* guid, size_t count)
+com::literals::operator""_guid(gsl::cwzstring guid, size_t count)
 {
 	return Guid::fromString({guid, guid+count});
+}
+
+std::string 
+to_string(::GUID const& g)
+{
+	return core::to_string(::to_wstring(g));
 }
 
 std::wstring 
 to_wstring(::GUID const& g)
 {
+#define _DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
+	GUID constexpr name = { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
+
+#define _DEFINE_OLEGUID(name, l, w1, w2) _DEFINE_GUID(name, l, w1, w2, 0xC0,0,0,0,0,0,0,0x46)
+
+	static _DEFINE_OLEGUID(IID_IIdentityUnmarshall, 0x0000001BL, 0, 0);
+
 #define _makeIfStatement(iid)  if (g == iid) return TEXT(#iid)
 	_makeIfStatement(IID_AsyncIMultiQI);
 	_makeIfStatement(IID_AsyncIPipeByte);
@@ -170,6 +189,7 @@ to_wstring(::GUID const& g)
 	_makeIfStatement(IID_ISynchronizeMutex);
 	_makeIfStatement(IID_IUnknown);
 	_makeIfStatement(IID_IWaitMultiple);
+	IID_IConnectionPoint;
 #undef _makeIfStatement
     return core::com::to_wstring(core::com::Guid{g});
 }

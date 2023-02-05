@@ -42,7 +42,7 @@ namespace core::com
 
 		// Insert class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
-		RegistryKey ourClassId = CLSID.subkey(create_new, traits::class_guid.str());
+		RegistryKey ourClassId = CLSID.subkey(create_new, traits::class_guid.wstr());
 		ourClassId[use_default] = traits::class_name;
 		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
 		ourServerPath[use_default] = std::wstring_view{modulePath};
@@ -58,7 +58,7 @@ namespace core::com
 		
 		// Link the two ids
 		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[use_default] = traits::program_id;
-		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[use_default] = traits::class_guid.str();
+		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[use_default] = traits::class_guid.wstr();
 
 		return S_OK;
 	}
@@ -77,11 +77,11 @@ namespace core::com
 		// Remove class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		{
-			auto ourClassId = CLSID.subkey(traits::class_guid.str());
+			auto ourClassId = CLSID.subkey(traits::class_guid.wstr());
 			ourClassId.removeKey(L"ProgId");
 			ourClassId.removeKey(L"InProcServer32");
 		}
-		CLSID.removeKey(traits::class_guid.str());
+		CLSID.removeKey(traits::class_guid.wstr());
 		
 		// Remove program-id registration
 		RegistryKey allClasses{win::ClassesRoot, KeyRight::All};
