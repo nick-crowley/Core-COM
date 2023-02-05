@@ -17,3 +17,8 @@
 #include "../../src/libBoost.h"
 
 #include "com/Concepts.h"
+
+namespace core::com
+{
+	using core::to_string;
+}
