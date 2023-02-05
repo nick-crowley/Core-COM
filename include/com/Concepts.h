@@ -19,7 +19,8 @@ namespace core::meta
 
 	template <typename T>
 	concept CoClass = Interface<T>
-	               && std::is_default_constructible_v<T>; // TODO: Requires `interface_tuple` member type -or- derives from com::implements<T...>
+	               && std::is_class_v<T>
+	               && !std::is_abstract_v<T>;
 	
 	template <typename T>
 	concept DispInterface = std::is_base_of_v<::IDispatch,T>;
