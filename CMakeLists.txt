@@ -51,8 +51,7 @@ set(GSL_ASSERTION_BEHAVIOUR "GSL_THROW_ON_CONTRACT_VIOLATION")
 # /wd4684           : Disable C4684: 'no_injected_text': WARNING!! attribute may cause invalid code generation: use with caution
 # /wd4543           : Disable C4543: Injected text suppressed by attribute 'no_injected_text'
 # /wd4584           : Disable C4584: Base-class 'IUnknown' is already a base-class of 'I...'
-# /MTd				: Statically link against (debug) CRT
-set(GLOBAL_COMPILER_OPTIONS "/std:c++latest /std:c17 /permissive /Zc:preprocessor /ZI /EHa /W4 /wd4251 /wd4275 /wd4467 /wd4684 /wd4543 /wd4584 /MTd")
+set(GLOBAL_COMPILER_OPTIONS "/std:c++latest /std:c17 /permissive /Zc:preprocessor /ZI /EHa /W4 /wd4251 /wd4275 /wd4467 /wd4684 /wd4543 /wd4584")
 
 # Set compiler options used by test modules
 #set(GLOBAL_TEST_COMPILER_OPTIONS "${GLOBAL_COMPILER_OPTIONS} -DTEST_BUILD_CONTEXT -DGTEST_LINKED_AS_SHARED_LIBRARY=1")
@@ -144,15 +143,17 @@ add_library(libCoreCOM STATIC
 # Include folders
 target_include_directories(libCoreCOM BEFORE
     PRIVATE
-	${PROJECT_SOURCE_FOLDER} 
+	${PROJECT_SOURCE_FOLDER}
     PUBLIC
-    ${PROJECT_INCLUDE_FOLDER}            
+    ${PROJECT_INCLUDE_FOLDER}
 )
-	
-# Differentiate the filename of the static library
+
+# Link against CRT statically
 set_target_properties(libCoreCOM PROPERTIES
-					  #OUTPUT_NAME "libCoreCOM"
-					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} -D${PROJECT_LIB_MACRO}")
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} /MTd -D${PROJECT_LIB_MACRO}"
+					  #COMPILE_FLAGS_DEBUG   "${GLOBAL_COMPILER_OPTIONS} /MTd -D${PROJECT_LIB_MACRO}"
+					  #COMPILE_FLAGS_RELEASE "${GLOBAL_COMPILER_OPTIONS} /MT  -D${PROJECT_LIB_MACRO}"
+)
 
 # Set project dependencies
 #add_dependencies(libCoreCOM
@@ -183,10 +184,11 @@ target_include_directories(dllCoreCOM BEFORE
     ${PROJECT_INCLUDE_FOLDER}
 )
 
-# Differentiate the filename of the static library
+# Differentiate the filename of the import library
 set_target_properties(dllCoreCOM PROPERTIES
 					  OUTPUT_NAME "CoreCOM"
-					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} -D${PROJECT_DLL_MACRO}")
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} -D${PROJECT_DLL_MACRO}"
+)
 
 # Set linker dependencies
 target_link_libraries(dllCoreCOM
