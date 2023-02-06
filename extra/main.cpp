@@ -6,7 +6,7 @@
 #include "com/Dispatch.h"
 #include "com/EntryPoints.h"
 #include "com/BinaryString.h"
-#include "com/InitializeSentry.h"
+#include "com/Apartments.h"
 #include "com/SetLastError.h"
 #include "com/LibraryTraits.h"
 #include "core/LiteralString.h"
@@ -42,6 +42,9 @@ class CoCustom : public com::Dispatch<ICustom>
 
 public:
 	using library_type = CustomLib_t;
+	
+	com::ThreadingModel constexpr 
+	static apartment = com::ThreadingModel::Any;
 
 	auto constexpr 
 	static class_name = LiteralString{L"CoCustom"};
@@ -163,7 +166,7 @@ public:
 // 
 int main()
 {
-	com::InitializeSentry init{COINIT_APARTMENTTHREADED};
+	com::IsolatedApartment apartment;
 
 	// Test coclass wrapper
 	CoCustomWrapper wrapper;

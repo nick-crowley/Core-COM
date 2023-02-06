@@ -4,7 +4,7 @@
 
 namespace core::com
 {
-	class Guid
+	class ComExport Guid
 	{
 	private:
 		using type = Guid;
@@ -59,10 +59,10 @@ namespace core::com
 	};
 	
 	std::string
-	to_string(Guid const& g);
+	ComExport to_string(Guid const& g);
 
 	std::wstring
-	to_wstring(Guid const&);
+	ComExport to_wstring(Guid const&);
 
 	template <typename T>
 	Guid const
@@ -71,24 +71,24 @@ namespace core::com
 	namespace literals
 	{
 		com::Guid
-		operator""_guid(gsl::cwzstring guid, size_t count);
+		ComExport operator""_guid(gsl::cwzstring guid, size_t count);
 	}
 }
 
 std::string 
-to_string(::GUID const& g);
+ComExport to_string(::GUID const& g);
 
 std::wstring 
-to_wstring(::GUID const& g);
+ComExport to_wstring(::GUID const& g);
 
 bool 
-operator==(::GUID const& l, core::com::Guid const& r) noexcept;
+ComExport operator==(::GUID const& l, core::com::Guid const& r) noexcept;
 
 bool 
-operator!=(::GUID const& l, core::com::Guid const& r) noexcept;
+ComExport operator!=(::GUID const& l, core::com::Guid const& r) noexcept;
 
 bool 
-operator==(core::com::Guid const& l, ::GUID const& r) noexcept;
+ComExport operator==(core::com::Guid const& l, ::GUID const& r) noexcept;
 
 bool 
-operator!=(core::com::Guid const& l, ::GUID const& r) noexcept;
+ComExport operator!=(core::com::Guid const& l, ::GUID const& r) noexcept;

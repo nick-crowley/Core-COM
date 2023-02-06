@@ -75,7 +75,8 @@ add_definitions(-D_ATL_ATTRIBUTES
 	-D_SCL_SECURE_NO_WARNINGS
 	-D${GSL_ASSERTION_BEHAVIOUR}
 	-D_UNICODE
-	-DNOMINMAX)
+	-DNOMINMAX
+)
 
 # Set global include folders: 
 # $ENV{BOOST_ROOT}	:	Boost headers
@@ -91,6 +92,34 @@ link_directories($ENV{BOOST_ROOT}/stage/lib ${OUTPUT_FOLDER})
 set(CMAKE_CONFIGURATION_TYPES Debug Release CACHE TYPE INTERNAL FORCE )
 #set(CMAKE_CONFIGURATION_TYPES Debug CACHE TYPE INTERNAL FORCE )
 
+# Source files
+file(GLOB_RECURSE PROJECT_SOURCE_FILES
+    "${PROJECT_SOURCE_FOLDER}*.h"
+    "${PROJECT_SOURCE_FOLDER}*.cpp"
+)
+	
+# [OPTIMIZED] Source files to exclude by marking as header-only
+file(GLOB_RECURSE PROJECT_SOURCE_IMPL_FILES
+    "${PROJECT_SOURCE_FOLDER}*.cpp"
+)
+set_source_files_properties(${PROJECT_SOURCE_IMPL_FILES} PROPERTIES 
+    HEADER_FILE_ONLY ON
+)
+
+# Optimized-build files
+file(GLOB_RECURSE PROJECT_SOURCE_CC_FILES
+    "${PROJECT_SOURCE_FOLDER}*.cc"
+)
+	
+# Exported header files
+file(GLOB_RECURSE PROJECT_INCLUDE_FILES
+    "${PROJECT_INCLUDE_FOLDER}*.h"
+)
+
+# Define macro controlling dllexport/import specifier
+set(PROJECT_DLL_MACRO "BuildCoreComDLL")
+set(PROJECT_LIB_MACRO "BuildCoreComStaticLib")
+
 ##############################################################################
 #         _________ __          __  .__         .____    ._____.             #
 #        /   _____//  |______ _/  |_|__| ____   |    |   |__\_ |__           #
@@ -101,40 +130,12 @@ set(CMAKE_CONFIGURATION_TYPES Debug Release CACHE TYPE INTERNAL FORCE )
 ##############################################################################
 message("StaticLib: Generating project(s) from ${PROJECT_SOURCE_FOLDER} with ${PROJECT_INCLUDE_FOLDER}")
 
-# Define macro controlling dllexport/import specifier
-set(PROJECT_DLL_MACRO "PROJECT_BUILD_DYNAMIC")
-set(PROJECT_LIB_MACRO "PROJECT_BUILD_STATIC")
-
-# Source files
-file(GLOB_RECURSE PROJECT_SOURCE_FILES
-    "${PROJECT_SOURCE_FOLDER}*.h"
-    "${PROJECT_SOURCE_FOLDER}*.cpp"
-    )
-	
-# [OPTIMIZED] Source files to exclude by marking as header-only
-file(GLOB_RECURSE PROJECT_SOURCE_IMPL_FILES
-    "${PROJECT_SOURCE_FOLDER}*.cpp"
-    )
-set_source_files_properties(${PROJECT_SOURCE_IMPL_FILES} PROPERTIES 
-    HEADER_FILE_ONLY ON
-)
-
-# Optimized-build files
-file(GLOB_RECURSE PROJECT_SOURCE_CC_FILES
-    "${PROJECT_SOURCE_FOLDER}*.cc"
-    )
-	
-# Exported header files
-file(GLOB_RECURSE PROJECT_INCLUDE_FILES
-    "${PROJECT_INCLUDE_FOLDER}*.h"
-    )
-
 # Project: libCoreCOM
 add_library(libCoreCOM STATIC 
 	${PROJECT_SOURCE_FILES} 
 	${PROJECT_SOURCE_CC_FILES} 
 	${PROJECT_INCLUDE_FILES} 
-    )
+)
   
 # Include folders
 target_include_directories(libCoreCOM BEFORE
@@ -142,12 +143,56 @@ target_include_directories(libCoreCOM BEFORE
 	${PROJECT_SOURCE_FOLDER} 
     PUBLIC
     ${PROJECT_INCLUDE_FOLDER}            
-	)
+)
 	
 # Differentiate the filename of the static library
 set_target_properties(libCoreCOM PROPERTIES
 					  #OUTPUT_NAME "libCoreCOM"
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} -D${PROJECT_LIB_MACRO}")
+
+# Set project dependencies
+#add_dependencies(libCoreCOM
+#	libCorePlatform
+#)
+
+#############################################################################
+#  ________                              .__          .____    ._____.      #
+#  \______ \ ___.__. ____ _____    _____ |__| ____    |    |   |__\_ |__    #
+#   |    |  <   |  |/    \\__  \  /     \|  |/ ___\   |    |   |  || __ \   #
+#   |    `   \___  |   |  \/ __ \|  Y Y  \  \  \___   |    |___|  || \_\ \  #
+#  /_______  / ____|___|  (____  /__|_|  /__|\___  >  |_______ \__||___  /  #
+#          \/\/         \/     \/      \/        \/           \/       \/   #
+#############################################################################
+message("DynamicLib: Generating project(s) from ${PROJECT_SOURCE_FOLDER} with ${PROJECT_INCLUDE_FOLDER}")
+
+# Project: dllCoreCOM
+add_library(dllCoreCOM SHARED 
+	"${PROJECT_EXTRA_FOLDER}DllMain.cpp"
+	${PROJECT_SOURCE_CC_FILES} 
+)
+
+# Include folders
+target_include_directories(dllCoreCOM BEFORE
+    PRIVATE
+	${PROJECT_SOURCE_FOLDER} 
+    PUBLIC
+    ${PROJECT_INCLUDE_FOLDER}
+)
+
+# Differentiate the filename of the static library
+set_target_properties(dllCoreCOM PROPERTIES
+					  OUTPUT_NAME "CoreCOM"
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} -D${PROJECT_DLL_MACRO}")
+
+# Set linker dependencies
+#target_link_libraries(dllCoreCOM
+#	dllCorePlatform
+#)
+
+# Set project dependencies
+#add_dependencies(dllCoreCOM
+#	dllCorePlatform
+#)
 
 ##############################################################
 #  ___________              __       _____                   #
@@ -158,22 +203,16 @@ set_target_properties(libCoreCOM PROPERTIES
 #               \/     \/                 \/|__|   |__|      #
 ##############################################################
 
-# Extra files
-file(GLOB_RECURSE PROJECT_EXTRA_FILES
-    "${PROJECT_EXTRA_FOLDER}*.h"
-    "${PROJECT_EXTRA_FOLDER}*.cpp"
-    )
-	
 # Resource files
 #file(GLOB_RECURSE PROJECT_RESOURCE_FILES
 #	"${PROJECT_RESOURCE_FOLDER}*.*"
-#    )
+#)
 
 # Project: appCoreCOM
 add_executable(appCoreCOM
-	${PROJECT_EXTRA_FILES}
+	"${PROJECT_EXTRA_FOLDER}main.cpp"
 	#${PROJECT_RESOURCE_FILES}
-    )
+)
 
 # Include folders
 target_include_directories(appCoreCOM BEFORE
@@ -182,13 +221,13 @@ target_include_directories(appCoreCOM BEFORE
 	${PROJECT_RESOURCE_FOLDER} 
     PUBLIC
     ${PROJECT_INCLUDE_FOLDER}            
-	)
+)
 	
 # Set linker dependencies
 target_link_libraries(appCoreCOM
-	libCoreCOM
-	libCorePlatform
-	)
+	dllCoreCOM
+	#dllCorePlatform
+)
 
 # Set compiler & linker flags
 set_target_properties(appCoreCOM PROPERTIES
@@ -198,9 +237,9 @@ set_target_properties(appCoreCOM PROPERTIES
 
 # Set project dependencies
 add_dependencies(appCoreCOM
-	libCoreCOM
-	libCorePlatform)
-
+	dllCoreCOM
+	#dllCorePlatform
+)
 
 #################################################################################
 #     ___________.__.__           .____                                __   
@@ -211,6 +250,12 @@ add_dependencies(appCoreCOM
 #          \/                 \/          \/    \/\/                        
 #################################################################################
 
+# Extra files
+file(GLOB_RECURSE PROJECT_EXTRA_FILES
+    "${PROJECT_EXTRA_FOLDER}*.h"
+    "${PROJECT_EXTRA_FOLDER}*.cpp"
+)
+	
 # Project file groups
 source_group(TREE ${PROJECT_SOURCE_FOLDER}    PREFIX "Build Files"    FILES ${PROJECT_SOURCE_CC_FILES}})
 source_group(TREE ${PROJECT_EXTRA_FOLDER}     PREFIX "Extra Files"    FILES ${PROJECT_EXTRA_FILES})

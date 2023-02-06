@@ -3,7 +3,7 @@
 
 namespace core::com
 {
-	class IsolatedApartment
+	class ComExport IsolatedApartment
 	{
 	public:
 		IsolatedApartment();
@@ -20,7 +20,7 @@ namespace core::com
 		);
 	};
 	
-	class SharedApartment
+	class ComExport SharedApartment
 	{
 	public:
 		SharedApartment();

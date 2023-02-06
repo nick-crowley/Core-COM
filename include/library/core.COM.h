@@ -1,5 +1,5 @@
 #pragma once
-#ifndef ComFramework_h_included
+#ifndef ComFramework_hS_included
 #	define ComFramework_h_included
 #endif
 
@@ -15,6 +15,8 @@
 
 #include "../../src/PlatformSdk.h"
 #include "../../src/libBoost.h"
+
+#include "../../src/library/ComExport.h"
 
 #include "com/Concepts.h"
 
