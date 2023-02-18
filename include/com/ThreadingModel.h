@@ -2,7 +2,7 @@
 
 namespace core::com
 {
-	enum ThreadingModel
+	enum class ThreadingModel
 	{
 		Isolated,   //!< Apartment
 		Shared,     //!< Free

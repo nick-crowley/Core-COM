@@ -1,6 +1,8 @@
 #pragma once
 #include "library/core.COM.h"
 #include "meta/Concepts.h"
+#include "com/HResult.h"
+#include "core/FunctionLogging.h"
 
 namespace core::com 
 {
@@ -28,18 +30,23 @@ namespace core::com
 
 	public:
 		::HRESULT
-		__stdcall QueryInterface(::IID const& id, void** out) override
+		__stdcall QueryInterface(::IID const& iid, void** ppv) override
 		{
-			if (!out) {
-				return E_INVALIDARG;
+			HResult hr = S_OK;
+			logFunction(iid,ppv).withRetVals(hr,*ppv);
+
+			if (!ppv) {
+				return hr = E_INVALIDARG;
 			}
 
-			return this->QueryInterfaceImpl<Interfaces...>(id,out);
+			return hr = this->QueryInterfaceImpl<Interfaces...>(iid,ppv);
 		}
 
 		::ULONG
 		__stdcall AddRef() override
 		{
+			logFunction().withRetVals(std::cref(this->m_refCount), std::cref(g_numInstances));
+
 			if (this->m_refCount++ == 0) {
 				++g_numInstances;
 			}
@@ -50,6 +57,8 @@ namespace core::com
 		::ULONG
 		__stdcall Release() override
 		{
+			logFunction().withRetVals(std::cref(this->m_refCount), std::cref(g_numInstances));
+
 			if (--this->m_refCount == 0)
 			{
 				delete this;
@@ -63,18 +72,18 @@ namespace core::com
 	private:
 		template <meta::Interface Interface, meta::Interface... Remainder>
 		::HRESULT
-		__stdcall QueryInterfaceImpl(::IID const& id, void** out) 
+		__stdcall QueryInterfaceImpl(::IID const& iid, void** ppv) 
 		{
-			if (__uuidof(Interface) == id) 
+			if (__uuidof(Interface) == iid) 
 			{
-				*out = static_cast<Interface*>(this);
+				*ppv = static_cast<Interface*>(this);
 				this->AddRef();
 				return S_OK;
 			}
 
 			if constexpr (sizeof...(Remainder))
 			{
-				return this->QueryInterfaceImpl<Remainder...>(id, out);
+				return this->QueryInterfaceImpl<Remainder...>(iid, ppv);
 			}
 			else
 			{

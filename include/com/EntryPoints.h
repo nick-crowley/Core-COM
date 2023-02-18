@@ -12,7 +12,7 @@ namespace core::com
 	extern g_numInstances;
 
 
-	template <meta::CoClass CoClass>
+	template <meta::CoreCoClass CoClass>
 	::HRESULT 
 	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
 	{
@@ -29,7 +29,7 @@ namespace core::com
 		return Boolean{g_numInstances == 0};
 	}
 
-	template <meta::CoClass CoClass>
+	template <meta::CoreCoClass CoClass>
 	::HRESULT
 	registerServer(::HANDLE hModule) 
 	try {
@@ -67,7 +67,7 @@ namespace core::com
 		return E_FAIL;
 	}
 	
-	template <meta::CoClass CoClass>
+	template <meta::CoreCoClass CoClass>
 	::HRESULT
 	unregisterServer() 
 	try {
