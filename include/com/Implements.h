@@ -1,8 +1,6 @@
 #pragma once
 #include "library/core.COM.h"
 #include "meta/Concepts.h"
-#include "com/HResult.h"
-#include "core/FunctionLogging.h"
 
 namespace core::com 
 {
@@ -32,21 +30,16 @@ namespace core::com
 		::HRESULT
 		__stdcall QueryInterface(::IID const& iid, void** ppv) override
 		{
-			HResult hr = S_OK;
-			logFunction(iid,ppv).withRetVals(hr,*ppv);
-
 			if (!ppv) {
-				return hr = E_INVALIDARG;
+				return E_INVALIDARG;
 			}
 
-			return hr = this->QueryInterfaceImpl<Interfaces...>(iid,ppv);
+			return this->QueryInterfaceImpl<Interfaces...>(iid,ppv);
 		}
 
 		::ULONG
 		__stdcall AddRef() override
 		{
-			logFunction().withRetVals(std::cref(this->m_refCount), std::cref(g_numInstances));
-
 			if (this->m_refCount++ == 0) {
 				++g_numInstances;
 			}
@@ -57,8 +50,6 @@ namespace core::com
 		::ULONG
 		__stdcall Release() override
 		{
-			logFunction().withRetVals(std::cref(this->m_refCount), std::cref(g_numInstances));
-
 			if (--this->m_refCount == 0)
 			{
 				delete this;

@@ -2,8 +2,6 @@
 #include "library/core.COM.h"
 #include "com/Implements.h"
 #include "com/Guid.h"
-#include "com/HResult.h"
-#include "core/FunctionLogging.h"
 
 namespace core::com::detail
 {
@@ -39,23 +37,18 @@ namespace core::com
 		::HRESULT
 		__stdcall CreateInstance(IUnknown*, ::IID const& iid, void** ppv) override
 		{
-			HResult hr = S_OK;
-			logFunction(iid,ppv).withRetVals(hr,*ppv);
-
 			if (iid == IID_IClassFactory) {
 				*ppv = this;
 				this->AddRef();
-				return hr = S_OK;
+				return S_OK;
 			}
 
-			return hr = type::CreateInstanceImpl(nullptr, iid, ppv, static_cast<interface_tuple_t<CoClass>*>(nullptr));
+			return type::CreateInstanceImpl(nullptr, iid, ppv, static_cast<interface_tuple_t<CoClass>*>(nullptr));
 		}
 
 		::HRESULT
 		__stdcall LockServer(::BOOL lock) override
 		{
-			logFunction(lock);
-
 			if (lock) {
 				++g_numInstances;
 			}
