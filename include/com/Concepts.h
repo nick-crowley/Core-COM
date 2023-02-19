@@ -8,6 +8,7 @@
 namespace core::com {
 	enum class ThreadingModel;
 	struct Version;
+	class Version;
 }
 
 namespace core::meta

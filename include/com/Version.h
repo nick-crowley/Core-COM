@@ -3,10 +3,12 @@
 
 namespace core::com
 {
-	struct Version
+	class Version
 	{
+	public:
 		unsigned Major = 1, Minor = 0;
 
+	public:
 		constexpr
 		Version(unsigned major, unsigned minor)
 		  : Major{major}, Minor{minor}
