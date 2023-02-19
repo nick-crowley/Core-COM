@@ -8,7 +8,7 @@
 
 namespace core::com
 {
-	template <meta::CoClass CoClass>
+	template <meta::CoreCoClass CoClass>
 	struct coclass_traits
 	{
 		using factory_type = ClassFactory<CoClass>;
@@ -30,6 +30,6 @@ namespace core::com
 		static program_id = library_type::library_name + L'.' + CoClass::class_name;
 	};
 	
-	template <meta::CoClass CoClass>
+	template <meta::CoreCoClass CoClass>
 	using factory_type_t = typename coclass_traits<CoClass>::factory_type;
 }

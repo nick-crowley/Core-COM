@@ -18,15 +18,17 @@ namespace core::meta
 	template <typename T>
 	concept ConvertibleFromHResult = std::is_arithmetic_v<T> && !is_any_of_v<T,bool,::HRESULT>;
 	
-
+	//! @brief	Any interface derived from IUnknown
 	template <typename T>
-	concept Interface = std::is_base_of_v<::IUnknown,T>;
+	concept Interface = std::derived_from<T,::IUnknown>
+	                  && std::is_class_v<T> && std::is_abstract_v<T>;
 
+	//! @brief	Any class which implements IUnknown (though not necessarily unambiguously)
 	template <typename T>
-	concept CoClass = Interface<T>
-	               && std::is_class_v<T>
-	               && !std::is_abstract_v<T>;
+	concept CoClass = std::is_base_of_v<::IUnknown,T>
+	               && std::is_class_v<T> && !std::is_abstract_v<T>;
 	
+	//! @brief	Any CORE co-class (ie. one which possesses valid traits)
 	template <typename T>
 	concept CoreCoClass = CoClass<T> && requires {
 		{ T::apartment } -> std::convertible_to<com::ThreadingModel>;
@@ -38,6 +40,7 @@ namespace core::meta
 		{ T::library_type::library_version } -> std::convertible_to<com::Version>;
 	};
 	
+	//! @brief	Any interface derived from IDispatch
 	template <typename T>
-	concept DispInterface = std::is_base_of_v<::IDispatch,T>;
+	concept DispInterface = std::derived_from<T,::IDispatch>;
 }

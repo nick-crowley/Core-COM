@@ -20,7 +20,7 @@ namespace core::com::detail
 
 namespace core::com 
 {
-	template <meta::CoClass CoClass>
+	template <meta::CoreCoClass CoClass>
 	class ClassFactory : public implements<IClassFactory,IUnknown>
 	{	
 		using type = ClassFactory<CoClass>;
