@@ -30,13 +30,12 @@ namespace core::meta
 
 	//! @brief	Any class decorated with ::GUID and which realizes ::IUnknown (though not necessarily unambiguously)
 	template <typename T>
-	concept CoClass = HasGuid<T>
-	               && std::is_base_of_v<::IUnknown,T>
+	concept CoClass = std::is_base_of_v<::IUnknown,T>
 	               && std::is_class_v<T> && !std::is_abstract_v<T>;
 	
 	//! @brief	Any CORE co-class (ie. one which possesses valid traits)
 	template <typename T>
-	concept CoreCoClass = CoClass<T> && requires {
+	concept CoreCoClass = CoClass<T> && HasGuid<T> && requires {
 		{ T::apartment } -> std::convertible_to<com::ThreadingModel>;
 		{ T::class_name } -> std::convertible_to<std::wstring_view>;
 		{ T::class_version } -> std::convertible_to<com::Version>;
