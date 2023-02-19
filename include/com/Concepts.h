@@ -44,6 +44,7 @@ namespace core::meta
 		
 		{ T::library_type::library_name } -> std::convertible_to<std::wstring_view>;
 		{ T::library_type::library_version } -> std::convertible_to<com::Version>;
+		// FIXME: These should be checking validity of coclass_traits<T> not T
 	};
 	
 	//! @brief	Any interface derived from IDispatch
