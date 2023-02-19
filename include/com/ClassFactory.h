@@ -21,7 +21,7 @@ namespace core::com::detail
 namespace core::com 
 {
 	template <meta::CoreCoClass CoClass>
-	class ClassFactory : public implements<IClassFactory,IUnknown>
+	class ClassFactory : public implements<::IClassFactory,::IUnknown>
 	{	
 		using type = ClassFactory<CoClass>;
 
@@ -35,7 +35,7 @@ namespace core::com
 		
 	public:
 		::HRESULT
-		__stdcall CreateInstance(IUnknown*, ::IID const& iid, void** ppv) override
+		__stdcall CreateInstance(::IUnknown*, ::IID const& iid, void** ppv) override
 		{
 			if (iid == IID_IClassFactory) {
 				*ppv = this;
