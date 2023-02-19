@@ -47,7 +47,7 @@ namespace core::meta
 		// FIXME: These should be checking validity of coclass_traits<T> not T
 	};
 	
-	//! @brief	Any interface derived from IDispatch
+	//! @brief	Any interface derived from ::IDispatch
 	template <typename T>
 	concept DispInterface = std::derived_from<T,::IDispatch>;
 }
