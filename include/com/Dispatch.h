@@ -11,7 +11,7 @@
 namespace core::com
 {
     template <meta::DispInterface... Interfaces>
-	class Dispatch : public implements<Interfaces...>
+	class Dispatch : public implements<Interfaces...,::IDispatch,::IUnknown>
 	{
         static_assert(sizeof...(Interfaces) == 1, 
             "Currently IDispatch implementation is limited to only 1 interface");
