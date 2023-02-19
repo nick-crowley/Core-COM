@@ -1,5 +1,6 @@
 #pragma once
 #include "library/core.COM.h"
+#include "core/ToHexString.h"
 #include "win/SystemError.h"
 
 namespace core::com
@@ -30,7 +31,7 @@ namespace core::com
 #define _makeSwitch(value)  case value: return #value
 			switch (this->m_value)
 			{
-			default: return "0x" + std::to_string(static_cast<uintptr_t>(this->m_value));
+			default: return to_hexString<8>(this->m_value);
 			_makeSwitch(S_FALSE);
 			_makeSwitch(S_OK);
 			_makeSwitch(E_UNEXPECTED);
