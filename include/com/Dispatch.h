@@ -41,6 +41,13 @@ namespace core::com
             this->m_typeInfo = getTypeInfoOfGuid(*typeLibrary,__uuidof(interface_t));
         }
 
+        satisfies(Dispatch, 
+			NotCopyable,
+			NotEqualityComparable,
+			NotSortable
+        );
+        
+    public:
         ::HRESULT 
         __stdcall GetTypeInfoCount(retval_t<::UINT> pCount) override
         {

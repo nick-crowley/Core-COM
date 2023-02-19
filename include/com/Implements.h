@@ -20,10 +20,10 @@ namespace core::com
 	public:
 		satisfies(implements,
 			IsDefaultConstructible noexcept,
+			IsPolymorphic,
 			NotCopyable,
 			NotEqualityComparable,
-			NotSortable,
-			virtual IsDestructible
+			NotSortable
 		);
 
 	public:
