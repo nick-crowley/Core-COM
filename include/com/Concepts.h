@@ -7,7 +7,7 @@
 
 namespace core::com {
 	enum class ThreadingModel;
-	struct Version;
+	class Guid;
 	class Version;
 }
 
@@ -19,14 +19,19 @@ namespace core::meta
 	template <typename T>
 	concept ConvertibleFromHResult = std::is_arithmetic_v<T> && !is_any_of_v<T,bool,::HRESULT>;
 	
-	//! @brief	Any interface derived from IUnknown
 	template <typename T>
-	concept Interface = std::derived_from<T,::IUnknown>
+	concept HasGuid = requires { __uuidof(T); };
+
+	//! @brief	Any interface decorated with ::GUID and derived from ::IUnknown
+	template <typename T>
+	concept Interface = HasGuid<T>
+	                  && std::derived_from<T,::IUnknown>
 	                  && std::is_class_v<T> && std::is_abstract_v<T>;
 
-	//! @brief	Any class which implements IUnknown (though not necessarily unambiguously)
+	//! @brief	Any class decorated with ::GUID and which realizes ::IUnknown (though not necessarily unambiguously)
 	template <typename T>
-	concept CoClass = std::is_base_of_v<::IUnknown,T>
+	concept CoClass = HasGuid<T>
+	               && std::is_base_of_v<::IUnknown,T>
 	               && std::is_class_v<T> && !std::is_abstract_v<T>;
 	
 	//! @brief	Any CORE co-class (ie. one which possesses valid traits)
