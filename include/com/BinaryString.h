@@ -27,7 +27,7 @@ namespace core::com
 			if constexpr (std::is_pointer_v<InputIterator>) {
 				return first && end && first <= end;
 			}
-			else if constexpr (std::_Is_random_iter_v<InputIterator>) {
+			else if constexpr (std::random_access_iterator<InputIterator>) {
 				return first <= end;
 			}
             else {
