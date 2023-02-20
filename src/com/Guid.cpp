@@ -136,11 +136,3 @@ operator!=(com::Guid const& l, ::GUID const& r) noexcept
 {
 	return l != com::Guid(r);
 }
-
-bool
-operator<(::GUID const& l, ::GUID const& r) {
-	return l.Data1 < r.Data1
-		&& l.Data2 < r.Data2
-		&& l.Data3 < r.Data3
-		&& l.Data4 < r.Data4;
-}
