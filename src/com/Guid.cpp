@@ -103,8 +103,11 @@ com::literals::operator""_guid(gsl::cwzstring guid, size_t count)
 std::string 
 to_string(::GUID const& g)
 {
-	auto ws = com::Guid{g}.wstr();
-	return {ws.begin(), ws.end()};
+	auto const ws = com::Guid{g}.wstr();
+	return {
+		boost::make_transform_iterator(ws.begin(), nstd::convert_to<char>),
+		boost::make_transform_iterator(ws.end(), nstd::convert_to<char>)
+	};
 }
 
 std::wstring 
