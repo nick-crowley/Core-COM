@@ -61,6 +61,11 @@ com::Guid::generate()
 com::wstring
 com::Guid::wstr() const
 {
+	if (com::KnownGuids.contains(this->m_value)) {
+		auto ws = com::KnownGuids[this->m_value];
+		return {ws.begin(), ws.end()};
+	}
+
     return wstring{adopt, stringFromCLSID(this->m_value)};
 }
 
@@ -94,104 +99,106 @@ com::literals::operator""_guid(gsl::cwzstring guid, size_t count)
 	return Guid::fromString({guid, guid+count});
 }
 
+com::KnownGuidCollection::KnownGuidCollection() {
+	::GUID constexpr
+	static IID_IIdentityUnmarshall = {0x0000001BL, 0, 0, {0xC0,0,0,0,0,0,0,0x46}};
+
+#define _emplaceGuidNamePair(iid)  \
+	this->emplace(iid, #iid);
+
+	_emplaceGuidNamePair(IID_AsyncIMultiQI);
+	_emplaceGuidNamePair(IID_AsyncIPipeByte);
+	_emplaceGuidNamePair(IID_AsyncIPipeDouble);
+	_emplaceGuidNamePair(IID_AsyncIPipeLong);
+	_emplaceGuidNamePair(IID_IActivationFilter);
+	_emplaceGuidNamePair(IID_IAddrExclusionControl);
+	_emplaceGuidNamePair(IID_IAddrTrackingControl);
+	_emplaceGuidNamePair(IID_IAgileObject);
+	_emplaceGuidNamePair(IID_IAgileReference);
+	_emplaceGuidNamePair(IID_IAgileReference);
+	_emplaceGuidNamePair(IID_IAsyncManager);
+	_emplaceGuidNamePair(IID_IAsyncRpcChannelBuffer);
+	_emplaceGuidNamePair(IID_IBindCtx);
+	_emplaceGuidNamePair(IID_ICallbackWithNoReentrancyToApplicationSTA);
+	_emplaceGuidNamePair(IID_ICallFactory);
+	_emplaceGuidNamePair(IID_ICancelMethodCalls);
+	_emplaceGuidNamePair(IID_IChannelHook);
+	_emplaceGuidNamePair(IID_IClassFactory);
+	_emplaceGuidNamePair(IID_IClassFactory2);
+	_emplaceGuidNamePair(IID_IClientSecurity);
+	_emplaceGuidNamePair(IID_IComThreadingInfo);
+	_emplaceGuidNamePair(IID_IEnumString);
+	_emplaceGuidNamePair(IID_IEnumUnknown);
+	_emplaceGuidNamePair(IID_IExternalConnection);
+	_emplaceGuidNamePair(IID_IFastRundown);
+	_emplaceGuidNamePair(IID_IGlobalInterfaceTable);
+	_emplaceGuidNamePair(IID_IGlobalOptions);
+	_emplaceGuidNamePair(IID_IDfReserved1);
+	_emplaceGuidNamePair(IID_IDfReserved2);
+	_emplaceGuidNamePair(IID_IDfReserved3);
+	_emplaceGuidNamePair(IID_IInternalMoniker);
+	_emplaceGuidNamePair(IID_IInternalUnknown);
+	_emplaceGuidNamePair(IID_ILockBytes);
+	_emplaceGuidNamePair(IID_IMachineGlobalObjectTable);
+	_emplaceGuidNamePair(IID_IMalloc);
+	_emplaceGuidNamePair(IID_IMarshal);
+	_emplaceGuidNamePair(IID_IMarshal2);
+	_emplaceGuidNamePair(IID_IMarshalingStream);
+	_emplaceGuidNamePair(IID_IMessageFilter);
+	_emplaceGuidNamePair(IID_IMoniker);
+	_emplaceGuidNamePair(IID_IMultiQI);
+	_emplaceGuidNamePair(IID_INoMarshal);
+	_emplaceGuidNamePair(IID_IPipeByte);
+	_emplaceGuidNamePair(IID_IPipeDouble);
+	_emplaceGuidNamePair(IID_IPipeLong);
+	_emplaceGuidNamePair(IID_IProcessInitControl);
+	_emplaceGuidNamePair(IID_IPSFactory);
+	_emplaceGuidNamePair(IID_IPSFactoryBuffer);
+	_emplaceGuidNamePair(IID_IReleaseMarshalBuffers);
+	_emplaceGuidNamePair(IID_IRpcChannel);
+	_emplaceGuidNamePair(IID_IRpcChannelBuffer);
+	_emplaceGuidNamePair(IID_IRpcChannelBuffer2);
+	_emplaceGuidNamePair(IID_IRpcChannelBuffer3);
+	_emplaceGuidNamePair(IID_IRpcHelper);
+	_emplaceGuidNamePair(IID_IRpcOptions);
+	_emplaceGuidNamePair(IID_IRpcProxy);
+	_emplaceGuidNamePair(IID_IRpcProxyBuffer);
+	_emplaceGuidNamePair(IID_IProxyManager);
+	_emplaceGuidNamePair(IID_IRootStorage);
+	_emplaceGuidNamePair(IID_IRpcStub);
+	_emplaceGuidNamePair(IID_IRpcStubBuffer);
+	_emplaceGuidNamePair(IID_IRpcSyntaxNegotiate);
+	_emplaceGuidNamePair(IID_IRunningObjectTable);
+	_emplaceGuidNamePair(IID_ISequentialStream);
+	_emplaceGuidNamePair(IID_IServerSecurity);
+	_emplaceGuidNamePair(IID_IStdMarshalInfo);
+	_emplaceGuidNamePair(IID_IStorage);
+	_emplaceGuidNamePair(IID_IStream);
+	_emplaceGuidNamePair(IID_IStubManager);
+	_emplaceGuidNamePair(IID_ISupportAllowLowerTrustActivation);
+	_emplaceGuidNamePair(IID_ISurrogate);
+	_emplaceGuidNamePair(IID_ISynchronize);
+	_emplaceGuidNamePair(IID_ISynchronizeContainer);
+	_emplaceGuidNamePair(IID_ISynchronizeEvent);
+	_emplaceGuidNamePair(IID_ISynchronizeHandle);
+	_emplaceGuidNamePair(IID_ISynchronizeMutex);
+	_emplaceGuidNamePair(IID_IUnknown);
+	_emplaceGuidNamePair(IID_IWaitMultiple);
+	_emplaceGuidNamePair(IID_IConnectionPoint);
+#undef _emplaceGuidNamePair
+}
+
 std::string 
 to_string(::GUID const& g)
 {
-	return core::to_string(::to_wstring(g));
+	auto ws = com::Guid{g}.wstr();
+	return {ws.begin(), ws.end()};
 }
 
 std::wstring 
 to_wstring(::GUID const& g)
 {
-#define _DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
-	GUID constexpr name = { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
-
-#define _DEFINE_OLEGUID(name, l, w1, w2) _DEFINE_GUID(name, l, w1, w2, 0xC0,0,0,0,0,0,0,0x46)
-
-	static _DEFINE_OLEGUID(IID_IIdentityUnmarshall, 0x0000001BL, 0, 0);
-
-#define _makeIfStatement(iid)  if (g == iid) return TEXT(#iid)
-	_makeIfStatement(IID_AsyncIMultiQI);
-	_makeIfStatement(IID_AsyncIPipeByte);
-	_makeIfStatement(IID_AsyncIPipeDouble);
-	_makeIfStatement(IID_AsyncIPipeLong);
-	_makeIfStatement(IID_IActivationFilter);
-	_makeIfStatement(IID_IAddrExclusionControl);
-	_makeIfStatement(IID_IAddrTrackingControl);
-	_makeIfStatement(IID_IAgileObject);
-	_makeIfStatement(IID_IAgileReference);
-	_makeIfStatement(IID_IAgileReference);
-	_makeIfStatement(IID_IAsyncManager);
-	_makeIfStatement(IID_IAsyncRpcChannelBuffer);
-	_makeIfStatement(IID_IBindCtx);
-	_makeIfStatement(IID_ICallbackWithNoReentrancyToApplicationSTA);
-	_makeIfStatement(IID_ICallFactory);
-	_makeIfStatement(IID_ICancelMethodCalls);
-	_makeIfStatement(IID_IChannelHook);
-	_makeIfStatement(IID_IClassFactory);
-	_makeIfStatement(IID_IClassFactory2);
-	_makeIfStatement(IID_IClientSecurity);
-	_makeIfStatement(IID_IComThreadingInfo);
-	_makeIfStatement(IID_IEnumString);
-	_makeIfStatement(IID_IEnumUnknown);
-	_makeIfStatement(IID_IExternalConnection);
-	_makeIfStatement(IID_IFastRundown);
-	_makeIfStatement(IID_IGlobalInterfaceTable);
-	_makeIfStatement(IID_IGlobalOptions);
-	_makeIfStatement(IID_IDfReserved1);
-	_makeIfStatement(IID_IDfReserved2);
-	_makeIfStatement(IID_IDfReserved3);
-	_makeIfStatement(IID_IInternalMoniker);
-	_makeIfStatement(IID_IInternalUnknown);
-	_makeIfStatement(IID_ILockBytes);
-	_makeIfStatement(IID_IMachineGlobalObjectTable);
-	_makeIfStatement(IID_IMalloc);
-	_makeIfStatement(IID_IMarshal);
-	_makeIfStatement(IID_IMarshal2);
-	_makeIfStatement(IID_IMarshalingStream);
-	_makeIfStatement(IID_IMessageFilter);
-	_makeIfStatement(IID_IMoniker);
-	_makeIfStatement(IID_IMultiQI);
-	_makeIfStatement(IID_INoMarshal);
-	_makeIfStatement(IID_IPipeByte);
-	_makeIfStatement(IID_IPipeDouble);
-	_makeIfStatement(IID_IPipeLong);
-	_makeIfStatement(IID_IProcessInitControl);
-	_makeIfStatement(IID_IPSFactory);
-	_makeIfStatement(IID_IPSFactoryBuffer);
-	_makeIfStatement(IID_IReleaseMarshalBuffers);
-	_makeIfStatement(IID_IRpcChannel);
-	_makeIfStatement(IID_IRpcChannelBuffer);
-	_makeIfStatement(IID_IRpcChannelBuffer2);
-	_makeIfStatement(IID_IRpcChannelBuffer3);
-	_makeIfStatement(IID_IRpcHelper);
-	_makeIfStatement(IID_IRpcOptions);
-	_makeIfStatement(IID_IRpcProxy);
-	_makeIfStatement(IID_IRpcProxyBuffer);
-	_makeIfStatement(IID_IProxyManager);
-	_makeIfStatement(IID_IRootStorage);
-	_makeIfStatement(IID_IRpcStub);
-	_makeIfStatement(IID_IRpcStubBuffer);
-	_makeIfStatement(IID_IRpcSyntaxNegotiate);
-	_makeIfStatement(IID_IRunningObjectTable);
-	_makeIfStatement(IID_ISequentialStream);
-	_makeIfStatement(IID_IServerSecurity);
-	_makeIfStatement(IID_IStdMarshalInfo);
-	_makeIfStatement(IID_IStorage);
-	_makeIfStatement(IID_IStream);
-	_makeIfStatement(IID_IStubManager);
-	_makeIfStatement(IID_ISupportAllowLowerTrustActivation);
-	_makeIfStatement(IID_ISurrogate);
-	_makeIfStatement(IID_ISynchronize);
-	_makeIfStatement(IID_ISynchronizeContainer);
-	_makeIfStatement(IID_ISynchronizeEvent);
-	_makeIfStatement(IID_ISynchronizeHandle);
-	_makeIfStatement(IID_ISynchronizeMutex);
-	_makeIfStatement(IID_IUnknown);
-	_makeIfStatement(IID_IWaitMultiple);
-	IID_IConnectionPoint;
-#undef _makeIfStatement
-    return core::com::to_wstring(core::com::Guid{g});
+	return std::wstring{static_cast<std::wstring_view>(core::com::Guid{g}.wstr())};
 }
 
 bool 
@@ -216,4 +223,12 @@ bool
 operator!=(com::Guid const& l, ::GUID const& r) noexcept
 {
 	return l != com::Guid(r);
+}
+
+bool
+operator<(::GUID const& l, ::GUID const& r) {
+	return l.Data1 < r.Data1
+		&& l.Data2 < r.Data2
+		&& l.Data3 < r.Data3
+		&& l.Data4 < r.Data4;
 }
