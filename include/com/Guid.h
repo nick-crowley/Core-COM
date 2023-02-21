@@ -148,7 +148,6 @@ namespace core::com
 		
 		reference constexpr
 		operator=(::GUID const& g) noexcept {
-			// FIXME: Consuming modules receive 'LNK2001 unresolved external symbol' unless defined here
 			this->m_value = g;
 			return *this;
 		}
@@ -175,7 +174,6 @@ namespace core::com
 		constexpr 
 		implicit operator 
 		::GUID const&() const noexcept { 
-			// FIXME: Consuming modules receive 'LNK2001 unresolved external symbol' unless defined here
 			return this->m_value; 
 		}
 
