@@ -9,7 +9,7 @@ namespace core::com
 	{   
     public:
         //! @brief  Generate GUID from string representation (adapted from boost::uuid)
-        template <meta::AnyOf<char,wchar_t> Character>
+        template <meta::Character Character>
         class Parser {
             using value_type = Character;
 
@@ -156,11 +156,16 @@ namespace core::com
 		Guid 
 		static fromProgId(std::wstring_view str);
 
-		Guid constexpr
+        Guid constexpr
+		static fromString(std::string_view str) {
+            return Guid::Parser<char>::fromString(str.begin(), str.end());
+        }
+
+        Guid constexpr
 		static fromString(std::wstring_view str) {
             return Guid::Parser<wchar_t>::fromString(str.begin(), str.end());
         }
-
+        
 		Guid 
 		static generate();
 		
@@ -193,10 +198,10 @@ namespace core::com
 
 	namespace literals
 	{
-        template <ZString<wchar_t> Buffer>
+        template <ZString<char> Buffer>
 		com::Guid constexpr
 		ComExport operator""_guid() {
-            return Guid::Parser<wchar_t>::fromString(Buffer.Text, Buffer.Text+Buffer.Length);
+            return Guid::Parser<char>::fromString(Buffer.Text, Buffer.Text+Buffer.Length);
         }
 	}
 }
