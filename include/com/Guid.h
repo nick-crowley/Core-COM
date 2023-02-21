@@ -132,6 +132,7 @@ namespace core::com
 	public:
         ::GUID  Value {};
 
+    public:
 		constexpr 
 		explicit 
 		Guid(::GUID const& g) noexcept
@@ -145,13 +146,14 @@ namespace core::com
 			constexpr IsDestructible noexcept,
 			constexpr NotSortable
 		);
-		
+
 		reference constexpr
 		operator=(::GUID const& g) noexcept {
 			this->Value = g;
 			return *this;
 		}
 
+    public:
 		Guid 
 		static fromProgId(std::wstring_view str);
 
@@ -168,6 +170,7 @@ namespace core::com
 		Guid 
 		static generate();
 		
+    public:
 		wstring 
 		wstr() const;
 		
