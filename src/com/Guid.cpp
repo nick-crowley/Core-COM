@@ -13,16 +13,7 @@ namespace
 	stringFromCLSID = com::function<1>(::StringFromCLSID);
 
 	auto constexpr 
-	clsIdFromString = com::function<1>(::CLSIDFromString);
-
-	auto constexpr 
 	clsIdFromProgId = com::function<1>(::CLSIDFromProgID);
-}
-
-constexpr 
-com::Guid::Guid(::GUID const& g) noexcept 
-  : m_value{g}
-{
 }
 
 //Guid::reference constexpr
@@ -45,12 +36,6 @@ com::Guid
 com::Guid::fromProgId(std::wstring_view str)
 {
 	return Guid{ clsIdFromProgId(str.data()) };
-}
-
-com::Guid 
-com::Guid::fromString(std::wstring_view str)
-{
-	return Guid{ clsIdFromString(str.data()) };
 }
 
 com::Guid
@@ -92,12 +77,6 @@ std::wstring
 com::to_wstring(Guid const& g)
 {
 	return std::wstring{static_cast<std::wstring_view>(g.wstr())};
-}
-
-com::Guid
-com::literals::operator""_guid(gsl::cwzstring guid, size_t count)
-{
-	return Guid::fromString({guid, guid+count});
 }
 
 std::string 
