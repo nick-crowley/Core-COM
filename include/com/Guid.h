@@ -171,17 +171,30 @@ namespace core::com
 		wstring 
 		wstr() const;
 		
+		bool constexpr
+		operator==(type const& r) const noexcept {
+            using namespace std;
+            // Cannot default this operator because it would call non-constexpr ::operator==(::GUID,::GUID)
+            return this->m_value.Data1 == r.m_value.Data1
+                && this->m_value.Data2 == r.m_value.Data2
+                && this->m_value.Data3 == r.m_value.Data3
+                && equal(begin(this->m_value.Data4), end(this->m_value.Data4), begin(r.m_value.Data4), end(r.m_value.Data4));
+        }
+		
+		bool constexpr
+		operator!=(type const& r) const noexcept {
+            using namespace std;
+            return this->m_value.Data1 != r.m_value.Data1
+                || this->m_value.Data2 != r.m_value.Data2
+                || this->m_value.Data3 != r.m_value.Data3
+                || !equal(begin(this->m_value.Data4), end(this->m_value.Data4), begin(r.m_value.Data4), end(r.m_value.Data4));
+        }
+
 		constexpr 
 		implicit operator 
 		::GUID const&() const noexcept { 
 			return this->m_value; 
 		}
-
-		bool 
-		operator==(type const& r) const noexcept;
-		
-		bool 
-		operator!=(type const& r) const noexcept;
 	};
 
 	std::string
@@ -210,14 +223,22 @@ ComExport to_string(::GUID const& g);
 std::wstring 
 ComExport to_wstring(::GUID const& g);
 
-bool 
-ComExport operator==(::GUID const& l, core::com::Guid const& r) noexcept;
+bool constexpr
+ComExport operator==(::GUID const& l, core::com::Guid const& r) noexcept {
+    return core::com::Guid{l} == r;
+}
 
-bool 
-ComExport operator!=(::GUID const& l, core::com::Guid const& r) noexcept;
+bool constexpr
+ComExport operator!=(::GUID const& l, core::com::Guid const& r) noexcept {
+    return core::com::Guid{l} != r;
+}
 
-bool 
-ComExport operator==(core::com::Guid const& l, ::GUID const& r) noexcept;
+bool constexpr
+ComExport operator==(core::com::Guid const& l, ::GUID const& r) noexcept {
+    return l == core::com::Guid{r};
+}
 
-bool 
-ComExport operator!=(core::com::Guid const& l, ::GUID const& r) noexcept;
+bool constexpr
+ComExport operator!=(core::com::Guid const& l, ::GUID const& r) noexcept {
+    return l != core::com::Guid{r};
+}
