@@ -52,7 +52,7 @@ namespace core::com
 	};
 	
 	KnownGuidCollection
-	inline ComExport KnownGuids;
+	extern ComExport KnownGuids;
 }
 
 bool

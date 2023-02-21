@@ -1,6 +1,9 @@
 #include "com/KnownGuidCollection.h"
 using namespace core;
 
+com::KnownGuidCollection
+com::KnownGuids{};
+
 com::KnownGuidCollection::KnownGuidCollection() {
 	::GUID constexpr
 	static IID_IIdentityUnmarshall = {0x0000001BL, 0, 0, {0xC0,0,0,0,0,0,0,0x46}};
