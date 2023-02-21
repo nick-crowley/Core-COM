@@ -214,7 +214,7 @@ namespace core::com
 	{
         template <ZString<char> Buffer>
 		com::Guid constexpr
-		ComExport operator""_guid() {
+		operator""_guid() {
             return Guid::Parser<char>::fromString(Buffer.Text, Buffer.Text+Buffer.Length);
         }
 	}
@@ -227,21 +227,21 @@ std::wstring
 ComExport to_wstring(::GUID const& g);
 
 bool constexpr
-ComExport operator==(::GUID const& l, core::com::Guid const& r) noexcept {
+operator==(::GUID const& l, core::com::Guid const& r) noexcept {
     return core::com::Guid{l} == r;
 }
 
 bool constexpr
-ComExport operator!=(::GUID const& l, core::com::Guid const& r) noexcept {
+operator!=(::GUID const& l, core::com::Guid const& r) noexcept {
     return core::com::Guid{l} != r;
 }
 
 bool constexpr
-ComExport operator==(core::com::Guid const& l, ::GUID const& r) noexcept {
+operator==(core::com::Guid const& l, ::GUID const& r) noexcept {
     return l == core::com::Guid{r};
 }
 
 bool constexpr
-ComExport operator!=(core::com::Guid const& l, ::GUID const& r) noexcept {
+operator!=(core::com::Guid const& l, ::GUID const& r) noexcept {
     return l != core::com::Guid{r};
 }
