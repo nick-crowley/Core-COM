@@ -4,10 +4,29 @@
 bool
 ComExport operator<(::GUID const& l, ::GUID const& r);
 
+namespace std 
+{
+    template <>
+	struct std::hash<::GUID> 
+	{
+		std::size_t
+		operator()(::GUID const& g) const noexcept {
+			// Adapted from boost::uuid
+			std::size_t seed = 0;
+			auto const* start = reinterpret_cast<uint8_t const*>(&g);
+			auto const* end = reinterpret_cast<uint8_t const*>(&g + 1);
+			for (auto const* i = start; i != end; ++i) 
+				seed ^= static_cast<std::size_t>(*i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            
+			return seed;
+		}
+	};
+}
+
 namespace core::com
 {
-	class ComExport KnownGuidCollection : private std::map<::GUID,std::string_view> {
-		using base = std::map<::GUID,std::string_view>;
+	class ComExport KnownGuidCollection : private std::unordered_map<::GUID,std::string_view> {
+		using base = std::unordered_map<::GUID,std::string_view>;
 
 	public:
 		using iterator = typename base::iterator;
@@ -54,7 +73,3 @@ namespace core::com
 	KnownGuidCollection
 	extern ComExport KnownGuids;
 }
-
-bool
-ComExport operator<(::GUID const& l, ::GUID const& r);
-	
