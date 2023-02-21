@@ -31,12 +31,12 @@ com::Guid::generate()
 com::wstring
 com::Guid::wstr() const
 {
-	if (com::KnownGuids.contains(this->m_value)) {
-		auto ws = com::KnownGuids[this->m_value];
+	if (com::KnownGuids.contains(this->Value)) {
+		auto ws = com::KnownGuids[this->Value];
 		return {ws.begin(), ws.end()};
 	}
 
-    return wstring{adopt, stringFromCLSID(this->m_value)};
+    return wstring{adopt, stringFromCLSID(this->Value)};
 }
 
 std::string

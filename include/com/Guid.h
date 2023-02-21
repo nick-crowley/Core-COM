@@ -130,12 +130,12 @@ namespace core::com
 		using reference = type&;
 
 	public:
-		::GUID  m_value = GUID_NULL;
+		::GUID  Value = GUID_NULL;
 
 		constexpr 
 		explicit 
 		Guid(::GUID const& g) noexcept
-          : m_value{g}
+          : Value{g}
         {}
 		
 		satisfies(Guid,
@@ -148,7 +148,7 @@ namespace core::com
 		
 		reference constexpr
 		operator=(::GUID const& g) noexcept {
-			this->m_value = g;
+			this->Value = g;
 			return *this;
 		}
 
@@ -175,25 +175,25 @@ namespace core::com
 		operator==(type const& r) const noexcept {
             using namespace std;
             // Cannot default this operator because it would call non-constexpr ::operator==(::GUID,::GUID)
-            return this->m_value.Data1 == r.m_value.Data1
-                && this->m_value.Data2 == r.m_value.Data2
-                && this->m_value.Data3 == r.m_value.Data3
-                && equal(begin(this->m_value.Data4), end(this->m_value.Data4), begin(r.m_value.Data4), end(r.m_value.Data4));
+            return this->Value.Data1 == r.Value.Data1
+                && this->Value.Data2 == r.Value.Data2
+                && this->Value.Data3 == r.Value.Data3
+                && equal(begin(this->Value.Data4), end(this->Value.Data4), begin(r.Value.Data4), end(r.Value.Data4));
         }
 		
 		bool constexpr
 		operator!=(type const& r) const noexcept {
             using namespace std;
-            return this->m_value.Data1 != r.m_value.Data1
-                || this->m_value.Data2 != r.m_value.Data2
-                || this->m_value.Data3 != r.m_value.Data3
-                || !equal(begin(this->m_value.Data4), end(this->m_value.Data4), begin(r.m_value.Data4), end(r.m_value.Data4));
+            return this->Value.Data1 != r.Value.Data1
+                || this->Value.Data2 != r.Value.Data2
+                || this->Value.Data3 != r.Value.Data3
+                || !equal(begin(this->Value.Data4), end(this->Value.Data4), begin(r.Value.Data4), end(r.Value.Data4));
         }
 
 		constexpr 
 		implicit operator 
 		::GUID const&() const noexcept { 
-			return this->m_value; 
+			return this->Value; 
 		}
 	};
 
