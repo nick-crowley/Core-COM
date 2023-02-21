@@ -130,7 +130,7 @@ namespace core::com
 		using reference = type&;
 
 	public:
-		::GUID  Value = GUID_NULL;
+        ::GUID  Value {};
 
 		constexpr 
 		explicit 
