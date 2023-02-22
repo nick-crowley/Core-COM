@@ -5,29 +5,26 @@
 #endif
 #include "com/HeapAllocator.h"
 #include "com/NoopAllocator.h"
+#include "core/ZString.h"
 
 namespace core::com 
 {
 	namespace detail 
 	{
-		template <typename T, typename... U>
-		bool constexpr 
-		static is_any_of_v = std::disjunction_v<std::is_same<T,U>...>;
-		
-		struct com_string
+		struct BStr
 		{
 			uint32_t  Length;
 			wchar_t*  Buffer;
 		};
 
-		template <typename InputIterator>
-		bool 
-		static is_valid_range(InputIterator first, InputIterator end)
+		template <std::forward_iterator ForwardIterator>
+		bool constexpr
+		static is_valid_range(ForwardIterator first, ForwardIterator end)
         {
-			if constexpr (std::is_pointer_v<InputIterator>) {
+			if constexpr (std::is_pointer_v<ForwardIterator>) {
 				return first && end && first <= end;
 			}
-			else if constexpr (std::random_access_iterator<InputIterator>) {
+			else if constexpr (std::random_access_iterator<ForwardIterator>) {
 				return first <= end;
 			}
             else {
@@ -42,29 +39,14 @@ namespace core::com
 	 * @tparam	Allocator	Any allocator type
 	*/
 	template <typename Allocator = allocator<wchar_t>>
-	class BinaryString;
-
-	inline namespace literals
-	{
-		inline namespace string_literals
-		{
-			constexpr BinaryString<NoopAllocator<wchar_t>> 
-			operator""_bstr(const wchar_t*, size_t) noexcept;
-		}
-	}
-
-	template <typename Allocator /*= allocator<wchar_t>*/>
-	class BinaryString : private detail::com_string
+	class BinaryString : private detail::BStr
 	{
 		using type = BinaryString<Allocator>;
-		using base = detail::com_string;
+		using base = detail::BStr;
 
 		using character_t = wchar_t;
-		using char_alloc_t = typename Allocator::template rebind<wchar_t>::other;
+		using char_allocator_t = typename Allocator::template rebind<character_t>::other;
 		
-		constexpr character_t 
-		static inline null = L'\0';
-
     public:
 		using allocator_type = Allocator;
 		using iterator = character_t*;
@@ -75,6 +57,14 @@ namespace core::com
 		using reference = character_t&;
 		using const_reference = character_t const&;
 		
+	private:
+		character_t constexpr
+		static inline null = L'\0';
+		
+	private:
+		char_allocator_t Alloc;
+
+	public:
 		/**
 		 * @brief	Construct uninitialized
 		*/
@@ -88,105 +78,56 @@ namespace core::com
 		 * @param alloc		Allocator used to allocate character buffer
 		*/
 		constexpr 
-		explicit BinaryString(Allocator alloc) noexcept
-		  : base{}, m_alloc{alloc}
+		explicit 
+		BinaryString(Allocator alloc) noexcept
+		  : base{}, Alloc{alloc}
 		{
 		}
 
 		/**
-		 * @brief	Construct with elements copied from built-in array
-		 * 
-		 * @tparam InputCharacter	Any type convertible to @p character_t 
-		 * 
-		 * @param src		Built-in array of elements (convertible to @p InputCharacter)
-		 * @param alloc		[optional] Allocator used to allocate character buffer
-		*/
-		template <typename InputCharacter, size_type N>
-		constexpr 
-		explicit BinaryString(InputCharacter (&src)[N], Allocator alloc = Allocator{}) noexcept
-          : BinaryString(std::begin(src), std::prev(std::end(src)), alloc)
-        {
-		}
-		
-		/**
-		 * @brief	Construct around string literal buffer
-		 * 
-		 * @tparam InputCharacter	Any type convertible to @p character_t 
-		 * 
-		 * @param src		String literal 
-		 * 
-		 * @remarks	Requires @p Allocator be the no-op allocator
-		*/
-		template <typename InputCharacter, size_type N>
-		constexpr 
-		explicit BinaryString(InputCharacter (&&src)[N]) noexcept
-		  : base{N-1, N, const_cast<character_t*>(static_cast<character_t const* const>(src))}
-        {
-			static_assert(std::is_const_v<InputCharacter>,"String literal buffer must be const");
-
-			static_assert(std::is_same_v<Allocator,NoopAllocator<character_t>>, 
-				"Constructing from string literal requires that you use NoopAllocator<..>");
-
-			static_assert(std::is_convertible_v<InputCharacter*,character_t const*>,
-				"Cannot construct from character literals of supplied type");
-		}
-
-		//! @brief	Cannot construct from null pointers
-		constexpr 
-		BinaryString(nullptr_t, nullptr_t, Allocator = Allocator{}) noexcept = delete;
-
-		/**
 		 * @brief	Construct with elements copied from input range
 		 * 
-		 * @tparam InputIterator	Any type convertible to @p character_t
+		 * @tparam	ForwardIterator		Referant type must be convertible to @p character_t
 		 * 
 		 * @param first		First element in range
 		 * @param end		Immediately beyond last element in range
 		 * @param alloc		[optional] Allocator used to allocate character buffer
 		*/
-		template <typename InputIterator>
-		constexpr 
-		BinaryString(InputIterator first, InputIterator end, Allocator alloc = Allocator{}) noexcept
-          : base{}, m_alloc{alloc}
+		template <std::forward_iterator ForwardIterator>
+		BinaryString(ForwardIterator first, ForwardIterator end, Allocator alloc = Allocator{}) noexcept
+          : base{}, Alloc{alloc}
         {	
-			static_assert(std::is_convertible_v<decltype(*first),wchar_t>);
+			static_assert(std::is_convertible_v<decltype(*first),character_t>);
 			this->assign(first,end);
 		}
 		
+		//! @brief	Prevent construction from null pointers
+		constexpr 
+		BinaryString(nullptr_t, nullptr_t, Allocator = Allocator{}) noexcept = delete;
+
 		/**
 		 * @brief	Construct with elements copied from a null-terminated C-string
 		 * 
-		 * @param str		Null-terminated character array
+		 * @param str		Null-terminated wide-character array
 		 * @param alloc		[optional] Allocator used to allocate character buffer
 		*/
-		constexpr 
-		explicit BinaryString(character_t const* str, Allocator alloc = Allocator{}) noexcept
-		  : BinaryString{str, str+wcslen(str), alloc}
+		explicit 
+		BinaryString(gsl::cwzstring const str, Allocator alloc = Allocator{}) noexcept
+		  : BinaryString{str, str+type::measure(str), alloc}
         {
 		}
 		
 		/**
-		 * @brief	Take ownership of elements in a null-terminated C-string
+		 * @brief	Take ownership of elements within a null-terminated buffer
 		 * 
-		 * @param str		Null-terminated character array
+		 * @param str		Null-terminated wide-character array
 		 * @param alloc		[optional] Allocator used to allocate character buffer
 		*/
 		constexpr 
-		explicit BinaryString(meta::adopt_t, character_t const* str, Allocator alloc = Allocator{}) noexcept
-		  : base{static_cast<uint32_t>(wcslen(str)),const_cast<character_t*>(str)}, m_alloc{alloc}
+		explicit 
+		BinaryString(meta::adopt_t, gsl::wzstring const str, Allocator alloc = Allocator{}) noexcept
+		  : base{static_cast<uint32_t>(type::measure(str)), str}, Alloc{alloc}
         {
-		}
-		
-		/**
-		 * @brief	Overwrite with elements copied from a null-terminated C-string 
-		 * 
-		 * @param r		Other string
-		*/
-		constexpr type& 
-		operator=(character_t const* const str) noexcept
-		{
-			type{str}.swap(*this);
-			return *this;
 		}
 		
 #if ATL_STRING_SUPPORT
@@ -209,7 +150,6 @@ namespace core::com
 		BinaryString(ATL::CSimpleStringT<wchar_t>&&, Allocator = Allocator{}) noexcept = delete;
 #endif // 0
 
-
 		/**
 		 * @brief	Construct with elements copied from a std::basic_string
 		 * 
@@ -218,7 +158,8 @@ namespace core::com
 		*/
 		template <typename C, typename T, typename A>
 		constexpr 
-		explicit BinaryString(std::basic_string<C,T,A> const& str, Allocator alloc = Allocator{}) noexcept
+		explicit 
+		BinaryString(std::basic_string<C,T,A> const& str, Allocator alloc = Allocator{}) noexcept
           : BinaryString(str.begin(), str.end(), alloc)
         {
 		}
@@ -252,19 +193,19 @@ namespace core::com
 		  : BinaryString{r.begin(), r.end(), alloc}
 		{
 		}
-		
+			
 		/**
-		 * @brief	Overwrite with elements copied from another string 
+		 * @brief	Construct with elements copied from a string using a different allocator
 		 * 
 		 * @param r		Other string
 		*/
-		type constexpr&
-		operator=(type const& r) noexcept
+		template <typename Other>
+		constexpr 
+		BinaryString(BinaryString<Other> const& r) noexcept
+          : BinaryString{r.begin(), r.end()}
 		{
-			type{r}.swap(*this);
-			return *this;
 		}
-		
+
 		/**
 		 * @brief	Construct with buffer moved from another string
 		 * 
@@ -272,7 +213,7 @@ namespace core::com
 		*/
 		constexpr 
 		BinaryString(type&& r) noexcept
-		  : base{}, m_alloc{r.get_allocator()}
+		  : base{}, Alloc{r.get_allocator()}
 		{
 			r.swap(*this);
 		}
@@ -287,17 +228,54 @@ namespace core::com
 		*/
 		constexpr 
 		BinaryString(type&& r, Allocator alloc) noexcept
-		  : base{}, m_alloc{alloc}
+		  : base{}, Alloc{alloc}
 		{
 			if (r.get_allocator() == alloc)
 			{
 				r.swap(*this);
-				std::swap(this->m_alloc, r.m_alloc);
+				std::swap(this->Alloc, r.Alloc);
 			}
 			else
 			{
 				type{r.begin(), r.end(), alloc}.swap(*this);
 			}
+		}
+		
+		/**
+		 * @brief	Overwrite with elements copied from a null-terminated C-string 
+		 * 
+		 * @param r		Other string
+		*/
+		constexpr type& 
+		operator=(gsl::cwzstring const str) noexcept
+		{
+			type{str}.swap(*this);
+			return *this;
+		}
+		
+		/**
+		 * @brief	Overwrite with elements copied from another string 
+		 * 
+		 * @param r		Other string
+		*/
+		type constexpr&
+		operator=(type const& r) noexcept
+		{
+			type{r}.swap(*this);
+			return *this;
+		}
+		
+		/**
+		 * @brief	Overwrite with elements copied from a string using a different allocator
+		 * 
+		 * @param r		Other string
+		*/
+		template <typename Other>
+		type constexpr&
+		operator=(BinaryString<Other> const& r) noexcept
+		{
+			type{r}.swap(*this);
+			return *this;
 		}
 		
 		/**
@@ -317,12 +295,12 @@ namespace core::com
 			else if (r.get_allocator() == this->get_allocator())
             {
 				r.swap(*this);
-				std::swap(this->m_alloc, r.m_alloc);
+				std::swap(this->Alloc, r.Alloc);
 			}
 			else 
 			{
-				type{r.begin(), r.end(), this->m_alloc}.swap(*this);
-				std::swap(this->m_alloc, r.m_alloc);
+				type{r.begin(), r.end(), this->Alloc}.swap(*this);
+				std::swap(this->Alloc, r.Alloc);
 			} 
 			return *this;
 		}
@@ -333,33 +311,45 @@ namespace core::com
 		{
 			if (this->initialized())
             {
-				this->m_alloc.deallocate(this->Buffer);
+				this->Alloc.deallocate(this->Buffer);
 				this->Buffer = nullptr;
 			}
 		}
+
+	protected:
+		/**
+		 * @brief	Measure string, in characters
+		 * 
+		 * @param	str		Pointer to first element, possibly @c nullptr
+		*/
+		size_type constexpr
+		static measure(gsl::cwzstring str) {
+			return static_cast<size_type>(ZString<character_t>::measure(str));
+		}
 		
+	public:
 		/**
 		 * @brief	Overwrite with elements copied from the range [first, end]
 		 * 
-		 * @tparam	InputIterator	Any input iterator
+		 * @tparam	ForwardIterator		Iterator whose referent is convertible to @c wchar_t
 		 * 
 		 * @param first		First element in range
 		 * @param end		One past last element in range
 		*/
-		template <typename InputIterator>
-		void constexpr
-		assign(InputIterator first, InputIterator end) noexcept
+		template <std::forward_iterator ForwardIterator>
+		void 
+		assign(ForwardIterator first, ForwardIterator end) noexcept
         {	
 			static_assert(std::is_convertible_v<decltype(*first),character_t>);
-			if (ptrdiff_t const nChars = std::distance(first,end); 
+
+			if (difference_type const nChars = std::distance(first,end); 
 				nChars < static_cast<size_type>(-1) && detail::is_valid_range(first,end))
 			{	
-				if (auto* newBuffer = this->m_alloc.allocate(meta::sizeof_n<wchar_t>(nChars+1)); newBuffer)
+				if (auto* newBuffer = this->Alloc.allocate(meta::sizeof_n<wchar_t>(nChars+1)); newBuffer)
                 {
 					if (this->Buffer) 
-					{
-						this->m_alloc.deallocate(this->Buffer);
-					}
+						this->Alloc.deallocate(this->Buffer);
+					
 					this->Buffer = newBuffer;
 					this->Length = static_cast<size_type>(nChars);
 					std::copy(first, end, this->Buffer);
@@ -369,93 +359,113 @@ namespace core::com
 		}
 
 		/**
-		 * @brief	Retrieve const-reference to back character
-		 * 
-		 * @remarks	Undefined behaviour when the string is empty or uninitialized
-		*/
-		const_reference constexpr
-		back() const noexcept
-		{
-			return this->Buffer[this->size()-1];
-		}
-
-		/**
 		 * @brief	Retrieve reference to back character
 		 * 
-		 * @remarks	Undefined behaviour when the string is empty or uninitialized
+		 * @remarks	Undefined behaviour when the string is empty
 		*/
-		reference constexpr
-		back() noexcept
+		template <typename Self>
+		auto constexpr&
+		back(this Self&& self) noexcept
 		{
-			return this->Buffer[this->size()-1];
-		}
-
-		/**
-		 * @brief	Retrieve const-iterator positioned at first character
-		 * 
-		 * @return	nullptr when uninitialized
-		*/
-		const_iterator constexpr
-		begin() const noexcept
-        {
-			return this->initialized() ? &this->Buffer[0] : nullptr;
+			return self.Buffer[self.size()-1];
 		}
 
 		/**
 		 * @brief	Retrieve iterator positioned at first character
 		 * 
-		 * @return	nullptr when uninitialized
+		 * @return	Equals @c end() when string is empty
 		*/
-		iterator constexpr 
-		begin() noexcept
+		template <typename Self>
+		auto constexpr
+		begin(this Self&& self) noexcept
         {
-			return this->initialized() ? &this->Buffer[0] : nullptr;
-		}
-
-		/**
-		 * @brief	Retrieve const-pointer to internal character buffer
-		 * 
-		 * @return	nullptr when uninitialized
-		*/
-		character_t const constexpr* 
-		c_str() const & noexcept
-		{
-			return this->data();
+			return self.initialized() ? &self.Buffer[0] : &type::null;
 		}
 
 		/**
 		 * @brief	Retrieve pointer to internal character buffer
-		 * 
-		 * @return	nullptr when uninitialized
 		*/
-		character_t constexpr* 
-		c_str() & noexcept
+		template <typename Self>
+		auto constexpr*
+		c_str(this Self&& self) noexcept
 		{
-			return this->data();
-		}
-
-		/**
-		 * @brief	Retrieve const-pointer to internal character buffer
-		 * 
-		 * @return	nullptr when uninitialized
-		*/
-		character_t const constexpr* 
-		data() const & noexcept
-		{
-			return this->initialized() ? &this->Buffer[0] : nullptr;
+			return self.initialized() ? &self.Buffer[0] : &type::null;
 		}
 
 		/**
 		 * @brief	Retrieve pointer to internal character buffer
-		 * 
-		 * @return	nullptr when uninitialized
 		*/
-		character_t constexpr* 
-		data() & noexcept
+		template <typename Self>
+		auto constexpr*
+		data(this Self&& self) noexcept
 		{
-			return this->initialized() ? &this->Buffer[0] : nullptr;
+			return self.initialized() ? &self.Buffer[0] : &type::null;
+		}
+
+		/**
+		 * @brief	Retrieve iterator positioned immediately beyond last character
+		 * 
+		 * @return	Equals @c begin() when string is empty
+		*/
+		template <typename Self>
+		auto constexpr
+		end(this Self&& self) noexcept
+        {
+			return self.initialized() ? &self.Buffer[self.size()] : &type::null;
+		}
+
+		/**
+		 * @brief	Retrieve reference to front character
+		 * 
+		 * @remarks	Undefined behaviour when the string is empty
+		*/
+		template <typename Self>
+		auto constexpr&
+		front(this Self&& self) noexcept
+		{
+			return self.Buffer[0];
+		}
+
+		/**
+		 * @brief	Query whether string is empty
+		 * 
+		 * @return	true iff empty
+		*/
+		bool constexpr
+		empty() const noexcept
+        {
+			return this->Length == 0;
+		}
+
+		/**
+		 * @brief	Retrieve allocator
+		*/
+		allocator_type constexpr
+		get_allocator() const noexcept
+		{
+			return this->Alloc;
 		}
 		
+		/**
+		 * @brief	Query current length, in characters
+		*/
+		size_type constexpr
+		size() const noexcept
+        {
+			return this->Length;
+		}
+		
+		/**
+		 * @brief	Construct string view of buffer
+		*/
+		constexpr
+		implicit operator 
+		std::wstring_view() const noexcept
+		{
+			return {this->Buffer, this->Buffer+this->Length};
+		}
+
+	public:
 		/**
 		 * @brief	Detach and return the internal character buffer, leaving this object uninitialized
 		 * 
@@ -469,90 +479,6 @@ namespace core::com
 		}
 
 		/**
-		 * @brief	Retrieve const-iterator positioned immediately beyond last character
-		 * 
-		 * @return	nullptr when uninitialized
-		*/
-		const_iterator constexpr
-		end() const noexcept
-        {
-			return this->initialized() ? &this->Buffer[this->size()] : nullptr;
-		}
-
-		/**
-		 * @brief	Retrieve iterator positioned immediately beyond last character
-		 * 
-		 * @return	nullptr when uninitialized
-		*/
-		iterator constexpr
-		end() noexcept
-        {
-			return this->initialized() ? &this->Buffer[this->size()] : nullptr;
-		}
-		
-		/**
-		 * @brief	Retrieve const-reference to front character
-		 * 
-		 * @remarks	Undefined behaviour when the string is empty or uninitialized
-		*/
-		const_reference constexpr
-		front() const noexcept
-		{
-			return this->Buffer[0];
-		}
-
-		/**
-		 * @brief	Retrieve reference to front character
-		 * 
-		 * @remarks	Undefined behaviour when the string is empty or uninitialized
-		*/
-		reference constexpr
-		front() noexcept
-		{
-			return this->Buffer[0];
-		}
-
-		/**
-		 * @brief	Query whether string is empty
-		 * 
-		 * @return	true iff empty or uninitialized
-		*/
-		bool constexpr
-		empty() const noexcept
-        {
-			return this->Length == 0;
-		}
-
-		/**
-		 * @brief	Query whether initialized
-		*/
-		allocator_type constexpr
-		get_allocator() const noexcept
-		{
-			return this->m_alloc;
-		}
-		
-		/**
-		 * @brief	Query whether initialized
-		 * 
-		 * @remarks	String is uninitialized when default-constructed
-		*/
-		bool constexpr
-		initialized() const noexcept
-        {
-			return this->Buffer != nullptr;
-		}
-
-		/**
-		 * @brief	Query current length, in characters
-		*/
-		size_type constexpr
-		size() const noexcept
-        {
-			return this->Length;
-		}
-
-		/**
 		 * @brief	Swap with another string
 		 * 
 		 * @param r	Other string
@@ -560,32 +486,22 @@ namespace core::com
 		void constexpr
 		swap(type& r) noexcept
         {
-			std::swap(this->m_alloc, r.m_alloc);
+			std::swap(this->Alloc, r.Alloc);
 			std::swap(this->Buffer, r.Buffer);
 			std::swap(this->Length, r.Length);
 		}
 		
+	protected:
 		/**
-		 * @brief	Convert into a string view
+		 * @brief	Query whether initialized
+		 * 
+		 * @remarks	String is uninitialized when default-constructed, detached, or moved-from
 		*/
-		implicit operator 
-		std::wstring_view() const noexcept
-		{
-			return {this->Buffer, this->Buffer+this->Length};
+		bool constexpr
+		initialized() const noexcept
+        {
+			return this->Buffer != nullptr;
 		}
-		
-	private:
-		BinaryString<NoopAllocator<wchar_t>> constexpr 
-		friend literals::string_literals::operator""_bstr(const wchar_t*, size_t) noexcept;
-		
-		//! @brief	Private constructor for literal operators
-		constexpr 
-		BinaryString(meta::hidden_t, character_t const* str, size_type len) noexcept
-		  : BinaryString{str, str+len}
-		{
-		}
-
-		char_alloc_t m_alloc;
 	};
 	
 	template <uint32_t N>
@@ -595,15 +511,21 @@ namespace core::com
 	{
 		inline namespace string_literals
 		{
-			constexpr BinaryString<NoopAllocator<wchar_t>> 
-			operator""_bstr(wchar_t const* ws, size_t n) noexcept
+			/**
+			 * @brief	Construct @p com::BinaryString from string literal
+			 * 
+			 * @param ws	String literal
+			*/
+			auto constexpr
+			operator""_bstr(gsl::cwzstring ws, size_t) noexcept
 			{
-				return {meta::hidden, ws, static_cast<uint32_t>(n)};
+				return BinaryString<NoopAllocator<wchar_t>>{adopt, const_cast<gsl::wzstring>(ws)};
 			}
 		}
 	}
 
 	extern template BinaryString<allocator<wchar_t>>;
 
+	//! @brief	Wide-character BSTR allocated on the COM heap
 	using wstring = BinaryString<allocator<wchar_t>>;
 }
