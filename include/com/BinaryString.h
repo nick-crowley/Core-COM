@@ -354,14 +354,14 @@ namespace core::com
 			if (ptrdiff_t const nChars = std::distance(first,end); 
 				nChars < static_cast<size_type>(-1) && detail::is_valid_range(first,end))
 			{	
-				if (auto* newBuffer = this->m_alloc.allocate(nChars+1); newBuffer)
+				if (auto* newBuffer = this->m_alloc.allocate(meta::sizeof_n<wchar_t>(nChars+1)); newBuffer)
                 {
 					if (this->Buffer) 
 					{
 						this->m_alloc.deallocate(this->Buffer);
 					}
 					this->Buffer = newBuffer;
-					this->Length = static_cast<size_type>(nChars) * sizeof(character_t);
+					this->Length = static_cast<size_type>(nChars);
 					std::copy(first, end, this->Buffer);
 					this->Buffer[nChars] = null;
 				}
