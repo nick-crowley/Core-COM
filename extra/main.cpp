@@ -163,8 +163,8 @@ public:
 #endif
 };
 
-// 
-int main()
+
+void testComCallAdapters()
 {
 	com::IsolatedApartment apartment;
 
@@ -177,14 +177,70 @@ int main()
 #if DISPATCH_SUPPORT_MULTIPLE_INTERFACES
 	auto [a,b] = wrapper.method3(L"World", 5);
 #endif
+}
+
+void testComString()
+{	
+	com::wstring constexpr
+	static ss1;
+
+	/*com::wstring constexpr
+	static ss2{L"w"};*/
+
+	using namespace com::literals;
+	auto constexpr
+	static ss2 = L"abc"_bstr;
 
 	// Test Bstring wrapper
-	com::wstring s{ L"hello"};
-	s = L"hello";
+	{
+		com::wstring{};
+	}
+
+	{
+		com::wstring s0 = ss2;
+		auto c = s0.front();
+	}
+
+	{
+		com::wstring s1{L"hello"};
+		s1 = L"hello";
+		std::wstring_view sv1 = s1;
+
+		auto* tmp = s1.c_str();
+		tmp = s1.data();
+		auto it = s1.begin();
+		it = s1.end();
+		auto c = s1.front();
+		c = s1.back();
+	}
+
+	{
+		com::wstring s2{adopt,com::HeapAllocator<wchar_t>{}.allocate(5)};
+		s2 = L"hello";
+		std::wstring_view sv2 = s2;
+	}
+
+	{
+		com::wstring s1{L"hello"};
+		com::wstring s2 = s1;
+		s2 = std::move(s1);
+		s1 = std::move(s2);
+		com::wstring s3 = std::move(s1);
+	}
+
+	std::wstring s3{L"abc"};
+	com::wstring s4{s3.begin(),s3.end()};
+	s4.assign(s3.begin(),s3.end());
+
+	std::wstring_view sv4 = s4;
 
 	//_variant_t t;
 	//_bstr_t b;
 
+}
+
+void testLiteralString()
+{	
 	// Test constexpr string
 	wchar_t buf[10] {L"abcdfeg"};
 	LiteralString cs{buf};
@@ -193,7 +249,60 @@ int main()
 	wchar_t constexpr rhs[10] {L"abcdfeg"};
 	auto constexpr cs2 = LiteralString{lhs} + LiteralString{rhs};
 	auto constexpr cs3 = LiteralString{lhs} + L'x';
+}
 
+void testComSharedPtr()
+{
 	// Test make_com() func
 	auto ptr = com::make_shared<CoCustom,ICustom>();
+}
+
+#define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
+        type constexpr static name = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+
+// "{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}"
+MIDL_DEFINE_GUID(GUID, IID_IMultifactorPortal,0xFE2C8ED8,0x98DA,0x4BF7,0xBD,0x5E,0x0A,0xA1,0xD3,0x8F,0xB5,0xE6);
+
+// "{D0DCF441-AA4C-4EAC-ACC1-32EDD2ED16F6}"
+MIDL_DEFINE_GUID(GUID, LIBID_MultifactorPortalLib,0xD0DCF441,0xAA4C,0x4EAC,0xAC,0xC1,0x32,0xED,0xD2,0xED,0x16,0xF6);
+
+// "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"
+MIDL_DEFINE_GUID(GUID, CLSID_MultifactorPortal,0x42C386F4,0x95A0,0x43A7,0xB2,0x4C,0x72,0x88,0xD3,0x1E,0x98,0xC2);
+
+void testComGuid()
+{
+	constexpr static com::Guid gN;
+
+	auto constexpr static g1 = com::Guid::fromString(L"{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}");
+	bool result = g1 == IID_IMultifactorPortal;
+
+	auto constexpr static g2 = com::Guid::fromString(L"{D0DCF441-AA4C-4EAC-ACC1-32EDD2ED16F6}");
+	result = g2 == LIBID_MultifactorPortalLib;
+
+	using namespace com::literals;
+	/*auto constexpr static g3 = L"{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid;
+	result = g3 == CLSID_MultifactorPortal;*/
+	//auto constexpr r = g3 == CLSID_MultifactorPortal;
+
+	
+	auto constexpr static g4 = com::Guid::fromString("{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}");
+	result = g4 == IID_IMultifactorPortal;
+
+	auto constexpr static g5 = "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid;
+	result = g5 == CLSID_MultifactorPortal;
+
+	auto constexpr static r1 = g1 == g2;
+	auto constexpr static r2 = g1 == IID_IMultifactorPortal;
+	auto constexpr static r3 = IID_IMultifactorPortal == g1;
+
+}
+
+// 
+int main()
+{
+	//testComCallAdapters();
+	testComString();
+	//testLiteralString();
+	//testComSharedPtr();
+	//testComGuid();
 }
