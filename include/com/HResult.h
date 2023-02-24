@@ -289,7 +289,7 @@ namespace core::com
 		  : m_value{value}
 		{
 			if (FAILED(value))
-				throw win::system_error{value};
+				throw win::system_error{value, HResult{value}.str()};
 		}
 		
 		std::string
