@@ -169,5 +169,11 @@ namespace core::com
 			new CoClass{std::forward<decltype(args)>(args)...}
 		};
 	}
-
+	
+	template <meta::Interface Interface, meta::Interface Original>
+	shared_ptr<Interface> 
+	dynamic_pointer_cast(shared_ptr<Original> const& ptr)
+	{
+		return shared_ptr<Interface>{ptr};
+	}
 }
