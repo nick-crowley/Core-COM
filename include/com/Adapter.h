@@ -33,6 +33,11 @@ namespace core::com
 		{}
 
 	public:
+		com::shared_ptr<Interface>
+		ptr() const {
+			return this->m_object;
+		}
+
 		implicit operator
 		interface_type*() const {
 			return this->m_object;
