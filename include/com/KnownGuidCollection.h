@@ -1,6 +1,7 @@
 #pragma once
 #include "library/core.COM.h"
-#pragma warning (push, 4251)
+#pragma warning (push)
+#pragma warning (disable: 4251)
 
 bool
 ComExport operator<(::GUID const& l, ::GUID const& r);
