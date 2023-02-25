@@ -38,6 +38,7 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	_emplaceGuidNamePair(IID_IFastRundown);
 	_emplaceGuidNamePair(IID_IGlobalInterfaceTable);
 	_emplaceGuidNamePair(IID_IGlobalOptions);
+	_emplaceGuidNamePair(IID_IIdentityUnmarshall);
 	_emplaceGuidNamePair(IID_IDfReserved1);
 	_emplaceGuidNamePair(IID_IDfReserved2);
 	_emplaceGuidNamePair(IID_IDfReserved3);
