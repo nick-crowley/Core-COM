@@ -31,29 +31,35 @@ com::Guid::generate()
 com::wstring
 com::Guid::wstr() const
 {
-	if (com::KnownGuids.contains(this->Value)) {
-		auto ws = com::KnownGuids[this->Value];
-		return {ws.begin(), ws.end()};
-	}
-
     return wstring{adopt, stringFromCLSID(this->Value)};
 }
 
 std::string
 com::to_string(Guid const& g)
 {
+	if (com::KnownGuids.contains(g.Value)) 
+		return std::string{com::KnownGuids[g]};
+	
 	return core::to_string(static_cast<std::wstring_view>(g.wstr()));
 }
 
 std::wstring
 com::to_wstring(Guid const& g)
 {
+	if (com::KnownGuids.contains(g.Value)) {
+		auto const s = com::KnownGuids[g.Value];
+		return {s.begin(), s.end()};
+	}
+
 	return std::wstring{static_cast<std::wstring_view>(g.wstr())};
 }
 
 std::string 
 to_string(::GUID const& g)
 {
+	if (com::KnownGuids.contains(g)) 
+		return std::string{com::KnownGuids[g]};
+
 	auto const ws = com::Guid{g}.wstr();
 	return {
 		boost::make_transform_iterator(ws.begin(), nstd::convert_to<char>),
@@ -64,5 +70,10 @@ to_string(::GUID const& g)
 std::wstring 
 to_wstring(::GUID const& g)
 {
+	if (com::KnownGuids.contains(g)) {
+		auto const s = com::KnownGuids[g];
+		return {s.begin(), s.end()};
+	}
+
 	return std::wstring{static_cast<std::wstring_view>(core::com::Guid{g}.wstr())};
 }
