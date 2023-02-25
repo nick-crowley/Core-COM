@@ -93,6 +93,14 @@ namespace core::com
 		}
 		
 	public:
+		/**
+		 * @brief	Detach and return the object pointer, leaving this object empty
+		*/
+		Interface*
+		detach() {
+			return std::exchange(this->m_object, nullptr);
+		}
+
 		void
 		reset() {
 			type{}.swap(*this);
