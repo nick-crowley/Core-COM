@@ -1,5 +1,6 @@
 #pragma once
 #include "library/core.COM.h"
+#pragma warning (push, 4251)
 
 bool
 ComExport operator<(::GUID const& l, ::GUID const& r);
@@ -73,3 +74,5 @@ namespace core::com
 	KnownGuidCollection
 	extern ComExport KnownGuids;
 }
+
+#pragma warning (pop)
