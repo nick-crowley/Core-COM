@@ -87,7 +87,8 @@ namespace core::com
 		}
 	}
 
-	extern std::atomic_long g_numInstances;
+	std::atomic_long 
+	extern g_numInstances;
 
 	template <meta::Interface... Interfaces>
 	class implements : public detail::MultipleRealization<detail::distinct_interfaces_t<Interfaces...>>
