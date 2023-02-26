@@ -57,7 +57,7 @@ namespace core::com
 	}
 
 	std::atomic_long 
-	extern g_numInstances;
+	extern numInstances;
 
 	//! @brief	Implements @c ::IUnknown for a set of COM interfaces
 	//! @tparam	Interfaces	Set of _all_ COM interfaces to be realized including ancestral interfaces (eg. @c ::IUnknown)
@@ -97,10 +97,10 @@ namespace core::com
 		::ULONG
 		__stdcall AddRef() override
 		{
-			logFunction().withRetVals(std::cref(this->refCount), std::cref(g_numInstances));
+			logFunction().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
 
 			if (this->refCount++ == 0) 
-				++g_numInstances;
+				++com::numInstances;
 
 			return this->refCount;
 		}
@@ -108,7 +108,7 @@ namespace core::com
 		::ULONG
 		__stdcall Release() override
 		{
-			logFunction().withRetVals(std::cref(this->refCount), std::cref(g_numInstances));
+			logFunction().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
 
 			if (this->refCount <= 0)
 				clog << Warning{"Coclass has an invalid reference count of {}", this->refCount.load()};
@@ -116,7 +116,7 @@ namespace core::com
 			if (--this->refCount <= 0)
 			{
 				delete this;
-				--g_numInstances;
+				--com::numInstances;
 				return 0;
 			}
 

@@ -9,7 +9,7 @@
 namespace core::com
 {
 	std::atomic_long 
-	extern g_numInstances;
+	extern com::numInstances;
 
 
 	template <meta::CoreCoClass CoClass>
@@ -26,7 +26,7 @@ namespace core::com
 	::HRESULT 
 	canUnloadNow()
 	{
-		return Boolean{g_numInstances == 0};
+		return Boolean{com::numInstances == 0};
 	}
 
 	template <meta::CoreCoClass CoClass>

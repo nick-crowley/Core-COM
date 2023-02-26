@@ -57,10 +57,10 @@ namespace core::com
 			logFunction(lock);
 
 			if (lock) {
-				++g_numInstances;
+				++com::numInstances;
 			}
 			else {
-				--g_numInstances;
+				--com::numInstances;
 			}
 			return S_OK;
 		}
