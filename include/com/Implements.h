@@ -59,6 +59,8 @@ namespace core::com
 	std::atomic_long 
 	extern g_numInstances;
 
+	//! @brief	Implements @c ::IUnknown for a set of COM interfaces
+	//! @tparam	Interfaces	Set of _all_ COM interfaces to be realized including ancestral interfaces (eg. @c ::IUnknown)
 	template <meta::Interface... Interfaces>
 	class implements : public detail::MultipleRealization<detail::distinct_interfaces_t<Interfaces...>>
 	{	
@@ -131,9 +133,9 @@ namespace core::com
 			if (__uuidof(Interface) == iid) 
 			{
 				// Since coclasses commonly realize multiple interfaces, each of which inherits from IUnknown,
-				// it's highly likely there will not be an unambiguous conversion to IUnknown. COM also has an
+				// ambiguous conversions to IUnknown commonly surface (ie. the diamond problem). COM has an
 				// identity requirement stating that, whatever conversion we choose, it must be consistent; so
-				// we're converting via the first interface in the list.
+				// we're casting via the _first_ interface in the list.
 				if constexpr (!std::is_convertible_v<type const*, Interface const*>)
 					*ppv = static_cast<Interface*>(
 						static_cast<nstd::tuple_front_t<interface_tuple>*>(this)
