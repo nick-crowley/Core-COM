@@ -28,7 +28,7 @@ namespace core::meta
 	                  && std::derived_from<T,::IUnknown>
 	                  && std::is_class_v<T> && std::is_abstract_v<T>;
 
-	//! @brief	Any class decorated with ::GUID and which realizes ::IUnknown (though not necessarily unambiguously)
+	//! @brief	Any concrete class which realizes ::IUnknown
 	template <typename T>
 	concept CoClass = std::is_base_of_v<::IUnknown,T>
 	               && std::is_class_v<T> && !std::is_abstract_v<T>;
