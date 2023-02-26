@@ -19,12 +19,6 @@ namespace core::com
 		template <typename ValueType>
 		using mutable_property_t = detail::MutablePropertyProxy<ValueType,interface_type>; 
 
-		template <unsigned NumResult, typename... Parameters>
-		using method_t = decltype(std::bind_front(
-			std::declval<com::method_t<NumResult,interface_type,Parameters...>>(),
-			std::declval<std::reference_wrapper<Interface>>()
-		));
-		
 	private:
 		com::shared_ptr<Interface> m_object;
 	
@@ -44,12 +38,16 @@ namespace core::com
 		}
 
 	protected:
-		template <unsigned NumReturnParameters = 0, typename... Parameters>
-		auto	
+		template <unsigned NumReturnParams = 0, typename... Parameters>
+		auto
 		method(method_pointer_t<Interface,Parameters...> method) const {
-			return std::bind_front(com::method<NumReturnParameters>(method), std::ref(const_cast<Interface&>(*this->m_object)));
+			return std::bind_front(com::method<NumReturnParams>(method), std::ref(const_cast<Interface&>(*this->m_object)));
 		}
 
+		// FIXME: This cannot preceed the above declaration because of its auto return-type
+		template <unsigned NumReturnParams, auto Method>
+		using method_t = decltype(std::declval<type const>().method<NumReturnParams>(Method));
+		
 		template <typename ValueType>
 		const_property_t<ValueType>
 		property(method_pointer_t<Interface,ValueType*> get) const {
