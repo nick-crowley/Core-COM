@@ -35,23 +35,6 @@ namespace core::com
 			{};
 		};
 	
-		namespace testing 
-		{
-			using TestVector = mpl::vector<IClassFactory,IUnknown,ITypeInfo>;
-			using TestVector_WithoutIUnknown = typename mpl::remove_if<TestVector, is_strict_base_of<IClassFactory>>::type;
-			static_assert(mpl::size<TestVector_WithoutIUnknown>::value == 2);
-			static_assert(mpl::contains<TestVector_WithoutIUnknown,IClassFactory>::value);
-			static_assert(!mpl::contains<TestVector_WithoutIUnknown,IUnknown>::value);
-			static_assert(mpl::contains<TestVector_WithoutIUnknown,ITypeInfo>::value);
-
-			using TestVector2 = mpl::vector<IClassFactory2,IClassFactory,IDispatch>;
-			using TestVector2_WithoutIClassFactory = typename mpl::remove_if<TestVector2, is_strict_base_of<IClassFactory2>>::type;
-			static_assert(mpl::size<TestVector2_WithoutIClassFactory>::value == 2);
-			static_assert(mpl::contains<TestVector2_WithoutIClassFactory,IClassFactory2>::value);
-			static_assert(!mpl::contains<TestVector2_WithoutIClassFactory,IClassFactory>::value);
-			static_assert(mpl::contains<TestVector2_WithoutIClassFactory,IDispatch>::value);
-		}
-	
 		template <typename ForwardSequence>
 		struct distinct_interfaces_impl : std::type_identity_t<ForwardSequence>{};
 
@@ -71,20 +54,6 @@ namespace core::com
 		//! @tparam	Interfaces...	Set of COM interfaces, possibly including common base classes
 		template <meta::Interface... Interfaces>
 		using distinct_interfaces_t = typename distinct_interfaces<Interfaces...>::type;
-	
-		namespace testing
-		{
-			using TestVector3 = distinct_interfaces_t<IClassFactory,IUnknown>;
-			static_assert(mpl::size<TestVector3>::value == 1);
-			static_assert(mpl::contains<TestVector3,IClassFactory>::value);
-			static_assert(!mpl::contains<TestVector3,IUnknown>::value);
-
-			using TestVector4 = distinct_interfaces_t<IClassFactory,IDispatch,IUnknown>;
-			static_assert(mpl::size<TestVector4>::value == 2);
-			static_assert(mpl::contains<TestVector4,IClassFactory>::value);
-			static_assert(mpl::contains<TestVector4,IDispatch>::value);
-			static_assert(!mpl::contains<TestVector4,IUnknown>::value);
-		}
 	}
 
 	std::atomic_long 
@@ -188,5 +157,33 @@ namespace core::com
 	
 	template <typename T>
 	using interface_tuple_t = typename T::interface_tuple;
+	
+	namespace detail::testing
+	{
+		using TestVector = mpl::vector<IClassFactory,IUnknown,ITypeInfo>;
+		using TestVector_WithoutIUnknown = typename mpl::remove_if<TestVector, is_strict_base_of<IClassFactory>>::type;
+		static_assert(mpl::size<TestVector_WithoutIUnknown>::value == 2);
+		static_assert(mpl::contains<TestVector_WithoutIUnknown,IClassFactory>::value);
+		static_assert(!mpl::contains<TestVector_WithoutIUnknown,IUnknown>::value);
+		static_assert(mpl::contains<TestVector_WithoutIUnknown,ITypeInfo>::value);
+
+		using TestVector2 = mpl::vector<IClassFactory2,IClassFactory,IDispatch>;
+		using TestVector2_WithoutIClassFactory = typename mpl::remove_if<TestVector2, is_strict_base_of<IClassFactory2>>::type;
+		static_assert(mpl::size<TestVector2_WithoutIClassFactory>::value == 2);
+		static_assert(mpl::contains<TestVector2_WithoutIClassFactory,IClassFactory2>::value);
+		static_assert(!mpl::contains<TestVector2_WithoutIClassFactory,IClassFactory>::value);
+		static_assert(mpl::contains<TestVector2_WithoutIClassFactory,IDispatch>::value);
+	
+		using TestVector3 = distinct_interfaces_t<IClassFactory,IUnknown>;
+		static_assert(mpl::size<TestVector3>::value == 1);
+		static_assert(mpl::contains<TestVector3,IClassFactory>::value);
+		static_assert(!mpl::contains<TestVector3,IUnknown>::value);
+
+		using TestVector4 = distinct_interfaces_t<IClassFactory,IDispatch,IUnknown>;
+		static_assert(mpl::size<TestVector4>::value == 2);
+		static_assert(mpl::contains<TestVector4,IClassFactory>::value);
+		static_assert(mpl::contains<TestVector4,IDispatch>::value);
+		static_assert(!mpl::contains<TestVector4,IUnknown>::value);
+	}
 
 }  // namespace core::com
