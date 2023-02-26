@@ -38,12 +38,12 @@ namespace core::com
 		template <typename ForwardSequence>
 		struct distinct_interfaces_impl : std::type_identity_t<ForwardSequence>{};
 
-		template <typename I>
-		struct distinct_interfaces_impl<mpl::vector<I>> : std::type_identity_t<mpl::vector<I>>{};
+		template <template<typename...> typename ForwardSequence, meta::Interface I>
+		struct distinct_interfaces_impl<ForwardSequence<I>> : std::type_identity_t<ForwardSequence<I>>{};
 
-		template <typename I, typename ...R>
-		struct distinct_interfaces_impl<mpl::vector<I,R...>> : std::type_identity_t<
-			typename mpl::remove_if<mpl::vector<I,R...>,is_strict_base_of<I>>::type
+		template <template<typename...> typename ForwardSequence, meta::Interface I, typename ...R>
+		struct distinct_interfaces_impl<ForwardSequence<I,R...>> : std::type_identity_t<
+			typename mpl::remove_if<ForwardSequence<I,R...>,is_strict_base_of<I>>::type
 		>{};
 
 		template <meta::Interface... I>
