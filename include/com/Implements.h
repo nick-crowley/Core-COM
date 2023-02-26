@@ -88,9 +88,8 @@ namespace core::com
 			HResult hr = S_OK;
 			logFunction(iid,ppv).withRetVals(hr,*ppv);
 
-			if (!ppv) {
+			if (!ppv) 
 				return hr = E_INVALIDARG;
-			}
 
 			return hr = this->QueryInterfaceImpl<Interfaces...>(iid,ppv);
 		}
@@ -100,9 +99,8 @@ namespace core::com
 		{
 			logFunction().withRetVals(std::cref(this->m_refCount), std::cref(g_numInstances));
 
-			if (this->m_refCount++ == 0) {
+			if (this->m_refCount++ == 0) 
 				++g_numInstances;
-			}
 
 			return this->m_refCount;
 		}
@@ -149,13 +147,9 @@ namespace core::com
 			}
 
 			if constexpr (sizeof...(Remainder))
-			{
 				return this->QueryInterfaceImpl<Remainder...>(iid, ppv);
-			}
 			else
-			{
 				return E_NOINTERFACE;
-			}
 		}
 	};
 	
