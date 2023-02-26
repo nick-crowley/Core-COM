@@ -70,7 +70,7 @@ namespace core::com
 		using interface_tuple = std::tuple<Interfaces...>;
 
 	private:
-		std::atomic_long m_refCount = 0;
+		std::atomic_long refCount = 0;
 
 	public:
 		satisfies(implements,
@@ -97,30 +97,30 @@ namespace core::com
 		::ULONG
 		__stdcall AddRef() override
 		{
-			logFunction().withRetVals(std::cref(this->m_refCount), std::cref(g_numInstances));
+			logFunction().withRetVals(std::cref(this->refCount), std::cref(g_numInstances));
 
-			if (this->m_refCount++ == 0) 
+			if (this->refCount++ == 0) 
 				++g_numInstances;
 
-			return this->m_refCount;
+			return this->refCount;
 		}
 	
 		::ULONG
 		__stdcall Release() override
 		{
-			logFunction().withRetVals(std::cref(this->m_refCount), std::cref(g_numInstances));
+			logFunction().withRetVals(std::cref(this->refCount), std::cref(g_numInstances));
 
-			if (this->m_refCount <= 0)
-				clog << Warning{"Coclass has an invalid reference count of {}", this->m_refCount.load()};
+			if (this->refCount <= 0)
+				clog << Warning{"Coclass has an invalid reference count of {}", this->refCount.load()};
 
-			if (--this->m_refCount <= 0)
+			if (--this->refCount <= 0)
 			{
 				delete this;
 				--g_numInstances;
 				return 0;
 			}
 
-			return this->m_refCount;
+			return this->refCount;
 		}
 
 	private:
