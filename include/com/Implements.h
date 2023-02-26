@@ -140,6 +140,8 @@ namespace core::com
 					*ppv = static_cast<Interface*>(
 						static_cast<nstd::tuple_front_t<interface_tuple>*>(this)
 					);
+					// FIXME: Only works for common case, we should select the path dynamically by searching the
+					//        type-list for the first common base eg. std::common_with
 				else
 					*ppv = static_cast<Interface*>(this);
 				this->AddRef();
