@@ -4,7 +4,7 @@
 
 namespace core::com
 {
-	template <meta::CoreCoClass CoClass>
+	template <meta::CoClass CoClass>
 	class Boundary
 	{
 		std::function<::HRESULT ()> m_action;

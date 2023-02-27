@@ -22,7 +22,7 @@ namespace core::com
 		shared_ptr<::ITypeInfo> m_typeInfo;
 
 	public:
-        template <meta::CoreCoClass CoClass>
+        template <meta::CoClass CoClass>
         Dispatch(CoClass const*) 
 		{
             auto constexpr

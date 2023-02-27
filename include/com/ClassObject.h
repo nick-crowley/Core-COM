@@ -9,7 +9,7 @@
 
 namespace core::com
 {
-	template <meta::CoreCoClass CoClass>
+	template <meta::CoClass CoClass>
 	class ClassObject
 	{
 		auto constexpr

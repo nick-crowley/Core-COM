@@ -12,7 +12,7 @@ namespace core::com
 	extern com::numInstances;
 
 
-	template <meta::CoreCoClass CoClass>
+	template <meta::CoClass CoClass>
 	::HRESULT 
 	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
 	{
@@ -29,7 +29,7 @@ namespace core::com
 		return Boolean{com::numInstances == 0};
 	}
 
-	template <meta::CoreCoClass CoClass, typename Traits = coclass_traits<CoClass>>
+	template <meta::CoClass CoClass, typename Traits = coclass_traits<CoClass>>
 	::HRESULT
 	registerServer(::HANDLE hModule) 
 	try {
@@ -66,7 +66,7 @@ namespace core::com
 		return E_FAIL;
 	}
 	
-	template <meta::CoreCoClass CoClass, typename Traits = coclass_traits<CoClass>>
+	template <meta::CoClass CoClass, typename Traits = coclass_traits<CoClass>>
 	::HRESULT
 	unregisterServer() 
 	try {

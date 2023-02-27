@@ -9,6 +9,7 @@
 
 namespace core::com
 {
+	//! @brief	@c CoClass::apartment if present, otherwise @c core::com::ThreadingModel::Isolated
 	template <typename CoClass, typename = void>
 	com::ThreadingModel constexpr
 	coclass_apartment_v = com::ThreadingModel::Isolated;
@@ -18,6 +19,7 @@ namespace core::com
 	coclass_apartment_v<CoClass,void> = CoClass::apartment;
 	
 
+	//! @brief	@c CoClass::factory_type if present, otherwise @c core::com::ClassFactory<CoClass>
 	template <typename CoClass, typename = void>
 	struct coclass_factory : std::type_identity<ClassFactory<CoClass>> {};
 
@@ -25,6 +27,7 @@ namespace core::com
 	struct coclass_factory<CoClass,void> : std::type_identity<typename CoClass::factory_type> {};
 	
 
+	//! @brief	@c CoClass::class_guid if present, otherwise @c __uuidof(CoClass)
 	template <typename CoClass, typename = void>
 	com::Guid constexpr
 	coclass_guid_v = __uuidof(CoClass);
@@ -34,11 +37,13 @@ namespace core::com
 	coclass_guid_v<CoClass,void> = CoClass::class_guid;
 
 
+	//! @brief	Always @c CoClass::class_name
 	template <typename CoClass> requires requires { CoClass::class_name; }
 	LiteralString constexpr
 	coclass_name_v = CoClass::class_name;
 
 
+	//! @brief	@c CoClass::class_version if present, otherwise @c core::com::Version{1,0}
 	template <typename CoClass, typename = void>
 	com::Version constexpr
 	coclass_version_v = com::Version{1,0};
@@ -49,7 +54,7 @@ namespace core::com
 	
 
 	template <meta::CoImpl CoClass>
-		requires meta::CoreCoLibrary<typename CoClass::library_type>
+		requires meta::CoLibrary<typename CoClass::library_type>
 	 && requires {CoClass::class_name;}
 	struct coclass_traits
 	{
@@ -78,14 +83,14 @@ namespace core::meta
 {
 	//! @brief	Core COM class (ie. one which possesses valid traits)
 	template <typename T>
-	concept CoreCoClass = CoImpl<T> && HasGuid<T> && requires {
+	concept CoClass = CoImpl<T> && HasGuid<T> && requires {
 		{ com::coclass_traits<T>::apartment } -> std::convertible_to<com::ThreadingModel>;
 		{ com::coclass_traits<T>::class_name } -> std::convertible_to<std::wstring_view>;
 		{ com::coclass_traits<T>::class_guid } -> std::convertible_to<com::Guid>;
 		{ com::coclass_traits<T>::class_version } -> std::convertible_to<com::Version>;
 		{ com::coclass_traits<T>::program_id } -> std::convertible_to<std::wstring_view>;
 		//{ com::coclass_traits<T>::factory_type } -> std::derived_from<::IClassFactory>;
-		//{ com::coclass_traits<T>::library_type } -> CoreCoLibrary;
+		//{ com::coclass_traits<T>::library_type } -> CoLibrary;
 		com::coclass_traits<T>::factory_type;
 		com::coclass_traits<T>::library_type;
 	};
@@ -93,6 +98,6 @@ namespace core::meta
 
 namespace core::com
 {
-	template <meta::CoreCoClass CoClass> 
+	template <meta::CoClass CoClass> 
 	using coclass_factory_t = typename coclass_factory<CoClass>::type;
 }
