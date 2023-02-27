@@ -169,12 +169,12 @@ namespace core::com
 		return object;
 	}
 	
-	template <meta::CoClass CoClass, meta::Interface Interface>
+	template <meta::CoImpl CoImpl, meta::Interface Interface>
 	shared_ptr<Interface> 
 	make_shared(auto&&... args)
 	{
 		return shared_ptr<Interface>{
-			new CoClass{std::forward<decltype(args)>(args)...}
+			new CoImpl{std::forward<decltype(args)>(args)...}
 		};
 	}
 	

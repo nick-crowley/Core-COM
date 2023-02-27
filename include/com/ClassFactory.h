@@ -22,10 +22,10 @@ namespace core::com::detail
 
 namespace core::com 
 {
-	template <meta::CoreCoClass CoClass>
+	template <meta::CoImpl CoImpl>
 	class ClassFactory : public implements<::IClassFactory,::IUnknown>
 	{	
-		using type = ClassFactory<CoClass>;
+		using type = ClassFactory<CoImpl>;
 
 	public:
 		satisfies(ClassFactory,
@@ -48,7 +48,7 @@ namespace core::com
 				return hr = S_OK;
 			}
 
-			return hr = type::CreateInstanceImpl(nullptr, iid, ppv, static_cast<interface_tuple_t<CoClass>*>(nullptr));
+			return hr = type::CreateInstanceImpl(nullptr, iid, ppv, static_cast<interface_tuple_t<CoImpl>*>(nullptr));
 		}
 
 		::HRESULT
@@ -72,7 +72,7 @@ namespace core::com
 		{
 			if ((... || (Guid(iid) == __uuidof(Interfaces))))
 			{
-				auto* inst = new CoClass{};
+				auto* inst = new CoImpl{};
 				return inst->QueryInterface(iid,ppv);
 			}
 

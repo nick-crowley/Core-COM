@@ -30,21 +30,8 @@ namespace core::meta
 
 	//! @brief	Any concrete class which realizes ::IUnknown
 	template <typename T>
-	concept CoClass = std::is_base_of_v<::IUnknown,T>
-	               && std::is_class_v<T> && !std::is_abstract_v<T>;
-	
-	//! @brief	Any CORE co-class (ie. one which possesses valid traits)
-	template <typename T>
-	concept CoreCoClass = CoClass<T> && HasGuid<T> && requires {
-		{ T::apartment } -> std::convertible_to<com::ThreadingModel>;
-		{ T::class_name } -> std::convertible_to<std::wstring_view>;
-		{ T::class_version } -> std::convertible_to<com::Version>;
-		T::library_type;
-		
-		{ T::library_type::library_name } -> std::convertible_to<std::wstring_view>;
-		{ T::library_type::library_version } -> std::convertible_to<com::Version>;
-		// FIXME: These should be checking validity of coclass_traits<T> not T
-	};
+	concept CoImpl = std::is_base_of_v<::IUnknown,T>
+	              && std::is_class_v<T> && !std::is_abstract_v<T>;
 	
 	//! @brief	Any interface derived from ::IDispatch
 	template <typename T>
