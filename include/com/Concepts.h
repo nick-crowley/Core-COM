@@ -4,6 +4,7 @@
 #endif
 #include "meta/TypeTraits.h"
 #include "../src/PlatformSdk.h"
+#include "../src/libBoost.h"
 
 namespace core::com {
 	enum class ThreadingModel;
@@ -19,6 +20,15 @@ namespace core::meta
 	template <typename T>
 	concept ConvertibleFromHResult = std::is_arithmetic_v<T> && !is_any_of_v<T,bool,::HRESULT>;
 	
+	template <typename T>
+	concept ForwardSequence = requires {
+		typename mpl::begin<T>::type;
+		typename mpl::end<T>::type;
+		typename mpl::empty<T>::type;
+		typename mpl::front<T>::type;
+		typename mpl::size<T>::type;
+	};
+
 	template <typename T>
 	concept HasGuid = requires { __uuidof(T); };
 

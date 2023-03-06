@@ -9,7 +9,7 @@ namespace core::com
 	namespace detail
 	{
 		//! @brief	Realizes an arbitrary type-list of COM interfaces
-		template <typename ForwardSequence>
+		template <meta::ForwardSequence ForwardSequence>
 		class MultipleRealization; 
 
 		template <template<typename...> typename ForwardSequence, meta::Interface... Interfaces>
@@ -35,7 +35,7 @@ namespace core::com
 			{};
 		};
 	
-		template <typename ForwardSequence>
+		template <meta::ForwardSequence ForwardSequence>
 		struct distinct_interfaces_impl : std::type_identity_t<ForwardSequence>{};
 
 		template <template<typename...> typename ForwardSequence, meta::Interface I>
