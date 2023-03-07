@@ -7,26 +7,36 @@
 
 namespace core::com::detail
 {
-#if UNUSED
-	template <typename InterfaceTuple>
-	struct make_implements;
+	template <meta::CoImpl CoImpl, meta::ForwardSequence Interfaces>
+	struct CreateInstanceImpl {
+		::HRESULT
+		operator()(IUnknown*, ::IID const&, void**) const = delete; 
+	};
 
-	template <typename... Interfaces>
-	struct make_implements<std::tuple<Interfaces...>> : meta::identity<implements<Interfaces...>>
-	{};
-		
-	template <typename InterfaceTuple>
-	using make_implements_t = typename make_implements<InterfaceTuple>::type;
-#endif
+	template <meta::CoImpl CoImpl, template<typename...> typename Sequence, meta::Interface... Interfaces>
+	struct CreateInstanceImpl<CoImpl,Sequence<Interfaces...>> {
+		::HRESULT
+		operator()(IUnknown*, ::IID const& iid, void** ppv) const
+		{
+			if ((... || (Guid(iid) == __uuidof(Interfaces))))
+			{
+				auto* inst = new CoImpl{};
+				return inst->QueryInterface(iid,ppv);
+			}
+			*ppv = nullptr;
+			return E_NOINTERFACE;
+		}
+	};
 }
 
 namespace core::com 
 {
 	template <meta::CoImpl CoImpl>
+		requires meta::ForwardSequence<typename CoImpl::interfaces>
 	class ClassFactory : public implements<::IClassFactory,::IUnknown>
 	{	
 		using type = ClassFactory<CoImpl>;
-
+		
 	public:
 		satisfies(ClassFactory,
 			IsDefaultConstructible noexcept,
@@ -47,8 +57,10 @@ namespace core::com
 				this->AddRef();
 				return hr = S_OK;
 			}
-
-			return hr = type::CreateInstanceImpl(nullptr, iid, ppv, static_cast<interface_tuple_t<CoImpl>*>(nullptr));
+			
+			// Since boost::mpl is C++03 library, we need to remove the placeholder args here
+			using interfaceSeq = typename mpl::remove_if<typename CoImpl::interfaces,mpl::same_as<mpl::na>>::type;
+			return hr = detail::CreateInstanceImpl<CoImpl,interfaceSeq>{}(nullptr, iid, ppv);
 		}
 
 		::HRESULT
@@ -63,21 +75,6 @@ namespace core::com
 				--com::numInstances;
 			}
 			return S_OK;
-		}
-
-	private:
-		template <meta::Interface... Interfaces>
-		::HRESULT
-		static CreateInstanceImpl(IUnknown*, ::IID const& iid, void** ppv, std::tuple<Interfaces...>* = nullptr) 
-		{
-			if ((... || (Guid(iid) == __uuidof(Interfaces))))
-			{
-				auto* inst = new CoImpl{};
-				return inst->QueryInterface(iid,ppv);
-			}
-
-			*ppv = nullptr;
-			return E_NOINTERFACE;
 		}
 	};
 }

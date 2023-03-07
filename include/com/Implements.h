@@ -67,7 +67,7 @@ namespace core::com
 		using type = implements<Interfaces...>;
 
 	public:
-		using interface_tuple = std::tuple<Interfaces...>;
+		using interfaces = mpl::vector<Interfaces...>;
 
 	private:
 		std::atomic_long refCount = 0;
@@ -136,7 +136,7 @@ namespace core::com
 				// we're casting via the _first_ interface in the list.
 				if constexpr (!std::is_convertible_v<type const*, Interface const*>)
 					*ppv = static_cast<Interface*>(
-						static_cast<nstd::tuple_front_t<interface_tuple>*>(this)
+						static_cast<typename mpl::front<interfaces>::type*>(this)
 					);
 					// FIXME: Only works for common case, we should select the path dynamically by searching the
 					//        type-list for the first common base eg. std::common_with
@@ -152,9 +152,6 @@ namespace core::com
 				return E_NOINTERFACE;
 		}
 	};
-	
-	template <typename T>
-	using interface_tuple_t = typename T::interface_tuple;
 	
 	namespace detail::testing
 	{

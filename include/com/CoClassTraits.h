@@ -63,7 +63,8 @@ namespace core::meta::detail
 			{ CoClass::class_name } -> std::convertible_to<std::wstring_view>;
 		} 
 		&& CoClass::class_name != std::wstring_view{}
-		&& com::coclass_guid_v<CoClass> != com::Guid{};
+		&& com::coclass_guid_v<CoClass> != com::Guid{}
+		&& meta::ForwardSequence<typename CoClass::interfaces>;
 }
 
 namespace core::com
