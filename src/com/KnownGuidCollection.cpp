@@ -1,16 +1,49 @@
 #include "com/KnownGuidCollection.h"
+#include "com/Guid.h"
 using namespace core;
 
 com::KnownGuidCollection
 com::KnownGuids{};
 
 com::KnownGuidCollection::KnownGuidCollection() {
+	using namespace com::literals;
+
 	::GUID constexpr
 	static IID_IIdentityUnmarshall = {0x0000001BL, 0, 0, {0xC0,0,0,0,0,0,0,0x46}};
+	
+	Guid constexpr
+	static IID_IApplicationFrame = "{143715D9-A015-40EA-B695-D5CC267E36EE}"_guid;
 
+	Guid constexpr
+	static IID_IApplicationFrameManager = "{D6DEFAB3-DBB9-4413-8AF9-554586FDFF94}"_guid;
+	
+	Guid constexpr
+	static IID_IApplicationFrameEventHandler = "{EA5D0DE4-770D-4DA0-A9F8-D7F9A140FF79}"_guid;
+	
+	Guid constexpr
+	static IID_IAudioDeviceGraph = "{3C169FF7-37B2-484C-B199-C3155590F316}"_guid;
+
+	Guid constexpr
+	static IID_IPimcContext2 = "{1868091E-AB5A-415F-A02F-5C4DD0CF901D}"_guid;
+	
+	Guid constexpr
+	static IID_IEUserBroker = "{1AC7516E-E6BB-4A69-B63F-E841904DC5A6}"_guid;
+
+	Guid constexpr
+	static IID_IFrameTaskManager = "{35BD3360-1B35-4927-BAE4-B10E70D99EFF}"_guid;
+	
+	Guid constexpr
+	static IID_IStreamGroup = "{816E5B3E-5523-4EFC-9223-98EC4214C3A0}"_guid;
+	
+	Guid constexpr
+	static IID_IVerbStateTaskCallBack = "{F2153260-232E-4474-9D0A-9F2AB153441D}"_guid;
+	
 #define _emplaceGuidNamePair(iid)  \
 	this->emplace(iid, #iid);
-
+	
+	_emplaceGuidNamePair(IID_IApplicationFrame);
+	_emplaceGuidNamePair(IID_IApplicationFrameManager);
+	_emplaceGuidNamePair(IID_IApplicationFrameEventHandler);
 	_emplaceGuidNamePair(IID_AsyncIMultiQI);
 	_emplaceGuidNamePair(IID_AsyncIPipeByte);
 	_emplaceGuidNamePair(IID_AsyncIPipeDouble);
@@ -23,6 +56,7 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	_emplaceGuidNamePair(IID_IAgileReference);
 	_emplaceGuidNamePair(IID_IAsyncManager);
 	_emplaceGuidNamePair(IID_IAsyncRpcChannelBuffer);
+	_emplaceGuidNamePair(IID_IAudioDeviceGraph);
 	_emplaceGuidNamePair(IID_IBindCtx);
 	_emplaceGuidNamePair(IID_ICallbackWithNoReentrancyToApplicationSTA);
 	_emplaceGuidNamePair(IID_ICallFactory);
@@ -36,12 +70,14 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	_emplaceGuidNamePair(IID_IEnumUnknown);
 	_emplaceGuidNamePair(IID_IExternalConnection);
 	_emplaceGuidNamePair(IID_IFastRundown);
+	_emplaceGuidNamePair(IID_IFrameTaskManager);
 	_emplaceGuidNamePair(IID_IGlobalInterfaceTable);
 	_emplaceGuidNamePair(IID_IGlobalOptions);
 	_emplaceGuidNamePair(IID_IIdentityUnmarshall);
 	_emplaceGuidNamePair(IID_IDfReserved1);
 	_emplaceGuidNamePair(IID_IDfReserved2);
 	_emplaceGuidNamePair(IID_IDfReserved3);
+	_emplaceGuidNamePair(IID_IEUserBroker);
 	_emplaceGuidNamePair(IID_IInternalMoniker);
 	_emplaceGuidNamePair(IID_IInternalUnknown);
 	_emplaceGuidNamePair(IID_ILockBytes);
@@ -54,6 +90,7 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	_emplaceGuidNamePair(IID_IMoniker);
 	_emplaceGuidNamePair(IID_IMultiQI);
 	_emplaceGuidNamePair(IID_INoMarshal);
+	_emplaceGuidNamePair(IID_IPimcContext2);
 	_emplaceGuidNamePair(IID_IPipeByte);
 	_emplaceGuidNamePair(IID_IPipeDouble);
 	_emplaceGuidNamePair(IID_IPipeLong);
@@ -80,6 +117,7 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	_emplaceGuidNamePair(IID_IStdMarshalInfo);
 	_emplaceGuidNamePair(IID_IStorage);
 	_emplaceGuidNamePair(IID_IStream);
+	_emplaceGuidNamePair(IID_IStreamGroup);
 	_emplaceGuidNamePair(IID_IStubManager);
 	_emplaceGuidNamePair(IID_ISupportAllowLowerTrustActivation);
 	_emplaceGuidNamePair(IID_ISurrogate);
@@ -89,6 +127,7 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	_emplaceGuidNamePair(IID_ISynchronizeHandle);
 	_emplaceGuidNamePair(IID_ISynchronizeMutex);
 	_emplaceGuidNamePair(IID_IUnknown);
+	_emplaceGuidNamePair(IID_IVerbStateTaskCallBack);
 	_emplaceGuidNamePair(IID_IWaitMultiple);
 	_emplaceGuidNamePair(IID_IConnectionPoint);
 #undef _emplaceGuidNamePair
