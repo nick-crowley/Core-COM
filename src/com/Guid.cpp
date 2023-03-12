@@ -1,7 +1,7 @@
 #include "com/Guid.h"
 #include "com/Function.h"
 #include "com/KnownGuidCollection.h"
-#include "core/ToString.h"
+#include "nstd/Functional.h"
 using namespace core;
 
 namespace
