@@ -4,6 +4,9 @@
 
 namespace core::com
 {
+	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+	* @brief	Encapsulation boundary through which C++ exceptions cannot propagate
+	*/
 	template <meta::CoreCoClass CoClass>
 	class Boundary
 	{
