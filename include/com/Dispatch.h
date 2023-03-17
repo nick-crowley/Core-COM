@@ -46,6 +46,9 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
+    /* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+	* @brief	Generic implementation of @c IDispatch for any interface
+	*/
     template <meta::DispInterface... Interfaces>
 	class Dispatch : public implements<Interfaces...,::IDispatch,::IUnknown>
 	{
