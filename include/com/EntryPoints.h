@@ -50,7 +50,12 @@ namespace core::com
 	std::atomic_long 
 	extern com::numInstances;
 
-
+	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+	* @brief	Retrieve a factory instance for any co-class
+	* @param[in]	clsId	Implementation ID
+	* @param[in]	iid		Interface ID
+	* @param[out]	ppv		Upon return, points to the instance
+	*/
 	template <meta::CoreCoClass CoClass>
 	::HRESULT 
 	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
@@ -62,12 +67,18 @@ namespace core::com
 		return factory->QueryInterface(iid,ppv);
 	}
 
+	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+	* @brief	Query whether lifetime of all objects constructed by this module have expired
+	*/
 	::HRESULT 
 	canUnloadNow()
 	{
 		return Boolean{com::numInstances == 0};
 	}
 
+	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+	* @brief	Populate all registry entries for @p CoClass co-classes
+	*/
 	template <meta::CoreCoClass CoClass, typename Traits = coclass_traits<CoClass>>
 	::HRESULT
 	registerServer(::HANDLE hModule) 
@@ -104,7 +115,10 @@ namespace core::com
 	{
 		return E_FAIL;
 	}
-	
+
+	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+	* @brief	Remove all registry entries for @p CoClass co-classes
+	*/
 	template <meta::CoreCoClass CoClass, typename Traits = coclass_traits<CoClass>>
 	::HRESULT
 	unregisterServer() 
