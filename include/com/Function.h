@@ -1,6 +1,6 @@
 #pragma once
 #include "library/core.COM.h"
-#include "core/CallAdapter.h"
+#include "core/SignatureAdapter.h"
 #include "com/HResult.h"
 
 namespace core::com
