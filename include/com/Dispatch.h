@@ -64,7 +64,7 @@ namespace core::com
                 return E_INVALIDARG;
             }
 
-            return this->m_typeInfo->QueryInterface(__uuidof(::ITypeInfo), nstd::out_ptr<void*>(*ppv));
+            return this->m_typeInfo->QueryInterface(__uuidof(::ITypeInfo), std::out_ptr(*ppv));
         }
         
         ::HRESULT

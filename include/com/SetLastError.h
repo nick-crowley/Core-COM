@@ -22,7 +22,7 @@ namespace core::com
 		  : m_result(result)
 		{
 			shared_ptr<::ICreateErrorInfo> info;	
-			if (auto hr = ::CreateErrorInfo(nstd::out_ptr<::ICreateErrorInfo*>(info)); FAILED(hr))	// BUG: double-AddRef
+			if (auto hr = ::CreateErrorInfo(std::out_ptr(info)); FAILED(hr))	// BUG: double-AddRef
 				this->m_result = hr;
 			else
 			{
