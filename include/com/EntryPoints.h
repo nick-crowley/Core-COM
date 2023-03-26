@@ -19,7 +19,7 @@ namespace core::com
 		if (clsId != __uuidof(CoClass))
 			return CLASS_E_CLASSNOTAVAILABLE;
 
-		shared_ptr<::IClassFactory> factory{new coclass_factory_t<CoClass>{}};
+		shared_ptr<::IClassFactory> factory = make_shared<coclass_factory_t<CoClass>,::IClassFactory>();
 		return factory->CreateInstance(nullptr,iid,ppv);
 	}
 
