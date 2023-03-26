@@ -18,7 +18,7 @@ namespace core::meta
 	concept ConvertibleToHResult = std::is_arithmetic_v<T> && !std::is_same_v<T,::HRESULT>;
 		
 	template <typename T>
-	concept ConvertibleFromHResult = std::is_arithmetic_v<T> && !is_any_of_v<T,bool,::HRESULT>;
+	concept ConvertibleFromHResult = std::is_arithmetic_v<T> && !AnyOf<T,bool,::HRESULT>;
 	
 	template <typename T>
 	concept ForwardSequence = requires {
