@@ -2,7 +2,6 @@
 #ifndef ComFramework_h_included
 #	error Including this header directly may cause a circular dependency; include <comFramework.h> directly
 #endif
-#include "meta/TypeTraits.h"
 #include "../src/PlatformSdk.h"
 #include "../src/libBoost.h"
 
