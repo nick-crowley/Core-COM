@@ -160,7 +160,7 @@ namespace core::com
 		return ptr.empty();
 	}
 
-	template <::GUID const& ClassID, meta::Interface Interface>
+	template <meta::Interface Interface, ::GUID const& ClassID>
 	shared_ptr<Interface> 
 	make_shared(DWORD context = CLSCTX_INPROC_SERVER|CLSCTX_LOCAL_SERVER)
 	{
@@ -169,7 +169,7 @@ namespace core::com
 		return object;
 	}
 	
-	template <meta::CoImpl CoImpl, meta::Interface Interface>
+	template <meta::Interface Interface, meta::CoImpl CoImpl>
 	shared_ptr<Interface> 
 	make_shared(auto&&... args)
 	{
