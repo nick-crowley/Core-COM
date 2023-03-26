@@ -9,7 +9,7 @@ namespace core::com
 	{   
     public:
         //! @brief  Generate GUID from string representation (adapted from boost::uuid)
-        template <meta::Character Character>
+        template <nstd::Character Character>
         class Parser {
             using value_type = Character;
 
