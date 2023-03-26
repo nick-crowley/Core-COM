@@ -345,7 +345,7 @@ namespace core::com
 			if (difference_type const nChars = std::distance(first,end); 
 				nChars < static_cast<size_type>(-1) && detail::is_valid_range(first,end))
 			{	
-				if (auto* newBuffer = this->Alloc.allocate(meta::sizeof_n<wchar_t>(nChars+1)); newBuffer)
+				if (auto* newBuffer = this->Alloc.allocate(nstd::sizeof_n<wchar_t>(nChars+1)); newBuffer)
                 {
 					if (this->Buffer) 
 						this->Alloc.deallocate(this->Buffer);
