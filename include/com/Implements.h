@@ -1,6 +1,5 @@
 #pragma once
 #include "library/core.COM.h"
-#include "meta/Concepts.h"
 #include "com/HResult.h"
 #include "core/FunctionLogging.h"
 
