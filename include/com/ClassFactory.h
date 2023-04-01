@@ -50,7 +50,7 @@ namespace core::com
 		__stdcall CreateInstance(::IUnknown*, ::IID const& iid, void** ppv) override
 		{
 			HResult hr = S_OK;
-			logFunction(iid,ppv).withRetVals(hr,*ppv);
+			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
 
 			if (iid == IID_IClassFactory) {
 				*ppv = this;
@@ -66,7 +66,7 @@ namespace core::com
 		::HRESULT
 		__stdcall LockServer(::BOOL lock) override
 		{
-			logFunction(lock);
+			logFunctionArgs(lock);
 
 			if (lock) {
 				++com::numInstances;

@@ -85,7 +85,7 @@ namespace core::com
 		__stdcall QueryInterface(::IID const& iid, void** ppv) override
 		{
 			HResult hr = S_OK;
-			logFunction(iid,ppv).withRetVals(hr,*ppv);
+			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
 
 			if (!ppv) 
 				return hr = E_INVALIDARG;
@@ -96,7 +96,7 @@ namespace core::com
 		::ULONG
 		__stdcall AddRef() override
 		{
-			logFunction().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
+			logFunctionArgs().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
 
 			if (this->refCount++ == 0) 
 				++com::numInstances;
@@ -107,7 +107,7 @@ namespace core::com
 		::ULONG
 		__stdcall Release() override
 		{
-			logFunction().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
+			logFunctionArgs().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
 
 			if (this->refCount <= 0)
 				clog << Warning{"Coclass has an invalid reference count of {}", this->refCount.load()};
