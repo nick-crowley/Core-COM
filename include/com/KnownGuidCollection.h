@@ -9,17 +9,15 @@ ComExport operator<(::GUID const& l, ::GUID const& r);
 namespace std 
 {
     template <>
-	struct std::hash<::GUID> 
+	struct hash<::GUID> 
 	{
-		std::size_t
-		operator()(::GUID const& g) const noexcept {
+		size_t
+		operator()(::GUID const& g) const noexcept 
+		{
+			size_t seed = 0;
 			// Adapted from boost::uuid
-			std::size_t seed = 0;
-			auto const* start = reinterpret_cast<uint8_t const*>(&g);
-			auto const* end = reinterpret_cast<uint8_t const*>(&g + 1);
-			for (auto const* i = start; i != end; ++i) 
-				seed ^= static_cast<std::size_t>(*i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            
+			for (byte const b : as_bytes(span(&g,1))) 
+				seed ^= static_cast<size_t>(b) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 			return seed;
 		}
 	};
