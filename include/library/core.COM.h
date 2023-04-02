@@ -19,8 +19,3 @@
 #include "../../src/library/ComExport.h"
 
 #include "com/Concepts.h"
-
-namespace core::com
-{
-	using core::to_string;
-}

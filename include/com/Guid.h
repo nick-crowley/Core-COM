@@ -226,6 +226,8 @@ ComExport to_string(::GUID const& g);
 std::wstring 
 ComExport to_wstring(::GUID const& g);
 
+static_assert(core::meta::Stringable<::GUID>);
+
 bool constexpr
 operator==(::GUID const& l, core::com::Guid const& r) noexcept {
     return core::com::Guid{l} == r;

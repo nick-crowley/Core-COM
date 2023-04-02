@@ -40,7 +40,7 @@ com::to_string(Guid const& g)
 	if (com::KnownGuids.contains(g.Value)) 
 		return std::string{com::KnownGuids[g]};
 	
-	return core::to_string(static_cast<std::wstring_view>(g.wstr()));
+	return as_string(static_cast<std::wstring_view>(g.wstr()));
 }
 
 std::wstring
