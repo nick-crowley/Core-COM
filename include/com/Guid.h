@@ -43,69 +43,99 @@ namespace core::com
 	class ComExport Guid
 	{
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+    private:
+		using type = Guid;
+		using reference = type&;
+		
     public:
         //! @brief  Generate GUID from string representation (adapted from boost::uuid)
-        template <nstd::Character Character>
-        class Parser {
-            using value_type = Character;
-
+        template <std::input_iterator CharIterator>
+        class GuidParser 
+        {
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+        private:
+            using type = GuidParser<CharIterator>;
+            using character_type = typename std::iterator_traits<CharIterator>::value_type;
+            
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+        private:
+            CharIterator const sourceBegin;
+            CharIterator const sourceEnd;
+            
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~o
         public:
-            satisfies(Parser,
-                constexpr NotDefaultConstructible
+            constexpr
+            GuidParser(CharIterator begin, CharIterator end)
+                : sourceBegin{begin}, sourceEnd{end}
+            {}
+            
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+        public:
+            satisfies(GuidParser,
+                constexpr NotDefaultConstructible,
+                constexpr IsCopyConstructible,
+                constexpr IsMoveConstructible,
+                NotCopyAssignable,
+                NotMoveAssignable,
+                NotEqualityComparable,
+                NotSortable
             );
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~o
+
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~o
         public:
-            template <std::input_iterator CharIterator>
             Guid constexpr
-            static fromString(CharIterator begin, CharIterator end) 
+            parse() 
             {
                 // check open brace
-                value_type c = Parser::getNextChar(begin, end);
-                bool const has_open_brace = Parser::isOpenBrace(c);
-                value_type const open_brace_char = c;
+                CharIterator pIn = this->sourceBegin;
+                character_type c = this->getNextChar(pIn);
+                bool const has_open_brace = this->isOpenBrace(c);
+                character_type const open_brace_char = c;
                 if (has_open_brace) 
-                    c = Parser::getNextChar(begin, end);
+                    c = this->getNextChar(pIn);
 
                 bool has_dashes = false;
 
                 uint8_t result[16] {};
                 int i = 0;
-                CharIterator pIn = begin;
                 for (auto pOut = std::begin(result); pOut != std::end(result); ++pOut, ++i) {
                     if (pOut != std::begin(result)) 
-                        c = Parser::getNextChar(pIn, end);
+                        c = this->getNextChar(pIn);
             
                     if (i == 4) {
-                        has_dashes = Parser::isDash(c);
+                        has_dashes = this->isDash(c);
                         if (has_dashes) 
-                            c = Parser::getNextChar(pIn, end);
+                            c = this->getNextChar(pIn);
                     }
             
                     // if there are dashes, they must be in every slot
                     else if (i == 6 || i == 8 || i == 10) {
                         if (has_dashes == true) {
-                            if (Parser::isDash(c)) 
-                                c = Parser::getNextChar(pIn, end);
+                            if (this->isDash(c)) 
+                                c = this->getNextChar(pIn);
                             else
                                 ThrowInvalidArg(str,"Invalid GUID syntax");
                         }
                     }
 
-                    *pOut = static_cast<uint8_t>(Parser::getValue(c));
+                    *pOut = static_cast<uint8_t>(this->getValue(c));
 
-                    c = Parser::getNextChar(pIn, end);
+                    c = this->getNextChar(pIn);
                     *pOut <<= 4;
-                    *pOut |= Parser::getValue(c);
+                    *pOut |= this->getValue(c);
                 }
 
                 // check close brace
                 if (has_open_brace) {
-                    c = Parser::getNextChar(pIn, end);
-                    Parser::checkCloseBrace(c, open_brace_char);
+                    c = this->getNextChar(pIn);
+                    this->checkCloseBrace(c, open_brace_char);
                 }
 
                 // check end of string - any additional data is an invalid uuid
-                if (pIn != end) 
+                if (pIn != this->sourceEnd) 
                     ThrowInvalidArg(str,"GUID string too long");
                 
                 ::GUID guid {};
@@ -122,19 +152,18 @@ namespace core::com
             }
     
         private:
-            template <std::input_iterator CharIterator>
-            typename std::iterator_traits<CharIterator>::value_type constexpr
-            static getNextChar(CharIterator& begin, CharIterator const end) {
-                if (begin == end) 
+            character_type constexpr
+            getNextChar(CharIterator& pos) {
+                if (pos == this->sourceEnd) 
                     ThrowInvalidArg(str,"GUID string too short");
                 
-                return *begin++;
+                return *pos++;
             }
             
-            std::make_unsigned_t<Character> constexpr
-            static getValue(Character const c) {
-                Character const digits[] {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','A','B','C','D','E','F'};
-                std::make_unsigned_t<Character> const values[] { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,10,11,12,13,14,15 };
+            std::make_unsigned_t<character_type> constexpr
+            getValue(character_type const c) {
+                character_type const digits[] {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','A','B','C','D','E','F'};
+                std::make_unsigned_t<character_type> const values[] { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,10,11,12,13,14,15 };
                 static_assert(lengthof(digits) == lengthof(values));
 
                 size_t const pos = ranges::find(digits, c) - digits;
@@ -145,25 +174,21 @@ namespace core::com
             }
             
             bool constexpr
-            static isDash(Character const c) {
+            isDash(character_type const c) {
                 return c == '-';
             }
             
             bool constexpr
-            static isOpenBrace(Character const c) {
+            isOpenBrace(character_type const c) {
                 return c == '{';
             }
             
             void constexpr
-            static checkCloseBrace(Character const c, Character const open_brace) {
+            checkCloseBrace(character_type const c, character_type const open_brace) {
                 if (open_brace != '{' || c != '}') 
                     ThrowInvalidArg(str,"GUID missing closing brace");
             }
         };
-
-	private:
-		using type = Guid;
-		using reference = type&;
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
         ::GUID  Value {};
@@ -199,12 +224,12 @@ namespace core::com
 
         Guid constexpr
 		static fromString(std::string_view str) {
-            return Guid::Parser<char>::fromString(str.begin(), str.end());
+            return GuidParser{str.begin(), str.end()}.parse();
         }
 
         Guid constexpr
 		static fromString(std::wstring_view str) {
-            return Guid::Parser<wchar_t>::fromString(str.begin(), str.end());
+            return GuidParser{str.begin(), str.end()}.parse();
         }
         
 		Guid 
@@ -258,11 +283,10 @@ namespace core::com
         template <ZString<char> Buffer>
 		com::Guid constexpr
 		operator""_guid() {
-            return Guid::Parser<char>::fromString(Buffer.Text, Buffer.Text+Buffer.Length);
+            return Guid::GuidParser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();
         }
 	}
 }
-
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 std::string 
