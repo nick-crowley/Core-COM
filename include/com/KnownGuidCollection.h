@@ -82,7 +82,14 @@ namespace core::com
 		KnownGuidCollection();
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-
+	public:
+		satisfies(KnownGuidCollection,
+			NotCopyable,
+			IsMovable,
+			NotEqualityComparable,
+			NotSortable,
+			NotArithmetic
+		)
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		template <typename Self>
