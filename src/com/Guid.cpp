@@ -117,4 +117,12 @@ to_wstring(::GUID const& g)
 	return std::wstring{static_cast<std::wstring_view>(core::com::Guid{g}.wstr())};
 }
 
+bool
+operator<(::GUID const& l, ::GUID const& r) {
+	return l.Data1 < r.Data1
+		&& l.Data2 < r.Data2
+		&& l.Data3 < r.Data3
+		&& std::array{l.Data4} < std::array{r.Data4};
+}
+
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

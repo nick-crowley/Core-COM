@@ -132,11 +132,3 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	_emplaceGuidNamePair(IID_IConnectionPoint);
 #undef _emplaceGuidNamePair
 }
-
-bool
-operator<(::GUID const& l, ::GUID const& r) {
-	return l.Data1 < r.Data1
-		&& l.Data2 < r.Data2
-		&& l.Data3 < r.Data3
-		&& std::array{l.Data4} < std::array{r.Data4};
-}
