@@ -44,7 +44,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	template <meta::CoClass CoClass>
+	template <meta::CoClass Factory>
 	class ClassObject
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -59,7 +59,7 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		ClassObject(::IUnknown& instance, ::CLSCTX context, ::REGCLS usage)
-			: m_cookie{coRegisterClassObject(guid_v<CoClass>, &instance, context, usage)}
+			: m_cookie{coRegisterClassObject(guid_v<Factory>, &instance, context, usage)}
 		{}
 
 		~ClassObject() {
