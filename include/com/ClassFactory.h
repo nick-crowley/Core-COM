@@ -69,15 +69,15 @@ namespace core::com
 	/**
 	 * @brief	Co-class factory
 	 * 
-	 * @tparam	CoImpl	Type produced by factory
+	 * @tparam	Product		Type produced by factory
 	*/
-	template <meta::CoImpl CoImpl>
-		requires meta::ForwardSequence<typename CoImpl::interfaces>
+	template <meta::CoImpl Product>
+		requires meta::ForwardSequence<typename Product::interfaces>
 	class ClassFactory : public implements<::IClassFactory,::IUnknown>
 	{	
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		using type = ClassFactory<CoImpl>;
+		using type = ClassFactory<Product>;
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
@@ -110,8 +110,8 @@ namespace core::com
 			}
 			
 			// Since boost::mpl is C++03 library, we need to remove the placeholder args here
-			using interfaceSeq = typename mpl::remove_if<typename CoImpl::interfaces,mpl::same_as<mpl::na>>::type;
-			return hr = detail::CreateInstanceImpl<CoImpl,interfaceSeq>{}(nullptr, iid, ppv);
+			using interfaceSeq = typename mpl::remove_if<typename Product::interfaces,mpl::same_as<mpl::na>>::type;
+			return hr = detail::CreateInstanceImpl<Product,interfaceSeq>{}(nullptr, iid, ppv);
 		}
 
 		::HRESULT
