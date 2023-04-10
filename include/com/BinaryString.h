@@ -1,4 +1,31 @@
+/* o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o */ /*!
+* @copyright	Copyright (c) 2023, Nick Crowley. All rights reserved.
+* 
+* Redistribution and use in source and binary forms, with or without modification, are permitted
+* provided that the following conditions are met:
+* 
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions
+*    and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of
+*    conditions and the following disclaimer in the documentation and/or other materials provided
+*    with the distribution.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+* FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+* WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* 
+* The views and conclusions contained in the software and documentation are those of the author 
+* and should not be interpreted as representing official policies, either expressed or implied, of
+* the projects which contain it.
+*/
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #pragma once
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
 #if ATL_STRING_SUPPORT
 #	include <atlstr.h>
@@ -6,7 +33,15 @@
 #include "com/HeapAllocator.h"
 #include "com/NoopAllocator.h"
 #include "core/ZString.h"
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Macro Definitions o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com 
 {
 	namespace detail 
@@ -41,6 +76,8 @@ namespace core::com
 	template <typename Allocator = allocator<wchar_t>>
 	class BinaryString : private detail::BStr
 	{
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	private:
 		using type = BinaryString<Allocator>;
 		using base = detail::BStr;
 
@@ -61,9 +98,11 @@ namespace core::com
 		character_t constexpr
 		static inline null = L'\0';
 		
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
 		char_allocator_t Alloc;
-
+		
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		/**
 		 * @brief	Construct uninitialized
@@ -315,49 +354,11 @@ namespace core::com
 				this->Buffer = nullptr;
 			}
 		}
-
-	protected:
-		/**
-		 * @brief	Measure string, in characters
-		 * 
-		 * @param	str		Pointer to first element, possibly @c nullptr
-		*/
-		size_type constexpr
-		static measure(gsl::cwzstring str) {
-			return static_cast<size_type>(ZString<character_t>::measure(str));
-		}
 		
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		/**
-		 * @brief	Overwrite with elements copied from the range [first, end]
-		 * 
-		 * @tparam	ForwardIterator		Iterator whose referent is convertible to @c wchar_t
-		 * 
-		 * @param first		First element in range
-		 * @param end		One past last element in range
-		*/
-		template <std::forward_iterator ForwardIterator>
-		void 
-		assign(ForwardIterator first, ForwardIterator end) noexcept
-        {	
-			static_assert(std::is_convertible_v<decltype(*first),character_t>);
-
-			if (difference_type const nChars = std::distance(first,end); 
-				nChars < static_cast<size_type>(-1) && detail::is_valid_range(first,end))
-			{	
-				if (auto* newBuffer = this->Alloc.allocate(nstd::sizeof_n<wchar_t>(nChars+1)); newBuffer)
-                {
-					if (this->Buffer) 
-						this->Alloc.deallocate(this->Buffer);
-					
-					this->Buffer = newBuffer;
-					this->Length = static_cast<size_type>(nChars);
-					std::copy(first, end, this->Buffer);
-					this->Buffer[nChars] = null;
-				}
-			}
-		}
-
 		/**
 		 * @brief	Retrieve reference to back character
 		 * 
@@ -426,6 +427,19 @@ namespace core::com
 			return self.Buffer[0];
 		}
 
+	protected:
+		/**
+		 * @brief	Measure string, in characters
+		 * 
+		 * @param	str		Pointer to first element, possibly @c nullptr
+		*/
+		size_type constexpr
+		static measure(gsl::cwzstring str) {
+			return static_cast<size_type>(ZString<character_t>::measure(str));
+		}
+		
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	public:
 		/**
 		 * @brief	Query whether string is empty
 		 * 
@@ -464,8 +478,51 @@ namespace core::com
 		{
 			return {this->Buffer, this->Buffer+this->Length};
 		}
-
+		
+	protected:
+		/**
+		 * @brief	Query whether initialized
+		 * 
+		 * @remarks	String is uninitialized when default-constructed, detached, or moved-from
+		*/
+		bool constexpr
+		initialized() const noexcept
+        {
+			return this->Buffer != nullptr;
+		}
+		
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
+		/**
+		 * @brief	Overwrite with elements copied from the range [first, end]
+		 * 
+		 * @tparam	ForwardIterator		Iterator whose referent is convertible to @c wchar_t
+		 * 
+		 * @param first		First element in range
+		 * @param end		One past last element in range
+		*/
+		template <std::forward_iterator ForwardIterator>
+		void 
+		assign(ForwardIterator first, ForwardIterator end) noexcept
+        {	
+			static_assert(std::is_convertible_v<decltype(*first),character_t>);
+
+			if (difference_type const nChars = std::distance(first,end); 
+				nChars < static_cast<size_type>(-1) && detail::is_valid_range(first,end))
+			{	
+				if (auto* newBuffer = this->Alloc.allocate(nstd::sizeof_n<wchar_t>(nChars+1)); newBuffer)
+                {
+					if (this->Buffer) 
+						this->Alloc.deallocate(this->Buffer);
+					
+					this->Buffer = newBuffer;
+					this->Length = static_cast<size_type>(nChars);
+					std::copy(first, end, this->Buffer);
+					this->Buffer[nChars] = null;
+				}
+			}
+		}
+
 		/**
 		 * @brief	Detach and return the internal character buffer, leaving this object uninitialized
 		 * 
@@ -490,23 +547,21 @@ namespace core::com
 			std::swap(this->Buffer, r.Buffer);
 			std::swap(this->Length, r.Length);
 		}
-		
-	protected:
-		/**
-		 * @brief	Query whether initialized
-		 * 
-		 * @remarks	String is uninitialized when default-constructed, detached, or moved-from
-		*/
-		bool constexpr
-		initialized() const noexcept
-        {
-			return this->Buffer != nullptr;
-		}
 	};
 	
 	template <uint32_t N>
 	explicit BinaryString(wchar_t const (&&)[N]) -> BinaryString<NoopAllocator<wchar_t>>;
 	
+	//! @brief	Wide-character BSTR allocated on the COM heap
+	using wstring = BinaryString<allocator<wchar_t>>;
+	
+	extern template wstring;
+}
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com 
+{
 	inline namespace literals
 	{
 		inline namespace string_literals
@@ -523,9 +578,9 @@ namespace core::com
 			}
 		}
 	}
-
-	extern template BinaryString<allocator<wchar_t>>;
-
-	//! @brief	Wide-character BSTR allocated on the COM heap
-	using wstring = BinaryString<allocator<wchar_t>>;
 }
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+
+// o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Separator o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
