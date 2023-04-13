@@ -44,7 +44,7 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Simplifies boilerplate of COM interface adapters
 	*/
-	template <meta::Interface Interface>
+	template <meta::ComInterface Interface>
 	class adapter {
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 		using type = adapter<Interface>;

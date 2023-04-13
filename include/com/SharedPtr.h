@@ -5,10 +5,10 @@
 
 namespace core::com
 {
-	template <meta::Interface Interface>
+	template <meta::ComInterface Interface>
 	class shared_ptr
 	{
-		template <meta::Interface> 
+		template <meta::ComInterface> 
 		friend class shared_ptr;
 
 		using type = shared_ptr<Interface>;
@@ -45,7 +45,7 @@ namespace core::com
 		{
 		}
 	
-		template <meta::Interface Other> 
+		template <meta::ComInterface Other> 
 		explicit
 		shared_ptr(shared_ptr<Other> const& r) noexcept 
 		{
@@ -153,14 +153,14 @@ namespace core::com
 		}
 	};
 	
-	template <meta::Interface Interface>
+	template <meta::ComInterface Interface>
 	bool 
 	empty(shared_ptr<Interface> const& ptr)
 	{
 		return ptr.empty();
 	}
 
-	template <meta::Interface Interface, ::GUID const& ClassID>
+	template <meta::ComInterface Interface, ::GUID const& ClassID>
 	shared_ptr<Interface> 
 	make_shared(DWORD context = CLSCTX_INPROC_SERVER|CLSCTX_LOCAL_SERVER)
 	{
@@ -169,7 +169,7 @@ namespace core::com
 		return object;
 	}
 	
-	template <meta::Interface Interface, meta::CoImplOf<Interface> CoImpl>
+	template <meta::ComInterface Interface, meta::CoImplOf<Interface> CoImpl>
 	shared_ptr<Interface> 
 	make_shared(auto&&... args)
 	{
@@ -178,7 +178,7 @@ namespace core::com
 		};
 	}
 	
-	template <meta::Interface Interface, meta::Interface Original>
+	template <meta::ComInterface Interface, meta::ComInterface Original>
 	shared_ptr<Interface> 
 	dynamic_pointer_cast(shared_ptr<Original> const& ptr)
 	{

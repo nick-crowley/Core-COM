@@ -39,13 +39,13 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com::detail
 {
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	using get_method_t = method_t<1,Interface,ValueType*>;
 
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	using put_method_t = method_t<0,Interface,ValueType>;
 
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	class MutablePropertyProxy
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -94,7 +94,7 @@ namespace core::com::detail
 		}
 	};
 	
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	class MutablePropertyFunctor
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -134,7 +134,7 @@ namespace core::com::detail
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
 
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	class ReadOnlyPropertyProxy
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -177,7 +177,7 @@ namespace core::com::detail
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
 	
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	class ReadOnlyPropertyFunctor
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -222,20 +222,20 @@ namespace core::com::detail
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	using const_property_t = detail::ReadOnlyPropertyFunctor<ValueType,Interface>;
 
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	using mutable_property_t = detail::MutablePropertyFunctor<ValueType,Interface>; 
 
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	mutable_property_t<ValueType,Interface> constexpr
 	property(method_pointer_t<Interface,ValueType*> get, method_pointer_t<Interface,ValueType> set)
 	{
 		return { com::method<1>(get), com::method(set) };
 	}
 	
-	template <typename ValueType, meta::Interface Interface>
+	template <typename ValueType, meta::ComInterface Interface>
 	const_property_t<ValueType,Interface> constexpr
 	property(method_pointer_t<Interface,ValueType*> get)
 	{

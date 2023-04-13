@@ -50,7 +50,7 @@ namespace core::com
 			operator()(IUnknown*, ::IID const&, void**) const = delete; 
 		};
 
-		template <meta::CoImpl CoImpl, template<typename...> typename Sequence, meta::Interface... Interfaces>
+		template <meta::CoImpl CoImpl, template<typename...> typename Sequence, meta::ComInterface... Interfaces>
 		struct CreateInstanceImpl<CoImpl,Sequence<Interfaces...>> {
 			::HRESULT
 			operator()(IUnknown*, ::IID const& iid, void** ppv) const

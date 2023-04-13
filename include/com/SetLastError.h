@@ -6,7 +6,7 @@
 
 namespace core::com
 {
-	template <meta::CoClass CoClass, meta::Interface Interface = nstd::tuple_front_t<typename CoClass::interface_tuple>>
+	template <meta::CoClass CoClass, meta::ComInterface Interface = nstd::tuple_front_t<typename CoClass::interface_tuple>>
 	class SetLastError
 	{
 		using traits = coclass_traits<CoClass>;

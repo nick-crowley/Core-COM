@@ -33,7 +33,7 @@ namespace core::meta
 
 	//! @brief	Any interface decorated with ::GUID and derived from ::IUnknown
 	template <typename T>
-	concept Interface = HasGuid<T>
+	concept ComInterface = HasGuid<T>
 	                  && std::derived_from<T,::IUnknown>
 	                  && std::is_class_v<T> && std::is_abstract_v<T>;
 
@@ -43,8 +43,8 @@ namespace core::meta
 	              && std::is_class_v<T> && !std::is_abstract_v<T>;
 	
 	//! @brief	Any co-class which realizes a specific interface
-	template <typename T, typename Interface>
-	concept CoImplOf = CoImpl<T> && std::is_base_of_v<Interface,T>;
+	template <typename T, typename ComInterface>
+	concept CoImplOf = CoImpl<T> && std::is_base_of_v<ComInterface,T>;
 	
 	//! @brief	Any interface derived from ::IDispatch
 	template <typename T>
