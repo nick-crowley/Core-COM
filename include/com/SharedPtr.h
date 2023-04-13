@@ -165,7 +165,7 @@ namespace core::com
 	make_shared(DWORD context = CLSCTX_INPROC_SERVER|CLSCTX_LOCAL_SERVER)
 	{
 		shared_ptr<Interface> object;
-		ThrowingHResult hr = ::CoCreateInstance(ClassID, nullptr, context, guid_v<Interface>, std::out_ptr(object,adopt));
+		win::ThrowingHResult hr = ::CoCreateInstance(ClassID, nullptr, context, guid_v<Interface>, std::out_ptr(object,adopt));
 		return object;
 	}
 	

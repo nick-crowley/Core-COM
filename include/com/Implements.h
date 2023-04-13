@@ -27,7 +27,7 @@
 #pragma once
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
-#include "com/HResult.h"
+#include "win/HResult.h"
 #include "core/FunctionLogging.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
@@ -130,7 +130,7 @@ namespace core::com
 		::HRESULT
 		__stdcall QueryInterface(::IID const& iid, void** ppv) override
 		{
-			HResult hr = S_OK;
+			win::HResult hr = S_OK;
 			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
 
 			if (!ppv) 

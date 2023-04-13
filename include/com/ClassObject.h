@@ -90,7 +90,7 @@ namespace core::com
 	void
 	inline resumeClassObjects() 
 	{
-		com::ThrowingHResult hr = ::CoResumeClassObjects();
+		win::ThrowingHResult hr = ::CoResumeClassObjects();
 	}
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

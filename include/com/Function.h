@@ -28,7 +28,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
 #include "core/SignatureAdapter.h"
-#include "com/HResult.h"
+#include "win/HResult.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -57,7 +57,7 @@ namespace core::com
 	{
 		auto const callable = [fx](Parameters... args) -> ::HRESULT
 		{
-			ThrowingHResult hr = (*fx)(std::forward<Parameters>(args)...);
+			win::ThrowingHResult hr = (*fx)(std::forward<Parameters>(args)...);
 			return hr;
 		};
 
@@ -70,7 +70,7 @@ namespace core::com
 	{
 		auto const callable = [mx](Interface& object, Parameters... args) -> ::HRESULT
 		{
-			ThrowingHResult hr = (object.*mx)(args...);
+			win::ThrowingHResult hr = (object.*mx)(args...);
 			return hr;
 		};
 		return core::detail::adaptSignature<NumResults>(callable);
