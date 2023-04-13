@@ -42,6 +42,10 @@ namespace core::meta
 	concept CoImpl = std::is_base_of_v<::IUnknown,T>
 	              && std::is_class_v<T> && !std::is_abstract_v<T>;
 	
+	//! @brief	Any co-class which realizes a specific interface
+	template <typename T, typename Interface>
+	concept CoImplOf = CoImpl<T> && std::is_base_of_v<Interface,T>;
+	
 	//! @brief	Any interface derived from ::IDispatch
 	template <typename T>
 	concept DispInterface = std::derived_from<T,::IDispatch>;
