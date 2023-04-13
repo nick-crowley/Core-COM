@@ -61,7 +61,7 @@ namespace core::com
         
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-        template <meta::CoClass CoClass>
+        template <meta::CoreComClass CoClass>
         Dispatch(CoClass const*) 
 		{
             auto constexpr
