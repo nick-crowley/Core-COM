@@ -57,7 +57,7 @@ namespace core::meta::detail
 {
 	//! @brief	Well-formed co-class declaration
 	template <typename CoClass>
-	concept CoClassDeclaration = CoImpl<CoClass> 
+	concept CoreComClassDeclaration = CoImpl<CoClass> 
 		&& CoLibraryDeclaration<typename CoClass::library_type>
 		&& requires {
 			{ CoClass::class_name } -> std::convertible_to<std::wstring_view>;
@@ -70,7 +70,7 @@ namespace core::meta::detail
 namespace core::com
 {
 	//! @brief	Compile-time co-class metadata
-	template <meta::detail::CoClassDeclaration CoClass>
+	template <meta::detail::CoreComClassDeclaration CoClass>
 	struct coclass_traits
 	{
 		using factory_type = typename coclass_factory<CoClass>::type;
