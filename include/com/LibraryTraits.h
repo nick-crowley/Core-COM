@@ -75,7 +75,7 @@ namespace core::meta::detail
 {	
 	//! @brief	Well-formed COM library declaration
 	template <typename Library>
-	concept CoLibraryDeclaration = requires {
+	concept CoreLibraryDeclaration = requires {
 			{ Library::library_name } -> std::convertible_to<std::wstring_view>;
 		} 
 		&& Library::library_name != std::wstring_view{}
@@ -85,7 +85,7 @@ namespace core::meta::detail
 namespace core::com
 {
 	//! @brief	Compile-time COM library metadata
-	template <meta::detail::CoLibraryDeclaration Library>
+	template <meta::detail::CoreLibraryDeclaration Library>
 	struct library_traits
 	{
 		LiteralString constexpr 
@@ -103,7 +103,7 @@ namespace core::meta
 {
 	//! @brief	Well-formed Core COM library (ie. one which possesses valid traits)
 	template <typename T>
-	concept CoLibrary = requires {
+	concept CoreLibrary = requires {
 		{ com::library_traits<T>::library_name } -> std::convertible_to<std::wstring_view>;
 		{ com::library_traits<T>::library_guid } -> std::convertible_to<com::Guid>;
 		{ com::library_traits<T>::library_version } -> std::convertible_to<com::Version>;
@@ -130,7 +130,7 @@ namespace core::com::detail::testing
 		static library_guid = Guid::fromString("714C8163-8D3F-4247-8BA8-9C152F131E91");
 	};
 	static_assert(library_guid_v<LibraryWithoutMemberGuid> == library_guid_v<LibraryWithMemberGuid>);
-	static_assert(!meta::CoLibrary<LibraryWithMemberGuid>);
+	static_assert(!meta::CoreLibrary<LibraryWithMemberGuid>);
 
 	// Verify library version is detected or defaulted
 	struct LibraryWithoutVersion{};
@@ -139,7 +139,7 @@ namespace core::com::detail::testing
 		static library_version = Version{1,0};
 	};
 	static_assert(library_version_v<LibraryWithoutVersion> == library_version_v<LibraryWithVersion>);
-	static_assert(!meta::CoLibrary<LibraryWithVersion>);
+	static_assert(!meta::CoreLibrary<LibraryWithVersion>);
 	
 	// Verify library name is detected
 	struct LibraryWithoutName{};
@@ -147,7 +147,7 @@ namespace core::com::detail::testing
 		LiteralString constexpr
 		static library_name = L"LibraryWithName";
 	};
-	static_assert(!meta::CoLibrary<LibraryWithName>);
+	static_assert(!meta::CoreLibrary<LibraryWithName>);
 
 	// Verify library concept
 	MIDL_INTERFACE("E5C012CA-0A03-46C9-A996-2601DBEF465B")
@@ -155,6 +155,6 @@ namespace core::com::detail::testing
 		LiteralString constexpr
 		static library_name = L"ValidCoLibrary";
 	};
-	static_assert(meta::CoLibrary<ValidCoLibrary>);
+	static_assert(meta::CoreLibrary<ValidCoLibrary>);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

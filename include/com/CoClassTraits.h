@@ -56,21 +56,21 @@ namespace core::com
 namespace core::meta::detail
 {
 	//! @brief	Well-formed co-class declaration
-	template <typename CoClass>
-	concept CoreComClassDeclaration = CoImpl<CoClass> 
-		&& CoLibraryDeclaration<typename CoClass::library_type>
+	template <typename T>
+	concept CoreCoClassDeclaration = CoClass<T> 
+		&& CoreLibraryDeclaration<typename T::library_type>
 		&& requires {
-			{ CoClass::class_name } -> std::convertible_to<std::wstring_view>;
+			{ T::class_name } -> std::convertible_to<std::wstring_view>;
 		} 
-		&& CoClass::class_name != std::wstring_view{}
-		&& com::coclass_guid_v<CoClass> != com::Guid{}
-		&& meta::ForwardSequence<typename CoClass::interfaces>;
+		&& T::class_name != std::wstring_view{}
+		&& com::coclass_guid_v<T> != com::Guid{}
+		&& meta::ForwardSequence<typename T::interfaces>;
 }
 
 namespace core::com
 {
 	//! @brief	Compile-time co-class metadata
-	template <meta::detail::CoreComClassDeclaration CoClass>
+	template <meta::detail::CoreCoClassDeclaration CoClass>
 	struct coclass_traits
 	{
 		using factory_type = typename coclass_factory<CoClass>::type;
@@ -98,7 +98,7 @@ namespace core::meta
 {
 	//! @brief	Well-formed Core co-class (ie. one which possesses valid traits)
 	template <typename T>
-	concept CoreComClass = CoImpl<T> && HasGuid<T> && requires {
+	concept CoreCoClass = CoClass<T> && HasGuid<T> && requires {
 		{ com::coclass_traits<T>::apartment } -> std::convertible_to<com::ThreadingModel>;
 		{ com::coclass_traits<T>::class_name } -> std::convertible_to<std::wstring_view>;
 		{ com::coclass_traits<T>::class_guid } -> std::convertible_to<com::Guid>;
@@ -106,7 +106,7 @@ namespace core::meta
 		{ com::coclass_traits<T>::program_id } -> std::convertible_to<std::wstring_view>;
 		com::coclass_traits<T>::factory_type;
 		com::coclass_traits<T>::library_type;
-	} && CoLibrary<typename com::coclass_traits<T>::library_type>
+	} && CoreLibrary<typename com::coclass_traits<T>::library_type>
 	  && std::derived_from<typename com::coclass_traits<T>::factory_type,::IClassFactory>
 	  && com::coclass_traits<T>::class_name != std::wstring_view{}
 	  && com::coclass_traits<T>::class_guid != com::Guid{}
@@ -117,7 +117,7 @@ namespace core::meta
 namespace core::com
 {
 	//! @brief	Class factory type for @p CoClass
-	template <meta::CoreComClass CoClass> 
+	template <meta::CoreCoClass CoClass> 
 	using coclass_factory_t = typename coclass_factory<CoClass>::type;
 }
 
@@ -131,7 +131,7 @@ namespace core::com::detail::testing
 		static class_guid = Guid::fromString("1D61B23A-5A26-48DA-A280-CE743C1B53F1");
 	};
 	static_assert(coclass_guid_v<ClassWithoutMemberGuid> == coclass_guid_v<ClassWithMemberGuid>);
-	static_assert(!meta::CoreComClass<ClassWithMemberGuid>);
+	static_assert(!meta::CoreCoClass<ClassWithMemberGuid>);
 	
 	// Verify class apartment is detected or defaulted
 	struct ClassWithoutApartment{};
@@ -140,7 +140,7 @@ namespace core::com::detail::testing
 		static apartment = ThreadingModel::Isolated;
 	};
 	static_assert(coclass_apartment_v<ClassWithoutApartment> == coclass_apartment_v<ClassWithApartment>);
-	static_assert(!meta::CoreComClass<ClassWithApartment>);
+	static_assert(!meta::CoreCoClass<ClassWithApartment>);
 	
 	// Verify class version is detected or defaulted
 	struct ClassWithoutVersion{};
@@ -149,7 +149,7 @@ namespace core::com::detail::testing
 		static class_version = Version{1,0};
 	};
 	static_assert(coclass_version_v<ClassWithoutVersion> == coclass_version_v<ClassWithVersion>);
-	static_assert(!meta::CoreComClass<ClassWithVersion>);
+	static_assert(!meta::CoreCoClass<ClassWithVersion>);
 	
 	// Verify class name is detected
 	struct ClassWithoutName{};
@@ -158,7 +158,7 @@ namespace core::com::detail::testing
 		static class_name = L"ClassWithName";
 	};
 	static_assert(coclass_name_v<ClassWithName> == L"ClassWithName");
-	static_assert(!meta::CoreComClass<ClassWithName>);
+	static_assert(!meta::CoreCoClass<ClassWithName>);
 
 	// Verify class concept
 	MIDL_INTERFACE("8F33278E-EF80-42E2-8C90-1749DBCD7836") 
@@ -168,6 +168,6 @@ namespace core::com::detail::testing
 		LiteralString constexpr
 		static class_name = L"ValidCoClass";
 	};
-	static_assert(meta::CoreComClass<ValidCoClass>);
+	static_assert(meta::CoreCoClass<ValidCoClass>);
 
 }

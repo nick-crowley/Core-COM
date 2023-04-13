@@ -169,7 +169,7 @@ namespace core::com
 		return object;
 	}
 	
-	template <meta::ComInterface Interface, meta::CoImplOf<Interface> CoImpl>
+	template <meta::ComInterface Interface, meta::CoClassOf<Interface> CoImpl>
 	shared_ptr<Interface> 
 	make_shared(auto&&... args)
 	{

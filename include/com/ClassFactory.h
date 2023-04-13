@@ -44,20 +44,20 @@ namespace core::com
 {
 	namespace detail
 	{
-		template <meta::CoImpl CoImpl, meta::ForwardSequence Interfaces>
+		template <meta::CoClass Impl, meta::ForwardSequence Interfaces>
 		struct CreateInstanceImpl {
 			::HRESULT
 			operator()(IUnknown*, ::IID const&, void**) const = delete; 
 		};
 
-		template <meta::CoImpl CoImpl, template<typename...> typename Sequence, meta::ComInterface... Interfaces>
-		struct CreateInstanceImpl<CoImpl,Sequence<Interfaces...>> {
+		template <meta::CoClass Impl, template<typename...> typename Sequence, meta::ComInterface... Interfaces>
+		struct CreateInstanceImpl<Impl,Sequence<Interfaces...>> {
 			::HRESULT
 			operator()(IUnknown*, ::IID const& iid, void** ppv) const
 			{
 				if ((... || (Guid(iid) == __uuidof(Interfaces))))
 				{
-					auto* inst = new CoImpl{};
+					auto* inst = new Impl{};
 					return inst->QueryInterface(iid,ppv);
 				}
 				*ppv = nullptr;
@@ -71,7 +71,7 @@ namespace core::com
 	 * 
 	 * @tparam	Product		Type produced by factory
 	*/
-	template <meta::CoImpl Product>
+	template <meta::CoClass Product>
 		requires meta::ForwardSequence<typename Product::interfaces>
 	class ClassFactory : public implements<::IClassFactory,::IUnknown>
 	{	

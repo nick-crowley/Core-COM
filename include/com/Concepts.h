@@ -39,12 +39,12 @@ namespace core::meta
 
 	//! @brief	Any concrete class which realizes ::IUnknown
 	template <typename T>
-	concept CoImpl = std::is_base_of_v<::IUnknown,T>
+	concept CoClass = std::is_base_of_v<::IUnknown,T>
 	              && std::is_class_v<T> && !std::is_abstract_v<T>;
 	
 	//! @brief	Any co-class which realizes a specific interface
 	template <typename T, typename ComInterface>
-	concept CoImplOf = CoImpl<T> && std::is_base_of_v<ComInterface,T>;
+	concept CoClassOf = CoClass<T> && std::is_base_of_v<ComInterface,T>;
 	
 	//! @brief	Any interface derived from ::IDispatch
 	template <typename T>
