@@ -571,7 +571,7 @@ namespace core::com
 			 * 
 			 * @param ws	String literal
 			*/
-			auto constexpr
+			auto consteval
 			operator""_bstr(gsl::cwzstring ws, size_t) noexcept
 			{
 				return BinaryString<NoopAllocator<wchar_t>>{adopt, const_cast<gsl::wzstring>(ws)};

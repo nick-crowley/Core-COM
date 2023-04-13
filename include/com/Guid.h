@@ -282,7 +282,7 @@ namespace core::com
 	namespace literals
 	{
         template <ZString<char> Buffer>
-		com::Guid constexpr
+		com::Guid consteval
 		operator""_guid() {
             return Guid::GuidParser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();
         }
