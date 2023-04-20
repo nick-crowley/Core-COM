@@ -24,6 +24,9 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	static IID_IAudioDeviceGraph = "{3C169FF7-37B2-484C-B199-C3155590F316}"_guid;
 
 	Guid constexpr
+	static IID_IInspectable = "{AF86E2E0-B12D-4C6A-9C5A-D7AA65101E90}"_guid;
+	
+	Guid constexpr
 	static IID_IPimcContext2 = "{1868091E-AB5A-415F-A02F-5C4DD0CF901D}"_guid;
 	
 	Guid constexpr
@@ -74,6 +77,7 @@ com::KnownGuidCollection::KnownGuidCollection() {
 	_emplaceGuidNamePair(IID_IGlobalInterfaceTable);
 	_emplaceGuidNamePair(IID_IGlobalOptions);
 	_emplaceGuidNamePair(IID_IIdentityUnmarshall);
+	_emplaceGuidNamePair(IID_IInspectable);
 	_emplaceGuidNamePair(IID_IDfReserved1);
 	_emplaceGuidNamePair(IID_IDfReserved2);
 	_emplaceGuidNamePair(IID_IDfReserved3);
