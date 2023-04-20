@@ -58,7 +58,11 @@ namespace core::com
 				if ((... || (Guid(iid) == __uuidof(Interfaces))))
 				{
 					auto* inst = new Impl{};
-					return inst->QueryInterface(iid,ppv);
+					auto hr = inst->QueryInterface(iid,ppv);
+					// Balance AddRef-ing the object if it supports the requested interface or
+					//  destroyt it prior to return if it doesn't.
+					inst->Release();
+					return hr;
 				}
 				*ppv = nullptr;
 				return E_NOINTERFACE;
