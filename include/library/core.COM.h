@@ -1,5 +1,5 @@
 #pragma once
-#ifndef ComFramework_hS_included
+#ifndef ComFramework_h_included
 #	define ComFramework_h_included
 #endif
 
