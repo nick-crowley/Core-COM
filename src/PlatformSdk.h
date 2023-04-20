@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef _ATL_ATTRIBUTES
-#	error Core-COM must be built with _ATL_ATTRIBUTES
+#	error Core-COM requires _ATL_ATTRIBUTES be defined
 #endif
 
 #include <atlbase.h>               // This header must come first otherwise ATL headers won't compile
