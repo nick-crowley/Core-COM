@@ -23,7 +23,7 @@ namespace core::com
 	template <typename CoClass, typename = void>
 	struct coclass_factory : std::type_identity<ClassFactory<CoClass>> {};
 
-	template <typename CoClass> requires requires { CoClass::factory_type; }
+	template <typename CoClass> requires requires { typename CoClass::factory_type; }
 	struct coclass_factory<CoClass,void> : std::type_identity<typename CoClass::factory_type> {};
 	
 
@@ -104,8 +104,8 @@ namespace core::meta
 		{ com::coclass_traits<T>::class_guid } -> std::convertible_to<com::Guid>;
 		{ com::coclass_traits<T>::class_version } -> std::convertible_to<com::Version>;
 		{ com::coclass_traits<T>::program_id } -> std::convertible_to<std::wstring_view>;
-		com::coclass_traits<T>::factory_type;
-		com::coclass_traits<T>::library_type;
+		typename com::coclass_traits<T>::factory_type;
+		typename com::coclass_traits<T>::library_type;
 	} && CoreLibrary<typename com::coclass_traits<T>::library_type>
 	  && std::derived_from<typename com::coclass_traits<T>::factory_type,::IClassFactory>
 	  && com::coclass_traits<T>::class_name != std::wstring_view{}
