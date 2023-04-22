@@ -19,3 +19,9 @@
 #include "../../src/library/ComExport.h"
 
 #include "com/Concepts.h"
+
+#ifdef COMAPI
+#	error COMAPI macro is already in use
+#else
+#	define COMAPI COMAPI
+#endif

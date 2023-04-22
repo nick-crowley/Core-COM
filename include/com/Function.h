@@ -41,10 +41,10 @@
 namespace core::com
 {
 	template <typename... Parameters>
-	using function_pointer_t = ::HRESULT (__stdcall *)(Parameters...);
+	using function_pointer_t = ::HRESULT (COMAPI *)(Parameters...);
 
 	template <meta::ComInterface Interface, typename... Parameters>
-	using method_pointer_t = ::HRESULT (__stdcall Interface::*)(Parameters...);
+	using method_pointer_t = ::HRESULT (COMAPI Interface::*)(Parameters...);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 

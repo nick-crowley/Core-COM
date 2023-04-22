@@ -51,7 +51,7 @@ namespace core::com
 	{
         static_assert(sizeof...(Interfaces) == 1, 
             "Currently IDispatch implementation is limited to only 1 interface");
-     
+
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     private:
         using interface_t = nstd::tuple_front_t<std::tuple<Interfaces...>>;
@@ -81,14 +81,14 @@ namespace core::com
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
         ::HRESULT 
-        __stdcall GetTypeInfoCount(retval_t<::UINT> pCount) override
+        COMAPI GetTypeInfoCount(retval_t<::UINT> pCount) override
         {
             *pCount = 1;
             return S_OK;
         }
         
         ::HRESULT 
-        __stdcall GetTypeInfo(::UINT                 iTInfo, 
+        COMAPI GetTypeInfo(::UINT                 iTInfo, 
                               ::LCID                 lcid, 
                               retval_t<::ITypeInfo*> ppv) override
         {
@@ -100,7 +100,7 @@ namespace core::com
         }
         
         ::HRESULT
-        __stdcall GetIDsOfNames(::GUID const&      riid, 
+        COMAPI GetIDsOfNames(::GUID const&      riid, 
                                 in_t<wchar_t*>     rgszNames, 
                                 ::UINT             cNames, 
                                 ::LCID             lcid, 
@@ -110,7 +110,7 @@ namespace core::com
         }
         
         ::HRESULT 
-        __stdcall Invoke(::DISPID            dispIdMember, 
+        COMAPI Invoke(::DISPID            dispIdMember, 
                          ::GUID const&       riid, 
                          ::LCID              lcid, 
                          ::WORD              wFlags, 
@@ -129,4 +129,18 @@ namespace core::com
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com::detail::testing
+{
+	// Verify class concept
+	/*MIDL_INTERFACE("8F33278E-EF80-42E2-8C90-1749DBCD7836") 
+	ValidCoClass : com::implements<IUnknown> {
+		using library_type = ValidCoLibrary;
+
+		LiteralString constexpr
+		static class_name = L"ValidCoClass";
+	};*/
+	//static_assert(std::same_as<Dispatch<ValidCoClass>, Dispatch<ValidCoClass>>);
+
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

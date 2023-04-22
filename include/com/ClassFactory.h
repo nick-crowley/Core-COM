@@ -102,7 +102,7 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		::HRESULT
-		__stdcall CreateInstance(::IUnknown*, ::IID const& iid, void** ppv) override
+		COMAPI CreateInstance(::IUnknown*, ::IID const& iid, void** ppv) override
 		{
 			win::HResult hr = S_OK;
 			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
@@ -119,7 +119,7 @@ namespace core::com
 		}
 
 		::HRESULT
-		__stdcall LockServer(::BOOL lock) override
+		COMAPI LockServer(::BOOL lock) override
 		{
 			logFunctionArgs(lock);
 

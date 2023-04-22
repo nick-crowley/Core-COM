@@ -128,7 +128,7 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		::HRESULT
-		__stdcall QueryInterface(::IID const& iid, void** ppv) override
+		COMAPI QueryInterface(::IID const& iid, void** ppv) override
 		{
 			win::HResult hr = S_OK;
 			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
@@ -140,7 +140,7 @@ namespace core::com
 		}
 
 		::ULONG
-		__stdcall AddRef() override
+		COMAPI AddRef() override
 		{
 			logFunctionArgs().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
 
@@ -151,7 +151,7 @@ namespace core::com
 		}
 	
 		::ULONG
-		__stdcall Release() override
+		COMAPI Release() override
 		{
 			logFunctionArgs().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
 
@@ -171,7 +171,7 @@ namespace core::com
 	private:
 		template <meta::ComInterface Interface, meta::ComInterface... Remainder>
 		::HRESULT
-		__stdcall QueryInterfaceImpl(::IID const& iid, void** ppv) 
+		COMAPI QueryInterfaceImpl(::IID const& iid, void** ppv) 
 		{
 			if (__uuidof(Interface) == iid) 
 			{
