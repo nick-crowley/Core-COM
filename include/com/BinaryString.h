@@ -27,9 +27,6 @@
 #pragma once
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
-#if ATL_STRING_SUPPORT
-#	include <atlstr.h>
-#endif
 #include "com/HeapAllocator.h"
 #include "com/NoopAllocator.h"
 #include "core/ZString.h"
@@ -169,7 +166,7 @@ namespace core::com
         {
 		}
 		
-#if ATL_STRING_SUPPORT
+#if SUPPORT_ATL_STRING
 		/**
 		 * @brief	Construct with elements copied from an ATL string
 		 *

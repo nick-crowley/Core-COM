@@ -15,3 +15,6 @@
 
 // NB: Add library-specific Windows dependencies here
 #include <Objbase.h>
+#if SUPPORT_ATL_STRING
+#	include <atlstr.h>
+#endif
