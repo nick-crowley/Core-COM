@@ -71,13 +71,13 @@ namespace core::com
             static getTypeInfoOfGuid = com::method<1>(&::ITypeLib::GetTypeInfoOfGuid);
 
             Version constexpr 
-            static classVer = coclass_traits<CoClass>::class_version;
+            static classVer = coclass_version_v<CoClass>;
 
             Guid const 
-            static libGuid = library_traits<CoClass::library_type>::library_guid;
+            static libGuid = library_guid_v<coclass_library_t<CoClass>>;
 
             shared_ptr<::ITypeLib>  typeLibrary{ loadRegTypeLib(libGuid, classVer.Major, classVer.Minor, 0) };
-            this->m_typeInfo = getTypeInfoOfGuid(*typeLibrary,__uuidof(interface_t));
+            this->m_typeInfo = getTypeInfoOfGuid(*typeLibrary,guid_v<interface_t>);
         }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
