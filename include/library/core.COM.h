@@ -53,7 +53,7 @@
 #ifdef COMAPI
 #	error COMAPI macro is already in use
 #else
-#	define COMAPI COMAPI
+#	define COMAPI __stdcall
 #endif
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
