@@ -96,7 +96,7 @@ namespace core::com
                 return E_INVALIDARG;
             }
 
-            return this->m_typeInfo->QueryInterface(__uuidof(::ITypeInfo), std::out_ptr(*ppv));
+            return this->m_typeInfo->QueryInterface(guid_v<::ITypeInfo>, std::out_ptr(*ppv));
         }
         
         ::HRESULT
