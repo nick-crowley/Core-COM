@@ -21,10 +21,10 @@ namespace core::com
 
 	//! @brief	@c CoClass::factory_type if present, otherwise @c core::com::ClassFactory<CoClass>
 	template <typename CoClass, typename = void>
-	struct coclass_factory : std::type_identity<ClassFactory<CoClass>> {};
+	metafunc coclass_factory : std::type_identity<ClassFactory<CoClass>> {};
 
 	template <typename CoClass> requires requires { typename CoClass::factory_type; }
-	struct coclass_factory<CoClass,void> : std::type_identity<typename CoClass::factory_type> {};
+	metafunc coclass_factory<CoClass,void> : std::type_identity<typename CoClass::factory_type> {};
 	
 
 	//! @brief	@c CoClass::class_guid if present, otherwise @c __uuidof(CoClass)
@@ -39,7 +39,7 @@ namespace core::com
 
 	//! @brief	Always @c CoClass::library_type
 	template <typename CoClass> requires requires { typename CoClass::library_type; }
-	struct coclass_library : std::type_identity<typename CoClass::library_type> {};
+	metafunc coclass_library : std::type_identity<typename CoClass::library_type> {};
 	
 
 	//! @brief	Always @c CoClass::class_name
@@ -76,7 +76,7 @@ namespace core::com
 {
 	//! @brief	Compile-time co-class metadata
 	template <meta::detail::CoreCoClassDeclaration CoClass>
-	struct coclass_traits
+	metafunc coclass_traits
 	{
 		using factory_type = typename coclass_factory<CoClass>::type;
 

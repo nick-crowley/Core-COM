@@ -86,7 +86,7 @@ namespace core::com
 {
 	//! @brief	Compile-time COM library metadata
 	template <meta::detail::CoreLibraryDeclaration Library>
-	struct library_traits
+	metafunc library_traits
 	{
 		LiteralString constexpr 
 		static library_name = library_name_v<Library>;
