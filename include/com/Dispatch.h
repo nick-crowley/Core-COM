@@ -89,8 +89,8 @@ namespace core::com
         
         ::HRESULT 
         COMAPI GetTypeInfo(::UINT                 iTInfo, 
-                              ::LCID                 lcid, 
-                              retval_t<::ITypeInfo*> ppv) override
+                           ::LCID                 lcid, 
+                           retval_t<::ITypeInfo*> ppv) override
         {
             if (iTInfo == 0) {
                 return E_INVALIDARG;
@@ -101,23 +101,23 @@ namespace core::com
         
         ::HRESULT
         COMAPI GetIDsOfNames(::GUID const&      riid, 
-                                in_t<wchar_t*>     rgszNames, 
-                                ::UINT             cNames, 
-                                ::LCID             lcid, 
-                                retval_t<::DISPID> rgDispId) override
+                             in_t<wchar_t*>     rgszNames, 
+                             ::UINT             cNames, 
+                             ::LCID             lcid, 
+                             retval_t<::DISPID> rgDispId) override
         {
             return this->m_typeInfo->GetIDsOfNames(rgszNames,cNames,rgDispId);
         }
         
         ::HRESULT 
         COMAPI Invoke(::DISPID            dispIdMember, 
-                         ::GUID const&       riid, 
-                         ::LCID              lcid, 
-                         ::WORD              wFlags, 
-                         out_t<::DISPPARAMS> pDispParams, 
-                         out_t<::VARIANT>    pVarResult, 
-                         out_t<::EXCEPINFO>  pExcepInfo, 
-                         out_t<::UINT>       puArgErr) override
+                      ::GUID const&       riid, 
+                      ::LCID              lcid, 
+                      ::WORD              wFlags, 
+                      out_t<::DISPPARAMS> pDispParams, 
+                      out_t<::VARIANT>    pVarResult, 
+                      out_t<::EXCEPINFO>  pExcepInfo, 
+                      out_t<::UINT>       puArgErr) override
         {
             return this->m_typeInfo->Invoke(static_cast<interface_t*>(this), dispIdMember, wFlags,
                 pDispParams, pVarResult, pExcepInfo, puArgErr);
@@ -129,18 +129,5 @@ namespace core::com
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
-// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-namespace core::com::detail::testing
-{
-	// Verify class concept
-	/*MIDL_INTERFACE("8F33278E-EF80-42E2-8C90-1749DBCD7836") 
-	ValidCoClass : com::implements<IUnknown> {
-		using library_type = ValidCoLibrary;
 
-		LiteralString constexpr
-		static class_name = L"ValidCoClass";
-	};*/
-	//static_assert(std::same_as<Dispatch<ValidCoClass>, Dispatch<ValidCoClass>>);
-
-}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
