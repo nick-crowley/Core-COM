@@ -38,7 +38,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com 
 {
-    //! @brief  Allocator which constructs/destructs but nothing when asked to perform allocation/deallocation
+    //! @brief  Allocator which executes ctor/dtors only (all allocations are no-ops)
     template <typename T>
     class NoopAllocator 
     {
@@ -143,6 +143,7 @@ namespace core::com
     };
     
     
+    //! @brief  Specialization which exposes (no-op) de-allocation of void-pointers
     template <>
     class NoopAllocator<void> 
     {
