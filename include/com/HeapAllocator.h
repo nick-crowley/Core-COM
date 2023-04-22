@@ -38,11 +38,13 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com 
 {
-    //! @brief  Allocator which constructs/destructs but nothing when asked to perform allocation/deallocation
+    //! @brief  Allocates from the COM heap
     template <typename T>
     class HeapAllocator
     {
         static_assert(!std::is_const_v<T>, "The C++ Standard forbids containers and allocators of const elements");
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+    private:
         using type = HeapAllocator<T>;
 
     public:
@@ -60,7 +62,18 @@ namespace core::com
         struct rebind {
             using other = HeapAllocator<U>;
         };
+        
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+    public:
+        template <class U>
+        constexpr 
+        implicit
+        HeapAllocator(const HeapAllocator<U>&) noexcept 
+        {}
+
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
         satisfies(HeapAllocator,
             constexpr IsDefaultConstructible noexcept,
@@ -68,13 +81,9 @@ namespace core::com
             constexpr IsCopyAssignable noexcept,
             constexpr IsDestructible noexcept
         );
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
-        template <class U>
-        constexpr 
-        implicit
-        HeapAllocator(const HeapAllocator<U>&) noexcept 
-        {}
-
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
         [[nodiscard]] 
         pointer constexpr 
@@ -130,12 +139,16 @@ namespace core::com
         {
             return size_type(-1) / sizeof(value_type);
         }
+
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     };
     
-    
+    //! @brief  Specialization for deallocating void-pointers
     template <>
     class HeapAllocator<void> 
     {
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+    private:
         using type = HeapAllocator<void>;
 
     public:
@@ -151,7 +164,16 @@ namespace core::com
         struct rebind {
             using other = HeapAllocator<U>;
         };
-        
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+    public:
+        template <class U>
+        constexpr 
+        implicit
+        HeapAllocator(HeapAllocator<U> const& r) noexcept
+        {}
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
         satisfies(HeapAllocator,
             constexpr IsDefaultConstructible noexcept,
@@ -159,13 +181,9 @@ namespace core::com
             constexpr IsCopyAssignable noexcept,
             constexpr IsDestructible noexcept
         );
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
-        template <class U>
-        constexpr 
-        implicit
-        HeapAllocator(HeapAllocator<U> const& r) noexcept
-        {}
-
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
         pointer constexpr 
         allocate(size_type const) const noexcept = delete;
@@ -175,6 +193,8 @@ namespace core::com
         {
             ::CoTaskMemFree(address);
         }
+
+        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     };
     
 
