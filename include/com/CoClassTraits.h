@@ -40,7 +40,7 @@ namespace core::com
 	//! @brief	Always @c CoClass::library_type
 	template <typename CoClass> requires requires { typename CoClass::library_type; }
 	struct coclass_library : std::type_identity<typename CoClass::library_type> {};
-
+	
 
 	//! @brief	Always @c CoClass::class_name
 	template <typename CoClass> requires requires { CoClass::class_name; }
@@ -124,6 +124,10 @@ namespace core::com
 	//! @brief	Class factory type for @p CoClass
 	template <meta::CoreCoClass CoClass> 
 	using coclass_factory_t = typename coclass_factory<CoClass>::type;
+	
+	//! @brief	Library type for @p CoClass
+	template <meta::CoreCoClass CoClass> 
+	using coclass_library_t = typename coclass_library<CoClass>::type;
 }
 
 namespace core::com::detail::testing
