@@ -31,6 +31,7 @@
 #include "com/Function.h"
 #include "com/SharedPtr.h"
 #include "com/Annotations.h"
+#include "com/TypeLibrary.h"
 #include "com/CoClassTraits.h"
 #include "com/LibraryTraits.h"
 #include "nstd/OutPtr.h"
@@ -63,21 +64,8 @@ namespace core::com
 	public:
         template <meta::CoreCoClass CoClass>
         Dispatch(CoClass const*) 
+          : m_typeInfo{TypeLibrary<CoClass>{}.typeInfo(guid_v<interface_t>)}
 		{
-            auto constexpr
-            static loadRegTypeLib = com::function<1>(::LoadRegTypeLib);
-
-            auto constexpr
-            static getTypeInfoOfGuid = com::method<1>(&::ITypeLib::GetTypeInfoOfGuid);
-
-            Version constexpr 
-            static classVer = coclass_version_v<CoClass>;
-
-            Guid const 
-            static libGuid = library_guid_v<coclass_library_t<CoClass>>;
-
-            shared_ptr<::ITypeLib>  typeLibrary{ loadRegTypeLib(libGuid, classVer.Major, classVer.Minor, 0) };
-            this->m_typeInfo = getTypeInfoOfGuid(*typeLibrary,guid_v<interface_t>);
         }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
