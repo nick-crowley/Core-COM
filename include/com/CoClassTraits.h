@@ -35,6 +35,11 @@ namespace core::com
 	template <typename CoClass> requires requires { CoClass::class_guid; }
 	com::Guid constexpr
 	coclass_guid_v<CoClass,void> = CoClass::class_guid;
+	
+
+	//! @brief	Always @c CoClass::library_type
+	template <typename CoClass> requires requires { typename CoClass::library_type; }
+	struct coclass_library : std::type_identity<typename CoClass::library_type> {};
 
 
 	//! @brief	Always @c CoClass::class_name
@@ -75,7 +80,7 @@ namespace core::com
 	{
 		using factory_type = typename coclass_factory<CoClass>::type;
 
-		using library_type = typename CoClass::library_type;
+		using library_type = typename coclass_library<CoClass>::type;
 
 		ThreadingModel constexpr 
 		static apartment = coclass_apartment_v<CoClass>;
