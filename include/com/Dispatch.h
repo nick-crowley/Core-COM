@@ -63,13 +63,14 @@ namespace core::com
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
         template <meta::CoreCoClass CoClass>
-        Dispatch(CoClass const*) 
+        Dispatch(CoClass const&) 
           : m_typeInfo{TypeLibrary<CoClass>{}.typeInfo(guid_v<interface_t>)}
 		{
         }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
         satisfies(Dispatch, 
+            NotDefaultConstructible,
 			NotCopyable,
 			NotEqualityComparable,
 			NotSortable
