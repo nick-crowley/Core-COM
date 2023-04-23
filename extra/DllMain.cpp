@@ -2,7 +2,7 @@
 
 extern "C"
 BOOL
-__stdcall DllMain(::HINSTANCE hinstDll, DWORD dwReason, void *)
+WINAPI DllMain(::HINSTANCE hinstDll, DWORD dwReason, void *)
 {
     switch (dwReason)
     {
