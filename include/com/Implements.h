@@ -144,7 +144,7 @@ namespace core::com
 		{
 			logFunctionArgs().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
 
-			if (this->refCount++ == 0) 
+			if (this->refCount++ == 1) 
 				++com::numInstances;
 
 			return this->refCount;
