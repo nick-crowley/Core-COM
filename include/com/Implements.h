@@ -142,7 +142,7 @@ namespace core::com
 		::ULONG
 		COMAPI AddRef() override
 		{
-			logFunctionArgs().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
+			logFunctionArgs().withRetVals(this->refCount, com::numInstances);
 
 			if (this->refCount++ == 1) 
 				++com::numInstances;
@@ -153,7 +153,7 @@ namespace core::com
 		::ULONG
 		COMAPI Release() override
 		{
-			logFunctionArgs().withRetVals(std::cref(this->refCount), std::cref(com::numInstances));
+			logFunctionArgs().withRetVals(this->refCount, com::numInstances);
 
 			if (this->refCount <= 0)
 				clog << Warning{"Coclass has an invalid reference count of {}", this->refCount.load()};
