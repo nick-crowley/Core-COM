@@ -96,7 +96,9 @@ namespace core::com
                 return E_INVALIDARG;
             }
 
-            return this->m_typeInfo->QueryInterface(guid_v<::ITypeInfo>, std::out_ptr(*ppv));
+            if (idx != 0) 
+                return hr = DISP_E_BADINDEX;
+
         }
         
         ::HRESULT
