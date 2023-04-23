@@ -84,45 +84,56 @@ namespace core::com
         ::HRESULT 
         COMAPI GetTypeInfoCount(retval_t<::UINT> pCount) override
         {
+			win::HResult hr = S_OK;
+			logFunctionArgs(pCount).withRetVals(hr,*pCount);
+
             *pCount = 1;
-            return S_OK;
+            return hr = S_OK;
         }
         
         ::HRESULT 
-        COMAPI GetTypeInfo(::UINT                 iTInfo, 
-                           ::LCID                 lcid, 
+        COMAPI GetTypeInfo(::UINT                 idx, 
+                           ::LCID                 locale, 
                            retval_t<::ITypeInfo*> ppv) override
         {
-            if (iTInfo == 0) {
-                return E_INVALIDARG;
-            }
+            win::HResult hr = S_OK;
+			logFunctionArgs(idx,locale).withRetVals(hr,*ppv);
 
             if (idx != 0) 
                 return hr = DISP_E_BADINDEX;
 
+            return hr = this->m_typeInfo->QueryInterface(guid_v<::ITypeInfo>, std::out_ptr(*ppv));
         }
         
         ::HRESULT
-        COMAPI GetIDsOfNames(::GUID const&      riid, 
-                             in_t<wchar_t*>     rgszNames, 
+        COMAPI GetIDsOfNames(::GUID const&      iid, 
+                             in_t<wchar_t*>     szNames, 
                              ::UINT             cNames, 
-                             ::LCID             lcid, 
-                             retval_t<::DISPID> rgDispId) override
+                             ::LCID             locale, 
+                             retval_t<::DISPID> arrDispId) override
         {
-            return this->m_typeInfo->GetIDsOfNames(rgszNames,cNames,rgDispId);
+            win::HResult hr = S_OK;
+            std::span const names{szNames,cNames};
+            logFunctionArgs(iid,names,locale).withRetVals(hr,*arrDispId);
+
+            return hr = this->m_typeInfo->GetIDsOfNames(szNames,cNames,arrDispId);
         }
         
         ::HRESULT 
         COMAPI Invoke(::DISPID            dispIdMember, 
-                      ::GUID const&       riid, 
-                      ::LCID              lcid, 
+                      ::GUID const&       iid, 
+                      ::LCID              locale, 
                       ::WORD              wFlags, 
                       out_t<::DISPPARAMS> pDispParams, 
                       out_t<::VARIANT>    pVarResult, 
                       out_t<::EXCEPINFO>  pExcepInfo, 
                       out_t<::UINT>       puArgErr) override
         {
-            return this->m_typeInfo->Invoke(static_cast<interface_t*>(this), dispIdMember, wFlags,
+            win::HResult hr = S_OK;
+            //! @todo   @c ::VARIANT, @c ::EXCEPTINFO, @c ::DISPPARAMS should model @c core::Stringable
+			logFunctionArgs(dispIdMember,iid,locale,wFlags).withRetVals(hr, *puArgErr /* *pDispParams, *pVarResult, *pExcepInfo */);
+
+            return hr = this->m_typeInfo->Invoke(static_cast<interface_t*>(this), dispIdMember, wFlags,
                 pDispParams, pVarResult, pExcepInfo, puArgErr);
         }
 	};
