@@ -125,7 +125,7 @@ namespace core::com
     public:
         shared_ptr<::ITypeInfo>
         typeInfo(Guid g) const {
-            return {this->library->getTypeInfoOfGuid(g), adopt};
+            return {this->library.getTypeInfoOfGuid(g), adopt};
         }
 
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
