@@ -110,17 +110,18 @@ namespace core::com
 		std::atomic_long refCount = 1;
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-
+	public:
+		implements() noexcept {
+			++com::numInstances;
+		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		satisfies(implements,
-			IsDefaultConstructible noexcept,
 			IsPolymorphic,
 			NotCopyable,
 			NotEqualityComparable,
 			NotSortable
 		);
-		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -144,10 +145,7 @@ namespace core::com
 		{
 			logFunctionArgs().withRetVals(this->refCount, com::numInstances);
 
-			if (this->refCount++ == 1) 
-				++com::numInstances;
-
-			return this->refCount;
+			return this->refCount++;
 		}
 	
 		::ULONG
