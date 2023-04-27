@@ -60,7 +60,7 @@ namespace core::com
 					auto* inst = new Impl{};
 					auto hr = inst->QueryInterface(iid,ppv);
 					// Balance AddRef-ing the object if it supports the requested interface or
-					//  destroyt it prior to return if it doesn't.
+					//  destroy the new object prior to return if it doesn't.
 					inst->Release();
 					return hr;
 				}
