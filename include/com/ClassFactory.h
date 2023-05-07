@@ -107,12 +107,6 @@ namespace core::com
 			win::HResult hr = S_OK;
 			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
 
-			if (iid == IID_IClassFactory) {
-				*ppv = this;
-				this->AddRef();
-				return hr = S_OK;
-			}
-			
 			// Since boost::mpl is C++03 library, we need to remove the placeholder args here
 			using interfaceSeq = typename mpl::remove_if<typename Product::interfaces,mpl::same_as<mpl::na>>::type;
 			return hr = detail::CreateInstanceImpl<Product,interfaceSeq>{}(nullptr, iid, ppv);

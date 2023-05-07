@@ -59,7 +59,7 @@ namespace core::com
 			return CLASS_E_CLASSNOTAVAILABLE;
 
 		shared_ptr<::IClassFactory> factory = make_shared<::IClassFactory,coclass_factory_t<CoClass>>();
-		return factory->CreateInstance(nullptr,iid,ppv);
+		return factory->QueryInterface(iid,ppv);
 	}
 
 	::HRESULT 
