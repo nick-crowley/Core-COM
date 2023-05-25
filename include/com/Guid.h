@@ -283,7 +283,7 @@ namespace core::com
 	ComExport to_string(Guid const& g);
 
 	std::wstring
-	ComExport to_wstring(Guid const&);
+	ComExport to_wstring(Guid const& g);
 }
 
 std::string 
