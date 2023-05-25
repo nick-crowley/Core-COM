@@ -271,27 +271,20 @@ namespace core::com
 
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
-
+    
+	template <typename T>
+	Guid const
+	inline guid_v { __uuidof(T) };
+}
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com
+{
 	std::string
 	ComExport to_string(Guid const& g);
 
 	std::wstring
 	ComExport to_wstring(Guid const&);
-
-	template <typename T>
-	Guid const
-	inline guid_v { __uuidof(T) };
-
-	namespace literals
-	{
-        template <ZString<char> Buffer>
-		com::Guid consteval
-		operator""_guid() {
-            return Guid::GuidParser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();
-        }
-	}
 }
-// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 std::string 
 ComExport to_string(::GUID const& g);
@@ -302,6 +295,17 @@ ComExport to_wstring(::GUID const& g);
 static_assert(core::meta::Stringable<::GUID>);
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com
+{
+    namespace literals
+	{
+        template <ZString<char> Buffer>
+		com::Guid consteval
+		operator""_guid() {
+            return Guid::GuidParser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();
+        }
+	}
+}
 
 bool constexpr
 operator==(::GUID const& l, core::com::Guid const& r) noexcept {
