@@ -91,6 +91,9 @@ namespace core::com
         
         auto constexpr
         inline static loadRegTypeLib = com::function<1>(::LoadRegTypeLib);
+        
+        auto constexpr
+        inline static registerTypeLib = com::function<0>(::RegisterTypeLib);
 
     public:
         ::LCID constexpr
@@ -110,7 +113,7 @@ namespace core::com
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-    private:
+    public:
         shared_ptr<::ITypeLib>
         static load(::LCID locale) {
             auto* const typelib = TypeLibrary::loadRegTypeLib(
@@ -119,7 +122,12 @@ namespace core::com
                 coclass_version_v<CoClass>.Minor, 
                 locale
             );
-            return {typelib, adopt};
+            return shared_ptr<::ITypeLib>{typelib/*, adopt*/};
+        }
+
+        void
+        static registér(shared_ptr<::ITypeLib> library, filesystem::path location) {
+            registerTypeLib(library, location.c_str(), nullptr);
         }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
