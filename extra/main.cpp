@@ -16,7 +16,7 @@ using namespace std::string_view_literals;
 using namespace core;
 
 std::atomic_long 
-com::g_numInstances = 0;
+com::numInstances = 0;
 
 [module(unspecified, name="CustomLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
 
@@ -54,7 +54,7 @@ public:
 
 public:
 	CoCustom() 
-	  : base{this}
+	  : base{*this}
 	{}
 
 public:
@@ -254,7 +254,7 @@ void testLiteralString()
 void testComSharedPtr()
 {
 	// Test make_com() func
-	auto ptr = com::make_shared<CoCustom,ICustom>();
+	auto ptr = com::make_shared<ICustom,CoCustom>();
 }
 
 #define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
