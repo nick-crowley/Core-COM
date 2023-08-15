@@ -44,7 +44,7 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Sets the exception for current logical COM thread
 	*/
-	template <meta::CoreCoClass CoClass, meta::ComInterface Interface = nstd::tuple_front_t<typename CoClass::interface_tuple>>
+	template <meta::CoreCoClass CoClass, meta::ComInterface Interface = typename mpl::front<typename CoClass::interfaces>::type>
 	class SetLastError
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
