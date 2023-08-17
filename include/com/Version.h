@@ -44,11 +44,11 @@ namespace core::com
 	class Version
 	{
 	public:
-		unsigned Major = 1, Minor = 0;
+		uint16_t Major = 1, Minor = 0;
 
 	public:
 		constexpr
-		Version(unsigned major, unsigned minor)
+		Version(uint16_t major, uint16_t minor)
 		  : Major{major}, Minor{minor}
 		{}
 
