@@ -76,12 +76,14 @@ namespace core::com
 	template <typename CoClass> requires requires { typename CoClass::library_type; }
 	metafunc coclass_library : std::type_identity<typename CoClass::library_type> {};
 	
+	//! @brief	@c CoClass::class_name if present, otherwise unqualified class name
+	template <typename CoClass, typename = void> 
+	auto constexpr
+	coclass_name_v = LiteralString<char,unqualified_class_name_v<CoClass>.length()>{ unqualified_class_name_v<CoClass>.data() };
 
-	//! @brief	Always @c CoClass::class_name
 	template <typename CoClass> requires requires { CoClass::class_name; }
 	LiteralString constexpr
-	coclass_name_v = CoClass::class_name;
-
+	coclass_name_v<CoClass,void> = CoClass::class_name;
 
 	//! @brief	@c CoClass::class_version if present, otherwise @c core::com::Version{1,0}
 	template <typename CoClass, typename = void>
@@ -100,9 +102,11 @@ namespace core::meta::detail
 	concept CoreCoClassDeclaration = CoClass<T> 
 		&& CoreLibraryDeclaration<typename T::library_type>
 		&& requires {
-			{ T::class_name } -> std::convertible_to<std::wstring_view>;
+			{ com::coclass_name_v<T> } -> std::convertible_to<std::string_view>;
+			com::coclass_name_v<T> + '.';
+			com::coclass_name_v<T> + com::coclass_name_v<T>;
 		} 
-		&& T::class_name != std::wstring_view{}
+		&& com::coclass_name_v<T> != std::string_view{}
 		&& com::coclass_guid_v<T> != com::Guid{}
 		&& meta::ForwardSequence<typename T::interfaces>;
 }
@@ -130,7 +134,7 @@ namespace core::com
 		static class_version = coclass_version_v<CoClass>;
 
 		LiteralString constexpr 
-		static program_id = library_name_v<library_type> + L'.' + coclass_name_v<CoClass>;
+		static program_id = library_name_v<library_type> + '.' + coclass_name_v<CoClass>;
 	};
 }
 
@@ -140,18 +144,18 @@ namespace core::meta
 	template <typename T>
 	concept CoreCoClass = CoClass<T> && HasGuid<T> && requires {
 		{ com::coclass_traits<T>::apartment } -> std::convertible_to<com::ThreadingModel>;
-		{ com::coclass_traits<T>::class_name } -> std::convertible_to<std::wstring_view>;
+		{ com::coclass_traits<T>::class_name } -> std::convertible_to<std::string_view>;
 		{ com::coclass_traits<T>::class_guid } -> std::convertible_to<com::Guid>;
 		{ com::coclass_traits<T>::class_version } -> std::convertible_to<com::Version>;
-		{ com::coclass_traits<T>::program_id } -> std::convertible_to<std::wstring_view>;
+		{ com::coclass_traits<T>::program_id } -> std::convertible_to<std::string_view>;
 		typename com::coclass_traits<T>::factory_type;
 		typename com::coclass_traits<T>::library_type;
 	} && CoreLibrary<typename com::coclass_traits<T>::library_type>
 	  && std::derived_from<typename com::coclass_traits<T>::factory_type,::IClassFactory>
-	  && com::coclass_traits<T>::class_name != std::wstring_view{}
+	  && com::coclass_traits<T>::class_name != std::string_view{}
 	  && com::coclass_traits<T>::class_guid != com::Guid{}
 	  && com::coclass_traits<T>::class_version >= com::Version{1,0}
-	  && com::coclass_traits<T>::program_id != std::wstring_view{};
+	  && com::coclass_traits<T>::program_id != std::string_view{};
 }
 
 namespace core::com
@@ -203,9 +207,9 @@ namespace core::com::detail::testing
 	struct ClassWithoutName{};
 	struct ClassWithName{
 		LiteralString constexpr
-		static class_name = L"ClassWithName";
+		static class_name = "ClassWithName";
 	};
-	static_assert(coclass_name_v<ClassWithName> == L"ClassWithName");
+	static_assert(coclass_name_v<ClassWithName> == "ClassWithName");
 	static_assert(!meta::CoreCoClass<ClassWithName>);
 
 	// Verify class concept
@@ -214,7 +218,7 @@ namespace core::com::detail::testing
 		using library_type = ValidCoLibrary;
 
 		LiteralString constexpr
-		static class_name = L"ValidCoClass";
+		static class_name = "ValidCoClass";
 	};
 	static_assert(meta::CoreCoClass<ValidCoClass>);
 

@@ -54,12 +54,14 @@ namespace core::com
 	com::Guid constexpr
 	library_guid_v<Library,void> {__uuidof(Library)};
 
+	//! @brief	@c Library::class_name if present, otherwise unqualified class name
+	template <typename Library, typename = void> 
+	auto constexpr
+	library_name_v = LiteralString<char,unqualified_class_name_v<Library>.length()>{ unqualified_class_name_v<Library>.data() };
 	
-	//! @brief	Always @c Library::class_name
-	template <typename Library> requires requires { Library::library_name; }
+	template <typename Library> requires requires { Library::class_name; }
 	LiteralString constexpr
-	library_name_v = Library::library_name;
-	
+	library_name_v<Library,void> = Library::class_name;
 	
 	//! @brief	@c Library::class_version if present, otherwise @c core::com::Version{1,0}
 	template <typename Library, typename = void>
@@ -76,9 +78,11 @@ namespace core::meta::detail
 	//! @brief	Well-formed COM library declaration
 	template <typename Library>
 	concept CoreLibraryDeclaration = requires {
-			{ Library::library_name } -> std::convertible_to<std::wstring_view>;
+			{ com::library_name_v<Library> } -> std::convertible_to<std::string_view>;
+			com::library_name_v<Library> + '.';
+			com::library_name_v<Library> + com::library_name_v<Library>;
 		} 
-		&& Library::library_name != std::wstring_view{}
+		&& com::library_name_v<Library> != std::string_view{}
 		&& com::library_guid_v<Library> != com::Guid{};
 }
 
@@ -104,10 +108,10 @@ namespace core::meta
 	//! @brief	Well-formed Core COM library (ie. one which possesses valid traits)
 	template <typename T>
 	concept CoreLibrary = requires {
-		{ com::library_traits<T>::library_name } -> std::convertible_to<std::wstring_view>;
+		{ com::library_traits<T>::library_name } -> std::convertible_to<std::string_view>;
 		{ com::library_traits<T>::library_guid } -> std::convertible_to<com::Guid>;
 		{ com::library_traits<T>::library_version } -> std::convertible_to<com::Version>;
-	} && com::library_traits<T>::library_name != std::wstring_view{}
+	} && com::library_traits<T>::library_name != std::string_view{}
 	  && com::library_traits<T>::library_guid != com::Guid{}
 	  && com::library_traits<T>::library_version >= com::Version{1,0};
 }
@@ -124,13 +128,14 @@ namespace core::com::detail::testing
 
 	// Verify library GUID is detected from either source
 	MIDL_INTERFACE("714C8163-8D3F-4247-8BA8-9C152F131E91")
-	LibraryWithoutMemberGuid{};
+	LibraryWithGuidAttribute{};
 	struct LibraryWithMemberGuid{
 		Guid constexpr
 		static library_guid = Guid::fromString("714C8163-8D3F-4247-8BA8-9C152F131E91");
 	};
-	static_assert(library_guid_v<LibraryWithoutMemberGuid> == library_guid_v<LibraryWithMemberGuid>);
-	static_assert(!meta::CoreLibrary<LibraryWithMemberGuid>);
+	static_assert(library_guid_v<LibraryWithGuidAttribute> == library_guid_v<LibraryWithMemberGuid>);
+	static_assert(meta::CoreLibrary<LibraryWithGuidAttribute>);
+	static_assert(meta::CoreLibrary<LibraryWithMemberGuid>);
 
 	// Verify library version is detected or defaulted
 	struct LibraryWithoutVersion{};
@@ -142,19 +147,20 @@ namespace core::com::detail::testing
 	static_assert(!meta::CoreLibrary<LibraryWithVersion>);
 	
 	// Verify library name is detected
-	struct LibraryWithoutName{};
 	struct LibraryWithName{
 		LiteralString constexpr
-		static library_name = L"LibraryWithName";
+		static library_name = "LibraryWithName";
 	};
 	static_assert(!meta::CoreLibrary<LibraryWithName>);
+	
+	// Verify library name is optional
+	struct LibraryWithoutName{};
+	static_assert(library_name_v<LibraryWithoutName> == "LibraryWithoutName");
+	static_assert(!meta::CoreLibrary<LibraryWithoutName>);
 
 	// Verify library concept
 	MIDL_INTERFACE("E5C012CA-0A03-46C9-A996-2601DBEF465B")
-	ValidCoLibrary{
-		LiteralString constexpr
-		static library_name = L"ValidCoLibrary";
-	};
+	ValidCoLibrary{};
 	static_assert(meta::CoreLibrary<ValidCoLibrary>);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

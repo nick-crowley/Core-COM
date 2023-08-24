@@ -68,7 +68,7 @@ namespace core::com
 			else
 			{
 				info->SetDescription(const_cast<wchar_t*>(msg.data()));					// TODO: Check this works
-				info->SetSource(const_cast<wchar_t*>(traits::program_id.data()));
+				info->SetSource(const_cast<wchar_t*>(traits::program_id.wstr().c_str()));
 				info->SetGUID(guid_v<Interface>);
 				
 				if (hr = ::SetErrorInfo(0, shared_ptr<::IErrorInfo>{info}); FAILED(hr))

@@ -92,7 +92,7 @@ namespace core::com
 		// Insert class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		RegistryKey ourClassId = CLSID.subkey(create_new, Traits::class_guid.wstr());
-		ourClassId[use_default] = Traits::class_name;
+		ourClassId[use_default] = Traits::class_name.wstr();
 		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
 		ourServerPath[use_default] = std::wstring_view{modulePath};
 		switch (Traits::apartment) {
@@ -102,11 +102,11 @@ namespace core::com
 		}
 		
 		// Insert program-id registration
-		RegistryKey ourProgId{create_new, win::ClassesRoot, Traits::program_id, KeyRight::All};
-		ourProgId[use_default] = Traits::class_name;
+		RegistryKey ourProgId{create_new, win::ClassesRoot, Traits::program_id.wstr(), KeyRight::All};
+		ourProgId[use_default] = Traits::class_name.wstr();
 		
 		// Link the two ids
-		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[use_default] = Traits::program_id;
+		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[use_default] = Traits::program_id.wstr();
 		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[use_default] = Traits::class_guid.wstr();
 
 		return S_OK;
@@ -137,10 +137,10 @@ namespace core::com
 		// Remove program-id registration
 		RegistryKey allClasses{win::ClassesRoot, KeyRight::All};
 		{
-			RegistryKey ourProgId{allClasses, Traits::program_id, KeyRight::All};
+			RegistryKey ourProgId{allClasses, Traits::program_id.wstr(), KeyRight::All};
 			ourProgId.removeKey(L"CLSID");
 		}
-		allClasses.removeKey(Traits::program_id);
+		allClasses.removeKey(Traits::program_id.wstr());
 		return S_OK;
 	}
 	catch (std::exception const& /*e*/)
