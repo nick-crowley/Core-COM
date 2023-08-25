@@ -122,8 +122,9 @@ file(GLOB_RECURSE PROJECT_INCLUDE_FILES
 )
 
 # Define macro controlling dllexport/import specifier
-set(PROJECT_DLL_MACRO "BuildCoreComDLL")
-set(PROJECT_LIB_MACRO "BuildCoreComStaticLib")
+set(PROJECT_EXPORT_MACRO "CoreComExport")
+set(PROJECT_IMPORT_MACRO "CoreComImport")
+set(PROJECT_STATIC_MACRO "CoreComStatic")
 
 ##############################################################################
 #         _________ __          __  .__         .____    ._____.             #
@@ -152,9 +153,15 @@ target_include_directories(libCoreCOM BEFORE
 
 # Link against CRT statically
 set_target_properties(libCoreCOM PROPERTIES
-					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} /MTd -D${PROJECT_LIB_MACRO}"
-					  #COMPILE_FLAGS_DEBUG   "${GLOBAL_COMPILER_OPTIONS} /MTd -D${PROJECT_LIB_MACRO}"
-					  #COMPILE_FLAGS_RELEASE "${GLOBAL_COMPILER_OPTIONS} /MT  -D${PROJECT_LIB_MACRO}"
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} /MTd"
+					  #COMPILE_FLAGS_DEBUG   "${GLOBAL_COMPILER_OPTIONS} /MTd -D${PROJECT_STATIC_MACRO}"
+					  #COMPILE_FLAGS_RELEASE "${GLOBAL_COMPILER_OPTIONS} /MT  -D${PROJECT_STATIC_MACRO}"
+)
+
+# Set export macros to 'static library' (same for all dependencies)
+target_compile_definitions(libCoreCOM
+	PUBLIC ${PROJECT_STATIC_MACRO}
+	PUBLIC CorePlatformStatic
 )
 
 # Set project dependencies
@@ -191,13 +198,19 @@ target_include_directories(dllCoreCOM BEFORE
 # Differentiate the filename of the import library
 set_target_properties(dllCoreCOM PROPERTIES
 					  OUTPUT_NAME "CoreCOM"
-					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} -D${PROJECT_DLL_MACRO}"
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 )
 
 # Set linker dependencies
 target_link_libraries(dllCoreCOM
 	#dllCorePlatform
 	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/CorePlatform.lib"
+)
+
+# Set export macros to 'export DLL' and set dependencies to 'import DLL'
+target_compile_definitions(dllCoreCOM
+	PUBLIC ${PROJECT_EXPORT_MACRO}
+	PUBLIC CorePlatformImport
 )
 
 # Set project dependencies
@@ -236,20 +249,31 @@ target_include_directories(appCoreCOM BEFORE
 	
 # Set linker dependencies
 target_link_libraries(appCoreCOM
-	dllCoreCOM
-	#dllCorePlatform
+	libCoreCOM
+	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/libCorePlatform.lib"
 )
 
 # Set compiler & linker flags
 set_target_properties(appCoreCOM PROPERTIES
-					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} -D${PROJECT_LIB_MACRO}"
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:CONSOLE"
 					  OUTPUT_NAME "appCoreCOM")
 
+# Set export macros for static-library for all dependencies
+target_compile_definitions(appCoreCOM
+	PRIVATE CorePlatformStatic CoreComStatic
+)
+
+# Link CRT according to build configuration
+target_compile_options(appCoreCOM
+	PRIVATE $<$<CONFIG:Release>:/MT>
+	PRIVATE $<$<CONFIG:Debug>:/MTd>
+)
+
 # Set project dependencies
 add_dependencies(appCoreCOM
-	dllCoreCOM
-	#dllCorePlatform
+	libCoreCOM
+	#libCorePlatform
 )
 
 #################################################################################

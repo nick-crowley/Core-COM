@@ -32,15 +32,17 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Macro Definitions o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-#if defined(BuildCoreComStaticLib)
+#if defined(CoreComStatic)
 	//! @brief	Core-COM symbol
 #	define ComExport 
-#elif defined(BuildCoreComDLL)
+#elif defined(CoreComExport)
 	//! @brief	Core-COM exported symbol
 #	define ComExport __declspec(dllexport)
-#else
+#elif defined(CoreComImport)
 	//! @brief	Core-COM imported symbol
 #	define ComExport __declspec(dllimport)
+#else
+#	error Cannot build Core-COM without specifying import-lib, dynamic-lib, or static-lib
 #endif
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
