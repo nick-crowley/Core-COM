@@ -63,6 +63,7 @@ set(GLOBAL_LINKER_OPTIONS "${GLOBAL_LINKER_OPTIONS} /SAFESEH:NO")
 # _ATL_ATTRIBUTES                           : Enable non-standard Microsoft COM attributes
 # BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE 	: Disable MSVC-2017 forward-compatibility warning
 # _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS 	: Disable C++17 deprecation warnings
+# _SILENCE_CXX20_CODECVT_FACETS_DEPRECAT... : Disable C++20 codecvt deprecation warning
 # _CRT_SECURE_NO_WARNINGS 					: Disable warnings about documented behaviour of CRT functions
 # _SCL_SECURE_NO_WARNINGS					: Disable warnings about documented behaviour of C++ library functions
 # GSL_ASSERTION_BEHAVIOUR 					: Globally set the contract-violation behaviour of GSL
@@ -70,6 +71,7 @@ set(GLOBAL_LINKER_OPTIONS "${GLOBAL_LINKER_OPTIONS} /SAFESEH:NO")
 add_definitions(-D_ATL_ATTRIBUTES
 	-DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE 
 	-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+	-D_SILENCE_CXX20_CODECVT_FACETS_DEPRECATION_WARNING
 	-D_CRT_SECURE_NO_WARNINGS
 	-D_SCL_SECURE_NO_WARNINGS
 	-D${GSL_ASSERTION_BEHAVIOUR}
