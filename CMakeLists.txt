@@ -122,9 +122,9 @@ file(GLOB_RECURSE PROJECT_INCLUDE_FILES
 )
 
 # Define macro controlling dllexport/import specifier
-set(PROJECT_EXPORT_MACRO "CoreComExport")
-set(PROJECT_IMPORT_MACRO "CoreComImport")
-set(PROJECT_STATIC_MACRO "CoreComStatic")
+set(PROJECT_EXPORT_MACRO "CORE_COM_EXPORT")
+set(PROJECT_IMPORT_MACRO "CORE_COM_IMPORT")
+set(PROJECT_STATIC_MACRO "CORE_COM_STATIC")
 
 ##############################################################################
 #         _________ __          __  .__         .____    ._____.             #
@@ -161,7 +161,7 @@ set_target_properties(libCoreCOM PROPERTIES
 # Set export macros to 'static library' (same for all dependencies)
 target_compile_definitions(libCoreCOM
 	PUBLIC ${PROJECT_STATIC_MACRO}
-	PUBLIC CorePlatformStatic
+	PUBLIC CORE_PLATFORM_STATIC
 )
 
 # Set project dependencies
@@ -210,7 +210,7 @@ target_link_libraries(dllCoreCOM
 # Set export macros to 'export DLL' and set dependencies to 'import DLL'
 target_compile_definitions(dllCoreCOM
 	PUBLIC ${PROJECT_EXPORT_MACRO}
-	PUBLIC CorePlatformImport
+	PUBLIC CORE_PLATFORM_IMPORT
 )
 
 # Set project dependencies
@@ -261,7 +261,7 @@ set_target_properties(appCoreCOM PROPERTIES
 
 # Set export macros for static-library for all dependencies
 target_compile_definitions(appCoreCOM
-	PRIVATE CorePlatformStatic CoreComStatic
+	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
 )
 
 # Link CRT according to build configuration

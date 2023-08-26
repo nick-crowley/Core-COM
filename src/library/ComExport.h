@@ -32,13 +32,13 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Macro Definitions o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-#if defined(CoreComStatic)
+#if defined(CORE_COM_STATIC)
 	//! @brief	Core-COM symbol
 #	define ComExport 
-#elif defined(CoreComExport)
+#elif defined(CORE_COM_EXPORT)
 	//! @brief	Core-COM exported symbol
 #	define ComExport __declspec(dllexport)
-#elif defined(CoreComImport)
+#elif defined(CORE_COM_IMPORT)
 	//! @brief	Core-COM imported symbol
 #	define ComExport __declspec(dllimport)
 #else
