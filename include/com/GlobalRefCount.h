@@ -27,10 +27,6 @@
 #pragma once
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
-#include "com/Implements.h"
-#include "com/Guid.h"
-#include "win/HResult.h"
-#include "core/FunctionLogging.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -42,92 +38,52 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	namespace detail
+	//! @brief	Provides a global sum of object ref-counts for all COM implementations 
+	class GlobalRefCount
 	{
-		template <meta::CoClass Impl, meta::ForwardSequence Interfaces>
-		struct CreateInstanceImpl {
-			::HRESULT
-			operator()(IUnknown*, ::IID const&, void**) const = delete; 
-		};
-
-		template <meta::CoClass Impl, template<typename...> typename Sequence, meta::ComInterface... Interfaces>
-		struct CreateInstanceImpl<Impl,Sequence<Interfaces...>> {
-			::HRESULT
-			operator()(IUnknown*, ::IID const& iid, void** ppv) const
-			{
-				if ((... || (Guid(iid) == __uuidof(Interfaces))))
-				{
-					auto* inst = new Impl{};
-					auto hr = inst->QueryInterface(iid,ppv);
-					// Balance AddRef-ing the object if it supports the requested interface or
-					//  destroy the new object prior to return if it doesn't.
-					inst->Release();
-					return hr;
-				}
-				*ppv = nullptr;
-				return E_NOINTERFACE;
-			}
-		};
-	}
-
-	/**
-	 * @brief	Co-class factory
-	 * 
-	 * @tparam	Product		Type produced by factory
-	*/
-	template <meta::CoClass Product>
-		requires meta::ForwardSequence<typename Product::interfaces>
-	class ClassFactory : public implements<::IClassFactory,::IUnknown>
-	{	
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-	private:
-		using type = ClassFactory<Product>;
-		using base = implements<::IClassFactory,::IUnknown>;
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	protected:
+		std::atomic_long 
+		inline static SumInstances = 0;		// TODO: Make private once logging macro supports rvalues
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		satisfies(ClassFactory,
-			IsDefaultConstructible noexcept,
-            NotCopyable,
+		satisfies(GlobalRefCount,
+			protected: IsDefaultConstructible noexcept,
+			public: NotPolymorphic,
+			NotCopyable,
 			NotEqualityComparable,
 			NotSortable
 		);
+		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	public:
+		long 
+		static value() {
+			return GlobalRefCount::SumInstances;
+		}
 
+	protected:
+		long 
+		static increment() {
+			return ++GlobalRefCount::SumInstances;
+		}
+			
+		long 
+		static decrement() {
+			return --GlobalRefCount::SumInstances;
+		}
+		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-	public:
-		::HRESULT
-		COMAPI CreateInstance(::IUnknown*, ::IID const& iid, void** ppv) override
-		{
-			win::HResult hr = S_OK;
-			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
-
-			// Since boost::mpl is C++03 library, we need to remove the placeholder args here
-			using interfaceSeq = typename mpl::remove_if<typename Product::interfaces,mpl::same_as<mpl::na>>::type;
-			return hr = detail::CreateInstanceImpl<Product,interfaceSeq>{}(nullptr, iid, ppv);
-		}
-
-		::HRESULT
-		COMAPI LockServer(::BOOL lock) override
-		{
-			logFunctionArgs(lock);
-
-			if (lock) {
-				GlobalRefCount::increment();
-			}
-			else {
-				GlobalRefCount::decrement();
-			}
-			return S_OK;
-		}
 	};
 }
+
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

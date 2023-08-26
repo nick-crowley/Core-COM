@@ -29,6 +29,7 @@
 #include "library/core.COM.h"
 #include "win/HResult.h"
 #include "core/FunctionLogging.h"
+#include "com/GlobalRefCount.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -89,18 +90,17 @@ namespace core::com
 		template <meta::ComInterface... Interfaces>
 		using distinct_interfaces_t = typename distinct_interfaces<Interfaces...>::type;
 	}
-
-	std::atomic_long 
-	extern numInstances;
-
+	
 	//! @brief	Implements @c ::IUnknown for a set of COM interfaces
 	//! @tparam	Interfaces	Set of _all_ COM interfaces to be realized including ancestral interfaces (eg. @c ::IUnknown)
 	template <meta::ComInterface... Interfaces>
-	class implements : public detail::MultipleRealization<detail::distinct_interfaces_t<Interfaces...>>
+	class implements : public detail::MultipleRealization<detail::distinct_interfaces_t<Interfaces...>>,
+	                   protected GlobalRefCount
 	{	
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
 		using type = implements<Interfaces...>;
+		using base = detail::MultipleRealization<detail::distinct_interfaces_t<Interfaces...>>;
 
 	public:
 		using interfaces = mpl::vector<Interfaces...>;
@@ -112,7 +112,7 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		implements() noexcept {
-			++com::numInstances;
+			GlobalRefCount::increment();
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
@@ -143,7 +143,7 @@ namespace core::com
 		::ULONG
 		COMAPI AddRef() override
 		{
-			logFunctionArgs().withRetVals(this->refCount, com::numInstances);
+			logFunctionArgs().withRetVals(this->refCount, GlobalRefCount::SumInstances);
 
 			return this->refCount++;
 		}
@@ -151,7 +151,7 @@ namespace core::com
 		::ULONG
 		COMAPI Release() override
 		{
-			logFunctionArgs().withRetVals(this->refCount, com::numInstances);
+			logFunctionArgs().withRetVals(this->refCount, GlobalRefCount::SumInstances);
 
 			if (this->refCount <= 0)
 				clog << Warning{"Coclass has an invalid reference count of {}", this->refCount.load()};
@@ -159,7 +159,7 @@ namespace core::com
 			if (--this->refCount <= 0)
 			{
 				delete this;
-				--com::numInstances;
+				GlobalRefCount::decrement();
 				return 0;
 			}
 

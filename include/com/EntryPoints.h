@@ -31,6 +31,7 @@
 #include "win/RegistryKey.h"
 #include "com/Boolean.h"
 #include "com/Function.h"
+#include "com/GlobalRefCount.h"
 #include "com/SharedPtr.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
@@ -47,9 +48,6 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	std::atomic_long 
-	extern com::numInstances;
-
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Retrieve a factory instance for any co-class
 	* @param[in]	clsId	Implementation ID
@@ -73,7 +71,7 @@ namespace core::com
 	::HRESULT 
 	canUnloadNow()
 	{
-		return Boolean{com::numInstances == 0};
+		return Boolean{GlobalRefCount::value() == 0};
 	}
 
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
