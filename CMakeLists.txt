@@ -151,17 +151,21 @@ target_include_directories(libCoreCOM BEFORE
     ${PROJECT_INCLUDE_FOLDER}
 )
 
-# Link against CRT statically
+# Set compile options
 set_target_properties(libCoreCOM PROPERTIES
-					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS} /MTd"
-					  #COMPILE_FLAGS_DEBUG   "${GLOBAL_COMPILER_OPTIONS} /MTd -D${PROJECT_STATIC_MACRO}"
-					  #COMPILE_FLAGS_RELEASE "${GLOBAL_COMPILER_OPTIONS} /MT  -D${PROJECT_STATIC_MACRO}"
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 )
 
 # Set export macros to 'static library' (same for all dependencies)
 target_compile_definitions(libCoreCOM
 	PUBLIC ${PROJECT_STATIC_MACRO}
 	PUBLIC CORE_PLATFORM_STATIC
+)
+
+# Link CRT statically
+target_compile_options(libCoreCOM
+	PRIVATE $<$<CONFIG:Release>:/MT>
+	PRIVATE $<$<CONFIG:Debug>:/MTd>
 )
 
 # Set project dependencies
@@ -211,6 +215,12 @@ target_link_libraries(dllCoreCOM
 target_compile_definitions(dllCoreCOM
 	PUBLIC ${PROJECT_EXPORT_MACRO}
 	PUBLIC CORE_PLATFORM_IMPORT
+)
+
+# Link CRT dynamically
+target_compile_options(dllCoreCOM
+	PRIVATE $<$<CONFIG:Release>:/MD>
+	PRIVATE $<$<CONFIG:Debug>:/MDd>
 )
 
 # Set project dependencies
@@ -264,7 +274,7 @@ target_compile_definitions(appCoreCOM
 	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
 )
 
-# Link CRT according to build configuration
+# Link CRT statically
 target_compile_options(appCoreCOM
 	PRIVATE $<$<CONFIG:Release>:/MT>
 	PRIVATE $<$<CONFIG:Debug>:/MTd>
