@@ -297,7 +297,7 @@ add_dependencies(dllBasicServer
 
 # Project: appCoreCOM
 add_executable(appCoreCOM
-	"${PROJECT_EXTRA_FOLDER}main.cpp"
+	"${PROJECT_EXTRA_FOLDER}appCoreCom.cpp"
 	#${PROJECT_RESOURCE_FILES}
 )
 
