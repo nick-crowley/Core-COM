@@ -5,17 +5,20 @@
 #include "com/SetLastError.h"
 using namespace core;
 
-[module(unspecified, name="BasicServerLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
+// Manually specify IDL imports (prevents errors from unwanted IDLs being dragged in)
+[emitidl(true, defaultimports=false)];
+[import(docobj.idl)];
+
+// Disable all ATL code injection (allows library class to share same name as `[module(...)]` directive)
+[no_injected_text(true)];
 
 [uuid("A10C8092-3549-4C2E-95D7-F264286720B9")]
-struct BasicServerLibType
+struct BasicServerLib
 {
-	// By default, the library name is obtained using reflection but MSVC won't permit us to
-	//  re-use `BasicServerLib` after using it in the `module` definition (above) so we must specify 
-	//  the library name explicitly
-	auto constexpr 
-	static library_name = core::LiteralString{"BasicServerLib"};
 };
+
+// Auto-generate IDL from the source file (must follow declaration of 'BasicServerLib')
+[module(unspecified, name="BasicServerLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
 
 [object, uuid("9E66A290-4365-11D2-A997-00C04FA37DDB")]
 __interface IBasicServer : IUnknown
@@ -31,7 +34,7 @@ __interface IBasicServer : IUnknown
 class BasicServer : public com::implements<IBasicServer,::IUnknown>
 {
 public:
-	using library_type = BasicServerLibType;
+	using library_type = BasicServerLib;
 	
 public:
 	::HRESULT 
