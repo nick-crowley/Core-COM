@@ -125,7 +125,7 @@ namespace core::com
 
 		// Remove class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
-		{
+		scoped {
 			auto ourClassId = CLSID.subkey(Traits::class_guid.wstr());
 			ourClassId.removeKey(L"ProgId");
 			ourClassId.removeKey(L"InProcServer32");
@@ -134,7 +134,7 @@ namespace core::com
 		
 		// Remove program-id registration
 		RegistryKey allClasses{win::ClassesRoot, KeyRight::All};
-		{
+		scoped {
 			RegistryKey ourProgId{allClasses, Traits::program_id.wstr(), KeyRight::All};
 			ourProgId.removeKey(L"CLSID");
 		}
