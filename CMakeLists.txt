@@ -228,6 +228,59 @@ target_compile_options(dllCoreCOM
 #	dllCorePlatform
 #)
 
+####################################################################################
+# __________               .__           _________                                 #
+# \______   \_____    _____|__| ____    /   _____/ ______________  __ ___________  #
+#  |    |  _/\__  \  /  ___/  |/ ___\   \_____  \_/ __ \_  __ \  \/ // __ \_  __ \ #
+#  |    |   \ / __ \_\___ \|  \  \___   /        \  ___/|  | \/\   /\  ___/|  | \/ #
+#  |______  /(____  /____  >__|\___  > /_______  /\___  >__|    \_/  \___  >__|    #
+#         \/      \/     \/        \/          \/     \/                 \/        #
+####################################################################################
+
+# Project: dllBasicServer
+add_library(dllBasicServer SHARED 
+	"${PROJECT_EXTRA_FOLDER}DllMain.cpp"
+	"${PROJECT_EXTRA_FOLDER}dllBasicServer.cpp"
+)
+
+# Include folders
+target_include_directories(dllBasicServer BEFORE
+    PRIVATE
+	${PROJECT_EXTRA_FOLDER} 
+	${PROJECT_RESOURCE_FOLDER} 
+    PUBLIC
+    ${PROJECT_INCLUDE_FOLDER}            
+)
+	
+# Set linker dependencies
+target_link_libraries(dllBasicServer
+	libCoreCOM
+	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/libCorePlatform.lib"
+)
+
+# Set compiler & linker flags
+set_target_properties(dllBasicServer PROPERTIES
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
+					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS"
+					  OUTPUT_NAME "dllBasicServer")
+
+# Set export macros for static-library for all dependencies
+target_compile_definitions(dllBasicServer
+	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
+)
+
+# Link CRT statically
+target_compile_options(dllBasicServer
+	PRIVATE $<$<CONFIG:Release>:/MT>
+	PRIVATE $<$<CONFIG:Debug>:/MTd>
+)
+
+# Set project dependencies
+add_dependencies(dllBasicServer
+	libCoreCOM
+	#libCorePlatform
+)
+
 ##############################################################
 #  ___________              __       _____                   #
 #  \__    ___/___   _______/  |_    /  _  \ ______ ______    #
