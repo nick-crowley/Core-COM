@@ -93,7 +93,7 @@ void testLiteralString()
 //
 /////////////////////////////////////////////////////////////////////////////////
 
-[module(unspecified, name="ExampleLib", version="1.0", uuid="D0DCF441-AA4C-4EAC-ACC1-32EDD2ED16F6")];
+[emitidl(restricted)];
 
 [object, uuid("FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6")]
 __interface IExample : IUnknown
