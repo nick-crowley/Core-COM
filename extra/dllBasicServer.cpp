@@ -17,7 +17,7 @@ struct BasicServerLib
 {
 };
 
-// Auto-generate IDL from the source file (must follow declaration of 'BasicServerLib')
+// Auto-generate IDL from the source file (must be placed after declaration of 'BasicServerLib')
 [module(unspecified, name="BasicServerLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
 
 [object, uuid("9E66A290-4365-11D2-A997-00C04FA37DDB")]
