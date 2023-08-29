@@ -1,0 +1,6 @@
+/out .\MIDL\
+/header  dllBasicServer.h
+/proxy   dllBasicServer_p.c
+/iid     dllBasicServer_i.c
+/dlldata dllBasicProxy.c
+/tlb     dllBasicServer.tlb

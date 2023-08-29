@@ -241,6 +241,7 @@ target_compile_options(dllCoreCOM
 add_library(dllBasicServer SHARED 
 	"${PROJECT_EXTRA_FOLDER}DllMain.cpp"
 	"${PROJECT_EXTRA_FOLDER}dllBasicServer.cpp"
+	"${PROJECT_EXTRA_FOLDER}dllBasicServer.midl"
 )
 
 # Include folders
@@ -258,10 +259,13 @@ target_link_libraries(dllBasicServer
 	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/libCorePlatform.lib"
 )
 
-# Set compiler & linker flags
+# Define MIDL flags
+set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_EXTRA_FOLDER}dllBasicServer.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
+
+# Set compiler & linker & MIDL flags
 set_target_properties(dllBasicServer PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
-					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS"
+					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
 					  OUTPUT_NAME "dllBasicServer")
 
 # Set export macros for static-library for all dependencies
