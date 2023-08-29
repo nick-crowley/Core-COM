@@ -1,0 +1,6 @@
+/out .\MIDL\
+/header  exeOutProcServer.h
+/proxy   exeOutProcServer_p.c
+/iid     exeOutProcServer_i.c
+/dlldata dllOutProcProxy.c
+/tlb     exeOutProcServer.tlb

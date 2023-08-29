@@ -285,6 +285,62 @@ add_dependencies(dllBasicServer
 	#libCorePlatform
 )
 
+######################################################################################################
+# ________          __ __________                          _________                                 #
+# \_____  \  __ ___/  |\______   \_______  ____   ____    /   _____/ ______________  __ ___________  #
+#  /   |   \|  |  \   __\     ___/\_  __ \/  _ \_/ ___\   \_____  \_/ __ \_  __ \  \/ // __ \_  __ \ #
+# /    |    \  |  /|  | |    |     |  | \(  <_> )  \___   /        \  ___/|  | \/\   /\  ___/|  | \/ #
+# \_______  /____/ |__| |____|     |__|   \____/ \___  > /_______  /\___  >__|    \_/  \___  >__|    #
+#         \/                                         \/          \/     \/                 \/        #
+######################################################################################################
+
+# Project: exeOutProcServer
+add_library(exeOutProcServer SHARED 
+	"${PROJECT_EXTRA_FOLDER}exeOutProcServer.cpp"
+	"${PROJECT_EXTRA_FOLDER}exeOutProcServer.midl"
+)
+
+# Include folders
+target_include_directories(exeOutProcServer BEFORE
+    PRIVATE
+	${PROJECT_EXTRA_FOLDER} 
+	${PROJECT_RESOURCE_FOLDER} 
+    PUBLIC
+    ${PROJECT_INCLUDE_FOLDER}            
+)
+	
+# Set linker dependencies
+target_link_libraries(exeOutProcServer
+	libCoreCOM
+	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/libCorePlatform.lib"
+)
+
+# Define MIDL flags
+set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_EXTRA_FOLDER}exeOutProcServer.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
+
+# Set compiler & linker & MIDL flags
+set_target_properties(exeOutProcServer PROPERTIES
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
+					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
+					  OUTPUT_NAME "dllBasicServer")
+
+# Set export macros for static-library for all dependencies
+target_compile_definitions(exeOutProcServer
+	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
+)
+
+# Link CRT statically
+target_compile_options(exeOutProcServer
+	PRIVATE $<$<CONFIG:Release>:/MT>
+	PRIVATE $<$<CONFIG:Debug>:/MTd>
+)
+
+# Set project dependencies
+add_dependencies(exeOutProcServer
+	libCoreCOM
+	#libCorePlatform
+)
+
 ##############################################################
 #  ___________              __       _____                   #
 #  \__    ___/___   _______/  |_    /  _  \ ______ ______    #
