@@ -341,6 +341,55 @@ add_dependencies(exeOutProcServer
 	#libCorePlatform
 )
 
+##################################################################################################
+# ________          __ __________                        __________                              #
+# \_____  \  __ ___/  |\______   \_______  ____   ____   \______   \_______  _______  ______.__. #
+#  /   |   \|  |  \   __\     ___/\_  __ \/  _ \_/ ___\   |     ___/\_  __ \/  _ \  \/  <   |  | #
+# /    |    \  |  /|  | |    |     |  | \(  <_> )  \___   |    |     |  | \(  <_> >    < \___  | #
+# \_______  /____/ |__| |____|     |__|   \____/ \___  >  |____|     |__|   \____/__/\_ \/ ____| #
+#         \/                                         \/                                \/\/      #
+##################################################################################################                                       
+
+# Project: dllOutProcProxy
+add_library(dllOutProcProxy SHARED 
+	"${OUTPUT_FOLDER}/MIDL/dllOutProcProxy.c"
+	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer_p.c"
+	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer_i.c"
+	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer.h"
+	"${PROJECT_EXTRA_FOLDER}dllOutProcProxy.def"
+)
+
+# Specify the source/headers may not exist (but should be compiled)
+set_source_files_properties("${OUTPUT_FOLDER}/MIDL/dllOutProcProxy.c" 
+	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer_p.c" 
+	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer_i.c" 
+	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer.h" PROPERTIES
+	GENERATED ON
+	HEADER_FILE_ONLY OFF
+	LANGUAGE C
+)
+
+# Set linker dependencies
+target_link_libraries(dllOutProcProxy
+	kernel32.lib rpcns4.lib rpcrt4.lib uuid.lib
+)
+
+# Set language flag; compile as 'C'
+set_target_properties(dllOutProcProxy PROPERTIES
+                      LINKER_LANGUAGE C
+					  COMPILE_FLAGS "/TC"  
+					  OUTPUT_NAME "dllOutProcProxy")
+
+# Set macros for building proxy
+target_compile_definitions(dllOutProcProxy
+	PRIVATE REGISTER_PROXY_DLL  #PROXY_CLSID=AB4CB84C-CDCC-4525-AFB0-0B0D5798078D
+)
+
+# Set project dependencies
+add_dependencies(dllOutProcProxy
+	exeOutProcServer
+)
+
 ##############################################################
 #  ___________              __       _____                   #
 #  \__    ___/___   _______/  |_    /  _  \ ______ ______    #
