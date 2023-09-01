@@ -26,6 +26,7 @@ set(OUTPUT_FOLDER "${BASE_FOLDER}build")
 # Folders: Project
 set(PROJECT_EXTRA_FOLDER    "${BASE_FOLDER}extra/")
 set(PROJECT_INCLUDE_FOLDER  "${BASE_FOLDER}include/")
+set(PROJECT_SAMPLE_FOLDER   "${BASE_FOLDER}sample/")
 set(PROJECT_SOURCE_FOLDER   "${BASE_FOLDER}src/")
 set(PROJECT_RESOURCE_FOLDER "${BASE_FOLDER}res/")
 
@@ -239,15 +240,15 @@ target_compile_options(dllCoreCOM
 
 # Project: dllInProcServer
 add_library(dllInProcServer SHARED 
-	"${PROJECT_EXTRA_FOLDER}dllInProcServer.cpp"
-	"${PROJECT_EXTRA_FOLDER}dllInProcServer.midl"
-	"${PROJECT_EXTRA_FOLDER}dllInProcServer.def"
+	"${PROJECT_SAMPLE_FOLDER}dllInProcServer.cpp"
+	"${PROJECT_SAMPLE_FOLDER}dllInProcServer.midl"
+	"${PROJECT_SAMPLE_FOLDER}dllInProcServer.def"
 )
 
 # Include folders
 target_include_directories(dllInProcServer BEFORE
     PRIVATE
-	${PROJECT_EXTRA_FOLDER} 
+	${PROJECT_SAMPLE_FOLDER} 
 	${PROJECT_RESOURCE_FOLDER} 
     PUBLIC
     ${PROJECT_INCLUDE_FOLDER}            
@@ -260,7 +261,7 @@ target_link_libraries(dllInProcServer
 )
 
 # Define MIDL flags
-set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_EXTRA_FOLDER}dllInProcServer.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
+set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_SAMPLE_FOLDER}dllInProcServer.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
 
 # Set compiler & linker & MIDL flags
 set_target_properties(dllInProcServer PROPERTIES
@@ -296,14 +297,14 @@ add_dependencies(dllInProcServer
 
 # Project: exeOutProcServer
 add_library(exeOutProcServer SHARED 
-	"${PROJECT_EXTRA_FOLDER}exeOutProcServer.cpp"
-	"${PROJECT_EXTRA_FOLDER}exeOutProcServer.midl"
+	"${PROJECT_SAMPLE_FOLDER}exeOutProcServer.cpp"
+	"${PROJECT_SAMPLE_FOLDER}exeOutProcServer.midl"
 )
 
 # Include folders
 target_include_directories(exeOutProcServer BEFORE
     PRIVATE
-	${PROJECT_EXTRA_FOLDER} 
+	${PROJECT_SAMPLE_FOLDER} 
 	${PROJECT_RESOURCE_FOLDER} 
     PUBLIC
     ${PROJECT_INCLUDE_FOLDER}            
@@ -316,7 +317,7 @@ target_link_libraries(exeOutProcServer
 )
 
 # Define MIDL flags
-set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_EXTRA_FOLDER}exeOutProcServer.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
+set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_SAMPLE_FOLDER}exeOutProcServer.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
 
 # Set compiler & linker & MIDL flags
 set_target_properties(exeOutProcServer PROPERTIES
@@ -356,7 +357,7 @@ add_library(dllOutProcProxy SHARED
 	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer_p.c"
 	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer_i.c"
 	"${OUTPUT_FOLDER}/MIDL/exeOutProcServer.h"
-	"${PROJECT_EXTRA_FOLDER}dllOutProcProxy.def"
+	"${PROJECT_SAMPLE_FOLDER}dllOutProcProxy.def"
 )
 
 # Specify the source/headers may not exist (but should be compiled)
@@ -406,14 +407,14 @@ add_dependencies(dllOutProcProxy
 
 # Project: appCoreCOM
 add_executable(appCoreCOM
-	"${PROJECT_EXTRA_FOLDER}appCoreCom.cpp"
+	"${PROJECT_SAMPLE_FOLDER}appCoreCom.cpp"
 	#${PROJECT_RESOURCE_FILES}
 )
 
 # Include folders
 target_include_directories(appCoreCOM BEFORE
     PRIVATE
-	${PROJECT_EXTRA_FOLDER} 
+	${PROJECT_SAMPLE_FOLDER} 
 	${PROJECT_RESOURCE_FOLDER} 
     PUBLIC
     ${PROJECT_INCLUDE_FOLDER}            
@@ -462,11 +463,25 @@ file(GLOB_RECURSE PROJECT_EXTRA_FILES
     "${PROJECT_EXTRA_FOLDER}*.h"
     "${PROJECT_EXTRA_FOLDER}*.cpp"
 )
-	
+
+# Sample code
+file(GLOB_RECURSE PROJECT_SAMPLE_FILES
+    "${PROJECT_SAMPLE_FOLDER}*.h"
+    "${PROJECT_SAMPLE_FOLDER}*.cpp"
+)
+
+# Sample code build/config files
+file(GLOB_RECURSE PROJECT_SAMPLE_BUILD_FILES
+    "${PROJECT_SAMPLE_FOLDER}*.midl"
+    "${PROJECT_SAMPLE_FOLDER}*.def"
+)
+
 # Project file groups
 source_group(TREE ${PROJECT_SOURCE_FOLDER}    PREFIX "Build Files"    FILES ${PROJECT_SOURCE_CC_FILES}})
 source_group(TREE ${PROJECT_EXTRA_FOLDER}     PREFIX "Extra Files"    FILES ${PROJECT_EXTRA_FILES})
+source_group(TREE ${PROJECT_SAMPLE_FOLDER}    PREFIX "Extra Files"    FILES ${PROJECT_SAMPLE_BUILD_FILES})
 source_group(TREE ${PROJECT_INCLUDE_FOLDER}   PREFIX "Header Files"   FILES ${PROJECT_INCLUDE_FILES})
+source_group(TREE ${PROJECT_SAMPLE_FOLDER}    PREFIX "Source Files"   FILES ${PROJECT_SAMPLE_FILES})
 source_group(TREE ${PROJECT_SOURCE_FOLDER}    PREFIX "Source Files"   FILES ${PROJECT_SOURCE_FILES})
 source_group(TREE ${PROJECT_RESOURCE_FOLDER}  PREFIX "Resource Files" FILES ${PROJECT_RESOURCE_FILES})
 
