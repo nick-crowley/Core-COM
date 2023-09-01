@@ -13,15 +13,15 @@ using namespace core;
 [no_injected_text(true)];
 
 [uuid("A10C8092-3549-4C2E-95D7-F264286720B9")]
-struct BasicServerLib
+struct InProcServerLib
 {
 };
 
-// Auto-generate IDL from the source file (must be placed after declaration of 'BasicServerLib')
-[module(unspecified, name="BasicServerLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
+// Auto-generate IDL from the source file (must be placed after declaration of 'InProcServerLib')
+[module(unspecified, name="InProcServerLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
 
 [object, uuid("9E66A290-4365-11D2-A997-00C04FA37DDB")]
-__interface IBasicServer : IUnknown
+__interface IInProcServer : IUnknown
 {
 	::HRESULT 
 	Method1(long idx);
@@ -31,24 +31,24 @@ __interface IBasicServer : IUnknown
 };
 
 [uuid("E46E39ED-E221-4F71-8E7A-6FBF30FA7692")]
-class BasicServer : public com::implements<IBasicServer,::IUnknown>
+class InProcServer : public com::implements<IInProcServer,::IUnknown>
 {
 public:
-	using library_type = BasicServerLib;
+	using library_type = InProcServerLib;
 	
 public:
 	::HRESULT 
 	COMAPI Method1(long idx) override
 	{
-		clog << Verbose{"BasicServer::Method1({}) => E_FAIL", idx};
+		clog << Verbose{"InProcServer::Method1({}) => E_FAIL", idx};
 
-		return com::SetLastError<BasicServer>(E_FAIL, L"Example exception message");
+		return com::SetLastError<InProcServer>(E_FAIL, L"Example exception message");
 	}
 
 	::HRESULT 
 	COMAPI Method2(long idx, com::retval_t<long> out) override
 	{
-		clog << Verbose{"BasicServer::Method2({}) => S_OK", idx};
+		clog << Verbose{"InProcServer::Method2({}) => S_OK", idx};
 		
 		*out = 42;
 		return S_OK;
@@ -67,7 +67,7 @@ extern "C"
 COMAPI DllGetClassObject(::CLSID const& clsId, ::IID const& iid, void** ppv)
 {
 	clog.attach(std::cout);
-	return com::getClassObject<BasicServer>(com::Guid{clsId}, iid, ppv);
+	return com::getClassObject<InProcServer>(com::Guid{clsId}, iid, ppv);
 }
 
 extern "C"
@@ -81,7 +81,7 @@ extern "C"
 ::HRESULT 
 COMAPI DllRegisterServer()
 {
-	return com::registerServer<BasicServer>(
+	return com::registerServer<InProcServer>(
 		::GetModuleHandleW(nullptr)
 	);
 }
@@ -90,5 +90,5 @@ extern "C"
 ::HRESULT 
 COMAPI DllUnregisterServer()
 {
-	return com::unregisterServer<BasicServer>();
+	return com::unregisterServer<InProcServer>();
 }

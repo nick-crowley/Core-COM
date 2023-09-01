@@ -228,24 +228,24 @@ target_compile_options(dllCoreCOM
 #	dllCorePlatform
 #)
 
-####################################################################################
-# __________               .__           _________                                 #
-# \______   \_____    _____|__| ____    /   _____/ ______________  __ ___________  #
-#  |    |  _/\__  \  /  ___/  |/ ___\   \_____  \_/ __ \_  __ \  \/ // __ \_  __ \ #
-#  |    |   \ / __ \_\___ \|  \  \___   /        \  ___/|  | \/\   /\  ___/|  | \/ #
-#  |______  /(____  /____  >__|\___  > /_______  /\___  >__|    \_/  \___  >__|    #
-#         \/      \/     \/        \/          \/     \/                 \/        #
-####################################################################################
+###########################################################################################
+# .___      __________                          _________                                 #
+# |   | ____\______   \_______  ____   ____    /   _____/ ______________  __ ___________  #
+# |   |/    \|     ___/\_  __ \/  _ \_/ ___\   \_____  \_/ __ \_  __ \  \/ // __ \_  __ \ #
+# |   |   |  \    |     |  | \(  <_> )  \___   /        \  ___/|  | \/\   /\  ___/|  | \/ #
+# |___|___|  /____|     |__|   \____/ \___  > /_______  /\___  >__|    \_/  \___  >__|    #
+#          \/                             \/          \/     \/                 \/        #
+###########################################################################################
 
-# Project: dllBasicServer
-add_library(dllBasicServer SHARED 
-	"${PROJECT_EXTRA_FOLDER}dllBasicServer.cpp"
-	"${PROJECT_EXTRA_FOLDER}dllBasicServer.midl"
-	"${PROJECT_EXTRA_FOLDER}dllBasicServer.def"
+# Project: dllInProcServer
+add_library(dllInProcServer SHARED 
+	"${PROJECT_EXTRA_FOLDER}dllInProcServer.cpp"
+	"${PROJECT_EXTRA_FOLDER}dllInProcServer.midl"
+	"${PROJECT_EXTRA_FOLDER}dllInProcServer.def"
 )
 
 # Include folders
-target_include_directories(dllBasicServer BEFORE
+target_include_directories(dllInProcServer BEFORE
     PRIVATE
 	${PROJECT_EXTRA_FOLDER} 
 	${PROJECT_RESOURCE_FOLDER} 
@@ -254,33 +254,33 @@ target_include_directories(dllBasicServer BEFORE
 )
 	
 # Set linker dependencies
-target_link_libraries(dllBasicServer
+target_link_libraries(dllInProcServer
 	libCoreCOM
 	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/libCorePlatform.lib"
 )
 
 # Define MIDL flags
-set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_EXTRA_FOLDER}dllBasicServer.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
+set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_EXTRA_FOLDER}dllInProcServer.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
 
 # Set compiler & linker & MIDL flags
-set_target_properties(dllBasicServer PROPERTIES
+set_target_properties(dllInProcServer PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
-					  OUTPUT_NAME "dllBasicServer")
+					  OUTPUT_NAME "dllInProcServer")
 
 # Set export macros for static-library for all dependencies
-target_compile_definitions(dllBasicServer
+target_compile_definitions(dllInProcServer
 	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
 )
 
 # Link CRT statically
-target_compile_options(dllBasicServer
+target_compile_options(dllInProcServer
 	PRIVATE $<$<CONFIG:Release>:/MT>
 	PRIVATE $<$<CONFIG:Debug>:/MTd>
 )
 
 # Set project dependencies
-add_dependencies(dllBasicServer
+add_dependencies(dllInProcServer
 	libCoreCOM
 	#libCorePlatform
 )
