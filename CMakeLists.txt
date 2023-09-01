@@ -229,6 +229,63 @@ target_compile_options(dllCoreCOM
 #	dllCorePlatform
 #)
 
+#####################################################################
+#    _____   __    __         ._____.           __                 	#
+#   /  _  \_/  |__/  |________|__\_ |__  __ ___/  |_  ____   ______	#
+#  /  /_\  \   __\   __\_  __ \  || __ \|  |  \   __\/ __ \ /  ___/	#
+# /    |    \  |  |  |  |  | \/  || \_\ \  |  /|  | \  ___/ \___ \ 	#
+# \____|__  /__|  |__|  |__|  |__||___  /____/ |__|  \___  >____  >	#
+#         \/                          \/                 \/     \/ 	#
+#####################################################################
+
+# Project: dllAttributes
+add_library(dllAttributes SHARED 
+	"${PROJECT_SAMPLE_FOLDER}dllAttributes.cpp"
+	"${PROJECT_SAMPLE_FOLDER}dllAttributes.midl"
+	"${PROJECT_SAMPLE_FOLDER}dllAttributes.def"
+)
+
+# Include folders
+target_include_directories(dllAttributes BEFORE
+    PRIVATE
+	${PROJECT_SAMPLE_FOLDER} 
+	${PROJECT_RESOURCE_FOLDER} 
+    PUBLIC
+    ${PROJECT_INCLUDE_FOLDER}            
+)
+	
+# Set linker dependencies
+target_link_libraries(dllAttributes
+	libCoreCOM
+	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/libCorePlatform.lib"
+)
+
+# Define MIDL flags
+set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_SAMPLE_FOLDER}dllAttributes.midl /IDLOUT:$(ProjectDir)MIDL\\$(ProjectName).idl")
+
+# Set compiler & linker & MIDL flags
+set_target_properties(dllAttributes PROPERTIES
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
+					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
+					  OUTPUT_NAME "dllAttributes")
+
+# Set export macros for static-library for all dependencies
+target_compile_definitions(dllAttributes
+	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
+)
+
+# Link CRT statically
+target_compile_options(dllAttributes
+	PRIVATE $<$<CONFIG:Release>:/MT>
+	PRIVATE $<$<CONFIG:Debug>:/MTd>
+)
+
+# Set project dependencies
+add_dependencies(dllAttributes
+	libCoreCOM
+	#libCorePlatform
+)
+
 ###########################################################################################
 # .___      __________                          _________                                 #
 # |   | ____\______   \_______  ____   ____    /   _____/ ______________  __ ___________  #

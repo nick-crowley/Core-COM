@@ -1,0 +1,6 @@
+LIBRARY        dllAttributes.dll
+EXPORTS        DllGetClassObject      PRIVATE
+               DllCanUnloadNow        PRIVATE
+               DllMain                PRIVATE
+               DllRegisterServer      PRIVATE
+               DllUnregisterServer    PRIVATE

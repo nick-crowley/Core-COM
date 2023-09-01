@@ -1,0 +1,6 @@
+/out .\MIDL\
+/header  dllAttributes.h
+/proxy   unused.tmp
+/iid     dllAttributes_i.c
+/dlldata unused2.tmp
+/tlb     dllAttributes.tlb
