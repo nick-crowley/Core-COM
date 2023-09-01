@@ -6,9 +6,10 @@
 using namespace core;
 using namespace com::literals;
 
-// Auto-generate IDL from the source file
+// Tells Visual Studio to auto-generate an IDL from the attributes in the source file(s)
 [module(unspecified, name="InProcServerLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
 
+// COM interfaces must be declared using non-standard `__interface` keyword
 [object, uuid("9E66A290-4365-11D2-A997-00C04FA37DDB")]
 __interface IInProcServer : IUnknown
 {
@@ -32,7 +33,17 @@ public:
 		// COM attributes aren't supported on nested classes so this is required
 		com::Guid constexpr
 		static library_guid = "A10C8092-3549-4C2E-95D7-F264286720B9"_guid;
+
+		// [VERSION] Library version of v1.0 is defined implicitly, by omission  (see library traits)
 	};
+
+	// [NAME] Class name of 'InProcServer' is obtained via reflection  (see coclass traits)
+
+	// [THREADING] Class threading-model of 'Apartment' is defined implicitly, by omission  (see coclass traits)
+
+	// [GUID] Class GUID is obtained from the COM attributes  (see coclass traits)
+
+	// [VERSION] Class version of v1.0 is defined implicitly, by omission  (see coclass traits)
 	
 public:
 	::HRESULT 
@@ -52,6 +63,9 @@ public:
 		return S_OK;
 	}
 };
+
+// [FACTORY] Complete ::IClassFactory implementation is provided by `ClassFactory<InProcServer>`  (see ClassFactory)
+
 
 extern "C"
 ::HRESULT 
