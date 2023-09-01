@@ -71,6 +71,13 @@ COMAPI DllGetClassObject(::CLSID const& clsId, ::IID const& iid, void** ppv)
 }
 
 extern "C"
+BOOL
+WINAPI DllMain(::HINSTANCE hinstDll, DWORD dwReason, void *)
+{
+    return TRUE;
+}
+
+extern "C"
 ::HRESULT 
 COMAPI DllRegisterServer()
 {
@@ -85,16 +92,3 @@ COMAPI DllUnregisterServer()
 {
 	return com::unregisterServer<BasicServer>();
 }
-
-#if defined _M_IX86
-#pragma comment (linker, "/EXPORT:DllRegisterServer=_DllRegisterServer@0,PRIVATE")
-#pragma comment (linker, "/EXPORT:DllUnregisterServer=_DllUnregisterServer@0,PRIVATE")
-#pragma comment (linker, "/EXPORT:DllGetClassObject=_DllGetClassObject@12,PRIVATE")
-#pragma comment (linker, "/EXPORT:DllCanUnloadNow=_DllCanUnloadNow@0,PRIVATE")
-
-#elif defined _M_X64
-#pragma comment (linker, "/EXPORT:DllRegisterServer,PRIVATE")
-#pragma comment (linker, "/EXPORT:DllUnregisterServer,PRIVATE")
-#pragma comment (linker, "/EXPORT:DllGetClassObject,PRIVATE")
-#pragma comment (linker, "/EXPORT:DllCanUnloadNow,PRIVATE")
-#endif

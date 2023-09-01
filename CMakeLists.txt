@@ -239,9 +239,9 @@ target_compile_options(dllCoreCOM
 
 # Project: dllBasicServer
 add_library(dllBasicServer SHARED 
-	"${PROJECT_EXTRA_FOLDER}DllMain.cpp"
 	"${PROJECT_EXTRA_FOLDER}dllBasicServer.cpp"
 	"${PROJECT_EXTRA_FOLDER}dllBasicServer.midl"
+	"${PROJECT_EXTRA_FOLDER}dllBasicServer.def"
 )
 
 # Include folders
