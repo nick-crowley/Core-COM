@@ -1,6 +1,6 @@
 /out .\MIDL\
-/header  dllBasicServer.h
+/header  dllInProcServer.h
 /proxy   unused.tmp
-/iid     dllBasicServer_i.c
+/iid     dllInProcServer_i.c
 /dlldata unused2.tmp
-/tlb     dllBasicServer.tlb
+/tlb     dllInProcServer.tlb
