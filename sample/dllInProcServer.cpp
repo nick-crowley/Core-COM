@@ -4,20 +4,9 @@
 #include "com/EntryPoints.h"
 #include "com/SetLastError.h"
 using namespace core;
+using namespace com::literals;
 
-// Manually specify IDL imports (prevents errors from unwanted IDLs being dragged in)
-[emitidl(true, defaultimports=false)];
-[import(docobj.idl)];
-
-// Disable all ATL code injection (allows library class to share same name as `[module(...)]` directive)
-[no_injected_text(true)];
-
-[uuid("A10C8092-3549-4C2E-95D7-F264286720B9")]
-struct InProcServerLib
-{
-};
-
-// Auto-generate IDL from the source file (must be placed after declaration of 'InProcServerLib')
+// Auto-generate IDL from the source file
 [module(unspecified, name="InProcServerLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
 
 [object, uuid("9E66A290-4365-11D2-A997-00C04FA37DDB")]
@@ -34,7 +23,16 @@ __interface IInProcServer : IUnknown
 class InProcServer : public com::implements<IInProcServer,::IUnknown>
 {
 public:
-	using library_type = InProcServerLib;
+	struct library_type {
+		// COM classes must have a member type named `library_type` but we must explicitly
+		// override the library name which would otherwise be obtained via reflection
+		LiteralString constexpr
+		static library_name {"InProcServerLib"};
+
+		// COM attributes aren't supported on nested classes so this is required
+		com::Guid constexpr
+		static library_guid = "A10C8092-3549-4C2E-95D7-F264286720B9"_guid;
+	};
 	
 public:
 	::HRESULT 
@@ -42,7 +40,7 @@ public:
 	{
 		clog << Verbose{"InProcServer::Method1({}) => E_FAIL", idx};
 
-		return com::SetLastError<InProcServer>(E_FAIL, L"Example exception message");
+		return com::SetLastError<InProcServer>(E_FAIL, L"Failed for demonstration purposes");
 	}
 
 	::HRESULT 
