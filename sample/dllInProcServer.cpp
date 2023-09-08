@@ -3,6 +3,7 @@
 #include "com/Implements.h"
 #include "com/EntryPoints.h"
 #include "com/SetLastError.h"
+#include "win/Module.h"
 using namespace core;
 using namespace com::literals;
 
@@ -93,9 +94,7 @@ extern "C"
 ::HRESULT 
 COMAPI DllRegisterServer()
 {
-	return com::registerServer<InProcServer>(
-		::GetModuleHandleW(nullptr)
-	);
+	return com::registerServer<InProcServer>(win::DllModule.path().native());
 }
 
 extern "C"

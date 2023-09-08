@@ -3,6 +3,7 @@
 #include "com/Implements.h"
 #include "com/EntryPoints.h"
 #include "com/SetLastError.h"
+#include "win/Module.h"
 using namespace core;
 
 // Manually specify IDL imports (prevents errors from unwanted IDLs being dragged in)
@@ -81,9 +82,7 @@ extern "C"
 ::HRESULT 
 COMAPI DllRegisterServer()
 {
-	return com::registerServer<Attributes>(
-		::GetModuleHandleW(nullptr)
-	);
+	return com::registerServer<Attributes>(win::DllModule.path().native());
 }
 
 extern "C"

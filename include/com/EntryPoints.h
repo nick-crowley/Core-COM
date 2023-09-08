@@ -79,20 +79,17 @@ namespace core::com
 	*/
 	template <meta::CoreCoClass CoClass, typename Traits = coclass_traits<CoClass>>
 	::HRESULT
-	registerServer(::HANDLE hModule) 
+	registerServer(std::wstring_view modulePath) 
 	try {
+		ThrowIfEmpty(modulePath);
 		using namespace core::win;
-
-		// Get module path
-		wchar_t modulePath[MAX_PATH] {};
-		::GetModuleFileNameW(reinterpret_cast<::HMODULE>(hModule), modulePath, MAX_PATH);
 
 		// Insert class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		RegistryKey ourClassId = CLSID.subkey(create_new, Traits::class_guid.wstr());
 		ourClassId[use_default] = Traits::class_name.wstr();
 		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
-		ourServerPath[use_default] = std::wstring_view{modulePath};
+		ourServerPath[use_default] = modulePath;
 		switch (Traits::apartment) {
 		case ThreadingModel::Isolated: ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Apartment"}; break;
 		case ThreadingModel::Shared:   ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Free"};      break;
