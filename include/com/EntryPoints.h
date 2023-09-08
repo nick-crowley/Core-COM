@@ -58,7 +58,7 @@ namespace core::com
 	::HRESULT 
 	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
 	{
-		if (clsId != __uuidof(CoClass))
+		if (clsId != coclass_guid_v<CoClass>)
 			return CLASS_E_CLASSNOTAVAILABLE;
 
 		shared_ptr<::IClassFactory> factory = make_shared<::IClassFactory,coclass_factory_t<CoClass>>();
