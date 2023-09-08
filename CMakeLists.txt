@@ -271,7 +271,7 @@ set_target_properties(dllAttributes PROPERTIES
 
 # Set export macros for static-library for all dependencies
 target_compile_definitions(dllAttributes
-	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
+	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC CORE_BUILDING_DLL
 )
 
 # Link CRT statically
@@ -328,7 +328,7 @@ set_target_properties(dllInProcServer PROPERTIES
 
 # Set export macros for static-library for all dependencies
 target_compile_definitions(dllInProcServer
-	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
+	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC CORE_BUILDING_DLL
 )
 
 # Link CRT statically
