@@ -83,6 +83,7 @@ namespace core::com
 	try {
 		ThrowIfEmpty(modulePath);
 		using namespace core::win;
+		using namespace std::string_view_literals;
 
 		// Insert class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
@@ -91,9 +92,9 @@ namespace core::com
 		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
 		ourServerPath[use_default] = modulePath;
 		switch (Traits::apartment) {
-		case ThreadingModel::Isolated: ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Apartment"}; break;
-		case ThreadingModel::Shared:   ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Free"};      break;
-		case ThreadingModel::Any:      ourServerPath[L"ThreadingModel"] = std::wstring_view{L"Both"};      break;
+		case ThreadingModel::Isolated: ourServerPath[L"ThreadingModel"] = L"Apartment"sv; break;
+		case ThreadingModel::Shared:   ourServerPath[L"ThreadingModel"] = L"Free"sv;      break;
+		case ThreadingModel::Any:      ourServerPath[L"ThreadingModel"] = L"Both"sv;      break;
 		}
 		
 		// Insert program-id registration
