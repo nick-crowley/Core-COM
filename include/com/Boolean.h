@@ -51,7 +51,7 @@ namespace core::com
 	public:
 		constexpr 
 		explicit 
-		Boolean(bool expr) : value{expr}
+		Boolean(bool expr) noexcept : value{expr}
 		{
 		}
 		
@@ -70,7 +70,7 @@ namespace core::com
 	public:
 		constexpr
 		implicit operator 
-		::HRESULT() const 
+		::HRESULT() const noexcept
 		{
 			return this->value ? S_OK : S_FALSE;
 		}
@@ -78,7 +78,7 @@ namespace core::com
 		template <nstd::AnyArithmeticExcept<::HRESULT> Unwanted>
 		constexpr
 		implicit operator
-		Unwanted() const = delete;
+		Unwanted() const noexcept = delete;
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
