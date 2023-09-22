@@ -19,10 +19,6 @@ message("solution: ${PROJECT_SOURCE_DIR}")
 set(BASE_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(OUTPUT_FOLDER "${BASE_FOLDER}build")
 
-# Folders: Google.Test
-#set(GTEST_INCLUDE_FOLDER "${BASE_FOLDER}3rdparty/google/include/")
-#set(GTEST_SOURCE_FOLDER  "${BASE_FOLDER}3rdparty/google/src/")
-
 # Folders: Project
 set(PROJECT_EXTRA_FOLDER    "${BASE_FOLDER}extra/")
 set(PROJECT_INCLUDE_FOLDER  "${BASE_FOLDER}include/")
@@ -33,7 +29,16 @@ set(PROJECT_RESOURCE_FOLDER "${BASE_FOLDER}res/")
 # Folders: Test code
 #set(PROJECT_TESTS_FOLDER         "${BASE_FOLDER}tests/")
 #set(PROJECT_MOCKS_FOLDER         "${BASE_FOLDER}mocks/")
-#set(PROJECT_SYSTEM_TESTS_FOLDER  "${BASE_FOLDER}stests/")
+
+# Folders: Google.Mock
+set(GMOCK_FOLDER         "${BASE_FOLDER}3rdparty/googlemock/")
+set(GMOCK_INCLUDE_FOLDER "${GMOCK_FOLDER}include/")
+set(GMOCK_SOURCE_FOLDER  "${GMOCK_FOLDER}src/")
+
+# Folders: Google.Test
+set(GTEST_FOLDER         "${BASE_FOLDER}3rdparty/googletest/")
+set(GTEST_INCLUDE_FOLDER "${GTEST_FOLDER}include/")
+set(GTEST_SOURCE_FOLDER  "${GTEST_FOLDER}src/")
 
 # Set Guideline Support Library contract violation behaviour
 set(GSL_ASSERTION_BEHAVIOUR "GSL_THROW_ON_CONTRACT_VIOLATION")
@@ -506,6 +511,50 @@ add_dependencies(appCoreCOM
 	#libCorePlatform
 )
 
+###############################################################################
+#   ________                     .__           ___________              __    #
+#  /  _____/  ____   ____   ____ |  |   ____   \__    ___/___   _______/  |_  #
+# /   \  ___ /  _ \ /  _ \ / ___\|  | _/ __ \    |    |_/ __ \ /  ___/\   __\ #
+# \    \_\  (  <_> |  <_> ) /_/  >  |_\  ___/    |    |\  ___/ \___ \  |  |   #
+#  \______  /\____/ \____/\___  /|____/\___  >   |____| \___  >____  > |__|   #
+#         \/             /_____/           \/               \/     \/         #
+###############################################################################
+message("dllGoogleTest: Generating project(s) from ${GTEST_SOURCE_FOLDER} with ${GMOCK_SOURCE_FOLDER}")
+
+# Project: dllGoogleTest
+add_library(dllGoogleTest SHARED 
+    "${GTEST_SOURCE_FOLDER}gtest-all.cc"
+    "${GMOCK_SOURCE_FOLDER}gmock-all.cc"
+    "${GTEST_SOURCE_FOLDER}gtest_main.cc"
+)
+
+# Include folders
+target_include_directories(dllGoogleTest BEFORE
+    PRIVATE
+	${GTEST_FOLDER}
+	${GMOCK_FOLDER}
+    PUBLIC
+    ${GTEST_INCLUDE_FOLDER}
+	${GMOCK_INCLUDE_FOLDER}
+)
+
+# Set compiler & linker flags
+set_target_properties(dllGoogleTest PROPERTIES
+					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
+					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS}"
+					  OUTPUT_NAME "GoogleTest"
+)
+
+# Specify GTest should be build as a DLL
+target_compile_definitions(dllGoogleTest
+	PRIVATE GTEST_CREATE_SHARED_LIBRARY=1
+)
+
+# Link CRT dynamically
+target_compile_options(dllGoogleTest
+	PRIVATE $<$<CONFIG:Release>:/MD>
+	PRIVATE $<$<CONFIG:Debug>:/MDd>
+)
 #################################################################################
 #     ___________.__.__           .____                                __   
 #     \_   _____/|__|  |   ____   |    |   _____  ___.__. ____  __ ___/  |_ 
