@@ -75,7 +75,7 @@ namespace core::com
 			return this->value ? S_OK : S_FALSE;
 		}
 		
-		template <meta::ConvertibleFromHResult Unwanted>
+		template <nstd::AnyArithmeticExcept<::HRESULT> Unwanted>
 		constexpr
 		implicit operator
 		Unwanted() const = delete;
