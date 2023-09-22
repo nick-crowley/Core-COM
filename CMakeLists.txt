@@ -159,10 +159,10 @@ set_target_properties(libCoreCOM PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 )
 
-# Set export macros to 'static library' (same for all dependencies)
+# Set export macros to 'extern' (same for all dependencies)
 target_compile_definitions(libCoreCOM
-	PUBLIC ${PROJECT_STATIC_MACRO}
-	PUBLIC CORE_PLATFORM_STATIC
+	PRIVATE CORE_PLATFORM_STATIC
+	        ${PROJECT_STATIC_MACRO}
 )
 
 # Link CRT statically
@@ -214,10 +214,10 @@ target_link_libraries(dllCoreCOM
 	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/CorePlatform.lib"
 )
 
-# Set export macros to 'export DLL' and set dependencies to 'import DLL'
+# Set export macros to 'dllexport' for this library and 'dllimport' for dependencies
 target_compile_definitions(dllCoreCOM
-	PUBLIC ${PROJECT_EXPORT_MACRO}
-	PUBLIC CORE_PLATFORM_IMPORT
+	PRIVATE CORE_PLATFORM_IMPORT
+	        ${PROJECT_EXPORT_MACRO}
 )
 
 # Link CRT dynamically
@@ -271,9 +271,11 @@ set_target_properties(dllAttributes PROPERTIES
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
 					  OUTPUT_NAME "dllAttributes")
 
-# Set export macros for static-library for all dependencies
+# Set export macros for 'extern' for all dependencies
 target_compile_definitions(dllAttributes
-	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC CORE_BUILDING_DLL
+	PRIVATE CORE_PLATFORM_STATIC 
+	        ${PROJECT_STATIC_MACRO} 
+			CORE_BUILDING_DLL
 )
 
 # Link CRT statically
@@ -328,9 +330,11 @@ set_target_properties(dllInProcServer PROPERTIES
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
 					  OUTPUT_NAME "dllInProcServer")
 
-# Set export macros for static-library for all dependencies
+# Set export macros for 'extern' for all dependencies
 target_compile_definitions(dllInProcServer
-	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC CORE_BUILDING_DLL
+	PRIVATE CORE_PLATFORM_STATIC 
+	        ${PROJECT_STATIC_MACRO} 
+	        CORE_BUILDING_DLL
 )
 
 # Link CRT statically
@@ -384,9 +388,10 @@ set_target_properties(exeOutProcServer PROPERTIES
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
 					  OUTPUT_NAME "dllBasicServer")
 
-# Set export macros for static-library for all dependencies
+# Set export macros for 'extern' for all dependencies
 target_compile_definitions(exeOutProcServer
-	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
+	PRIVATE CORE_PLATFORM_STATIC 
+	        ${PROJECT_STATIC_MACRO}
 )
 
 # Link CRT statically
@@ -491,9 +496,10 @@ set_target_properties(appCoreCOM PROPERTIES
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:CONSOLE"
 					  OUTPUT_NAME "appCoreCOM")
 
-# Set export macros for static-library for all dependencies
+# Set export macros for 'extern' for all dependencies
 target_compile_definitions(appCoreCOM
-	PRIVATE CORE_PLATFORM_STATIC CORE_COM_STATIC
+	PRIVATE CORE_PLATFORM_STATIC 
+	        ${PROJECT_STATIC_MACRO}
 )
 
 # Link CRT statically
@@ -600,7 +606,7 @@ target_link_libraries(exeComTests
 	dllCoreCOM
 )
 
-# Set header declarations to dllimport
+# Set header declarations to 'dllimport'
 target_compile_definitions(exeComTests
 	PRIVATE CORE_PLATFORM_IMPORT 
 	        ${PROJECT_IMPORT_MACRO}
