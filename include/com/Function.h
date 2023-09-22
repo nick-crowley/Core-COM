@@ -58,7 +58,7 @@ namespace core::com
 		auto const callable = [fx](Parameters... args) -> ::HRESULT
 		{
 			win::ThrowingHResult hr = (*fx)(std::forward<Parameters>(args)...);
-			return hr;
+			return S_OK;
 		};
 
 		return core::detail::adaptSignature<NumResults>(callable);
@@ -71,7 +71,7 @@ namespace core::com
 		auto const callable = [mx](Interface& object, Parameters... args) -> ::HRESULT
 		{
 			win::ThrowingHResult hr = (object.*mx)(args...);
-			return hr;
+			return S_OK;
 		};
 		return core::detail::adaptSignature<NumResults>(callable);
 	}
