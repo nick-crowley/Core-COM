@@ -8,6 +8,7 @@
 #          \/                   \/            \/         \/         \/   #
 ##########################################################################
 cmake_minimum_required (VERSION 3.8.2)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Solution: CoreCOM
 project (CoreCOM
@@ -269,7 +270,9 @@ set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_SAMPLE_FOLDER}dllAttributes.midl
 set_target_properties(dllAttributes PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
-					  OUTPUT_NAME "dllAttributes")
+					  OUTPUT_NAME "dllAttributes"
+					  FOLDER "Samples"
+)
 
 # Set export macros for 'extern' for all dependencies
 target_compile_definitions(dllAttributes
@@ -328,7 +331,9 @@ set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_SAMPLE_FOLDER}dllInProcServer.mi
 set_target_properties(dllInProcServer PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
-					  OUTPUT_NAME "dllInProcServer")
+					  OUTPUT_NAME "dllInProcServer"
+					  FOLDER "Samples"
+)
 
 # Set export macros for 'extern' for all dependencies
 target_compile_definitions(dllInProcServer
@@ -386,7 +391,9 @@ set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_SAMPLE_FOLDER}exeOutProcServer.m
 set_target_properties(exeOutProcServer PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
-					  OUTPUT_NAME "dllBasicServer")
+					  OUTPUT_NAME "dllBasicServer"
+					  FOLDER "Samples"
+)
 
 # Set export macros for 'extern' for all dependencies
 target_compile_definitions(exeOutProcServer
@@ -443,7 +450,9 @@ target_link_libraries(dllOutProcProxy
 set_target_properties(dllOutProcProxy PROPERTIES
                       LINKER_LANGUAGE C
 					  COMPILE_FLAGS "/TC"  
-					  OUTPUT_NAME "dllOutProcProxy")
+					  OUTPUT_NAME "dllOutProcProxy"
+					  FOLDER "Samples"
+)
 
 # Set macros for building proxy
 target_compile_definitions(dllOutProcProxy
@@ -494,7 +503,9 @@ target_link_libraries(appCoreCOM
 set_target_properties(appCoreCOM PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:CONSOLE"
-					  OUTPUT_NAME "appCoreCOM")
+					  OUTPUT_NAME "appCoreCOM"
+					  FOLDER "Samples"
+)
 
 # Set export macros for 'extern' for all dependencies
 target_compile_definitions(appCoreCOM
@@ -546,6 +557,7 @@ set_target_properties(dllGoogleTest PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS}"
 					  OUTPUT_NAME "GoogleTest"
+					  FOLDER "Testing"
 )
 
 # Specify GTest should be build as a DLL
@@ -597,6 +609,7 @@ target_compile_definitions(exeComTests
 set_target_properties(exeComTests PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:CONSOLE"
+					  FOLDER "Testing"
 )
 
 # Set linker dependencies
