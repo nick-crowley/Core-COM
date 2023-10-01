@@ -93,7 +93,7 @@ namespace core::com
 		
 	private:
 		character_t constexpr
-		static inline null = L'\0';
+		inline static null = L'\0';
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
