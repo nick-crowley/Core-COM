@@ -49,6 +49,7 @@ set(GSL_ASSERTION_BEHAVIOUR "GSL_THROW_ON_CONTRACT_VIOLATION")
 # /std:c17			: ISO C 17 Standard
 # /permissive		: Support non-standard Microsoft COM attributes
 # /Zc:preprocessor	: ISO C++20 Preprocessor
+# /Zc:__cplusplus   : Define __cplusplus macro
 # /ZI				: PDBs for edit & continue
 # /EHa				: Enable SEH and C++ exceptions
 # /W4				: Warning level 4
@@ -58,7 +59,7 @@ set(GSL_ASSERTION_BEHAVIOUR "GSL_THROW_ON_CONTRACT_VIOLATION")
 # /wd4467           : Disable C4467: Usage of ATL attributes is deprecated
 # /wd4684           : Disable C4684: 'no_injected_text': WARNING!! attribute may cause invalid code generation: use with caution
 # /wd4543           : Disable C4543: Injected text suppressed by attribute 'no_injected_text'
-set(GLOBAL_COMPILER_OPTIONS "/std:c++latest /std:c17 /permissive /Zc:preprocessor /ZI /EHa /W4 /wd4100 /wd4251 /wd4275 /wd4467 /wd4684 /wd4543")
+set(GLOBAL_COMPILER_OPTIONS "/std:c++latest /std:c17 /permissive /Zc:preprocessor /Zc:__cplusplus /ZI /EHa /W4 /wd4100 /wd4251 /wd4275 /wd4467 /wd4684 /wd4543")
 
 # Set linker options used by all modules
 set(GLOBAL_LINKER_OPTIONS "${GLOBAL_LINKER_OPTIONS} /SAFESEH:NO")
