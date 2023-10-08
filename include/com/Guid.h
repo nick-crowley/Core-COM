@@ -299,7 +299,7 @@ namespace core::com
 {
     namespace literals
 	{
-        template <ZString<char> Buffer>
+        template <ZString<char const> Buffer>
 		com::Guid consteval
 		operator""_guid() {
             return Guid::GuidParser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();

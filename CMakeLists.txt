@@ -48,6 +48,18 @@ set(GSL_ASSERTION_BEHAVIOUR "GSL_THROW_ON_CONTRACT_VIOLATION")
 # /std:c++latest	: Preview ISO C++ 23 Standard
 # /std:c17			: ISO C 17 Standard
 # /permissive		: Support non-standard Microsoft COM attributes
+# /Zc:enumTypes     : Deduce enumeration underlying type from enumerators, not vice versa
+# /Zc:externC       : Strict enforcement of parameter types allowed in functions with C language linkage
+# /Zc:externConstexpr : Allow external linkage of constexpr variables
+# /Zc:lambda        : Enable conforming lambda grammar
+# /Zc:hiddenFriend  : Enforces stricter name lookup for friend functions 
+# /Zc:gotoScope     : Prevent skipping initialization of variables using goto
+# /Zc:referenceBinding : Prevent non-const lvalue references binding to temporaries
+# /Zc:strictStrings : Disable implicit conversion from string literals to mutable character-pointers
+# /Zc:static_assert : Evaluate static_assert earlier for non-dependant expressions
+# /Zc:rvalueCast    : Stricter interpretation of value-categories produced by casts
+# /Zc:ternary       : Disable non-standard conversions in ternary operator operands
+# /Zc:templateScope : Prevent shadowing template parameters
 # /Zc:preprocessor	: ISO C++20 Preprocessor
 # /Zc:__cplusplus   : Define __cplusplus macro
 # /ZI				: PDBs for edit & continue
@@ -59,7 +71,7 @@ set(GSL_ASSERTION_BEHAVIOUR "GSL_THROW_ON_CONTRACT_VIOLATION")
 # /wd4467           : Disable C4467: Usage of ATL attributes is deprecated
 # /wd4684           : Disable C4684: 'no_injected_text': WARNING!! attribute may cause invalid code generation: use with caution
 # /wd4543           : Disable C4543: Injected text suppressed by attribute 'no_injected_text'
-set(GLOBAL_COMPILER_OPTIONS "/std:c++latest /std:c17 /permissive /Zc:preprocessor /Zc:__cplusplus /ZI /EHa /W4 /wd4100 /wd4251 /wd4275 /wd4467 /wd4684 /wd4543")
+set(GLOBAL_COMPILER_OPTIONS "/std:c++latest /std:c17 /permissive /Zc:enumTypes /Zc:externC /Zc:externConstexpr /Zc:lambda /Zc:hiddenFriend /Zc:gotoScope /Zc:referenceBinding /Zc:strictStrings /Zc:rvalueCast /Zc:ternary /Zc:templateScope /Zc:preprocessor /Zc:__cplusplus /ZI /EHa /W4 /wd4100 /wd4251 /wd4275 /wd4467 /wd4684 /wd4543")
 
 # Set linker options used by all modules
 set(GLOBAL_LINKER_OPTIONS "${GLOBAL_LINKER_OPTIONS} /SAFESEH:NO")
