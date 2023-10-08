@@ -189,7 +189,7 @@ namespace core::com
 				return S_OK;
 			}
 
-			if constexpr (sizeof...(Remainder))
+			if constexpr (nstd::AtLeastOneType<Remainder>)
 				return this->QueryInterfaceImpl<Remainder...>(iid, ppv);
 			else
 				return E_NOINTERFACE;
