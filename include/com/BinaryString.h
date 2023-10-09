@@ -113,8 +113,7 @@ namespace core::com
 		 * 
 		 * @param alloc		Allocator used to allocate character buffer
 		*/
-		constexpr 
-		explicit 
+		explicit constexpr
 		BinaryString(Allocator alloc) noexcept
 		  : base{}, Alloc{alloc}
 		{
@@ -159,8 +158,7 @@ namespace core::com
 		 * @param str		Null-terminated wide-character array
 		 * @param alloc		[optional] Allocator used to allocate character buffer
 		*/
-		constexpr 
-		explicit 
+		constexpr explicit 
 		BinaryString(meta::adopt_t, gsl::wzstring const str, Allocator alloc = Allocator{}) noexcept
 		  : base{static_cast<uint32_t>(type::measure(str)), str}, Alloc{alloc}
         {
@@ -193,8 +191,7 @@ namespace core::com
 		 * @param alloc		[optional] Allocator used to allocate character buffer
 		*/
 		template <typename C, typename T, typename A>
-		constexpr 
-		explicit 
+		constexpr explicit 
 		BinaryString(std::basic_string<C,T,A> const& str, Allocator alloc = Allocator{}) noexcept
           : BinaryString(str.begin(), str.end(), alloc)
         {
@@ -282,7 +279,7 @@ namespace core::com
 		 * 
 		 * @param r		Other string
 		*/
-		constexpr type& 
+		type constexpr& 
 		operator=(gsl::cwzstring const str) noexcept
 		{
 			type{str}.swap(*this);
@@ -469,9 +466,8 @@ namespace core::com
 		/**
 		 * @brief	Construct string view of buffer
 		*/
-		constexpr
-		implicit operator 
-		std::wstring_view() const noexcept
+		implicit constexpr 
+		operator std::wstring_view() const noexcept
 		{
 			return {this->Buffer, this->Buffer+this->Length};
 		}
