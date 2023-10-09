@@ -25,3 +25,4 @@
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "com/BasicString_UnitTests.cpp"
+#include "com/SharedPtr_UnitTests.cpp"
