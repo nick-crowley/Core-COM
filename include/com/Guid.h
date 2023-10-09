@@ -199,8 +199,7 @@ namespace core::com
         
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
-		constexpr 
-		explicit 
+		explicit constexpr 
 		Guid(::GUID const& g) noexcept
           : Value{g}
         {}
@@ -263,9 +262,8 @@ namespace core::com
                 || !equal(begin(this->Value.Data4), end(this->Value.Data4), begin(r.Value.Data4), end(r.Value.Data4));
         }
 
-		constexpr 
-		implicit operator 
-		::GUID const&() const noexcept { 
+		implicit constexpr
+        operator ::GUID const&() const noexcept { 
 			return this->Value; 
 		}
 
