@@ -255,15 +255,6 @@ namespace core::com
                 && equal(begin(this->Value.Data4), end(this->Value.Data4), begin(r.Value.Data4), end(r.Value.Data4));
         }
 		
-		bool constexpr
-		operator!=(type const& r) const noexcept {
-            using namespace std;
-            return this->Value.Data1 != r.Value.Data1
-                || this->Value.Data2 != r.Value.Data2
-                || this->Value.Data3 != r.Value.Data3
-                || !equal(begin(this->Value.Data4), end(this->Value.Data4), begin(r.Value.Data4), end(r.Value.Data4));
-        }
-
 		implicit constexpr
         operator ::GUID const&() const noexcept { 
 			return this->Value; 
