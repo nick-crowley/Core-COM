@@ -43,22 +43,6 @@ namespace core::com
 {
 	namespace detail
 	{
-		//! @brief	Realizes an arbitrary type-list of COM interfaces
-		template <meta::ForwardSequence ForwardSequence>
-		class MultipleRealization; 
-
-		template <template<typename...> typename ForwardSequence, meta::ComInterface... Interfaces>
-		class MultipleRealization<ForwardSequence<Interfaces...>> : public Interfaces...
-		{
-			satisfies(MultipleRealization,
-				protected: IsDefaultConstructible noexcept,
-				public: IsPolymorphic,
-				NotCopyable,
-				NotEqualityComparable,
-				NotSortable
-			);
-		};
-	
 		//! @brief	Query whether @c Derived is a public and unambiguous descendant of @c Base (but is not @c Base)
 		template <meta::ComInterface Derived>
 		metafunc is_strict_base_of {
@@ -70,6 +54,7 @@ namespace core::com
 			{};
 		};
 	
+		//! @brief  Applies @c detail::is_strict_base_of to each element of @p ForwardSequence
 		template <meta::ForwardSequence ForwardSequence>
 		metafunc distinct_interfaces_impl : std::type_identity_t<ForwardSequence>{};
 
@@ -80,27 +65,45 @@ namespace core::com
 		metafunc distinct_interfaces_impl<ForwardSequence<I,R...>> : std::type_identity_t<
 			typename mpl::remove_if<ForwardSequence<I,R...>,is_strict_base_of<I>>::type
 		>{};
-
-		template <meta::ComInterface... I>
-		metafunc distinct_interfaces : distinct_interfaces_impl<mpl::vector<I...>>
-		{};
-
-		//! @brief	Type-list of distinct COM interfaces (ie. with ancestral interfaces removed)
-		//! @tparam	Interfaces...	Set of COM interfaces, possibly including common base classes
-		template <meta::ComInterface... Interfaces>
-		using distinct_interfaces_t = typename distinct_interfaces<Interfaces...>::type;
 	}
 	
+	//! @brief	Realizes an arbitrary set COM interfaces
+	template <meta::ForwardSequence ForwardSequence>
+	class MultipleRealization; 
+
+	template <template<typename...> typename Sequence, meta::ComInterface... Interfaces>
+	class MultipleRealization<Sequence<Interfaces...>> : public Interfaces...
+	{
+		satisfies(MultipleRealization,
+			IsInterface,
+			NotCopyable,
+			NotEqualityComparable,
+			NotSortable
+		);
+	};
+	
+	//! @brief	Sequence of distinct COM interfaces (ie. with ancestral interfaces removed)
+	//! 
+	//! @tparam	Interfaces...	Set of COM interfaces, possibly including common base classes
+	template <meta::ComInterface... I>
+	metafunc distinct_interfaces : detail::distinct_interfaces_impl<mpl::vector<I...>>
+	{};
+
+	// Type-accessor
+	template <meta::ComInterface... Interfaces>
+	using distinct_interfaces_t = typename distinct_interfaces<Interfaces...>::type;
+
+
 	//! @brief	Implements @c ::IUnknown for a set of COM interfaces
 	//! @tparam	Interfaces	Set of _all_ COM interfaces to be realized including ancestral interfaces (eg. @c ::IUnknown)
 	template <meta::ComInterface... Interfaces>
-	class implements : public detail::MultipleRealization<detail::distinct_interfaces_t<Interfaces...>>,
+	class implements : public MultipleRealization<distinct_interfaces_t<Interfaces...>>,
 	                   protected GlobalRefCount
 	{	
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
 		using type = implements<Interfaces...>;
-		using base = detail::MultipleRealization<detail::distinct_interfaces_t<Interfaces...>>;
+		using base = MultipleRealization<distinct_interfaces_t<Interfaces...>>;
 
 	public:
 		using interfaces = mpl::vector<Interfaces...>;
@@ -201,17 +204,17 @@ namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-namespace core::com::detail::testing
+namespace core::com::testing
 {
 	using TestVector = mpl::vector<IClassFactory,IUnknown,ITypeInfo>;
-	using TestVector_WithoutIUnknown = typename mpl::remove_if<TestVector, is_strict_base_of<IClassFactory>>::type;
+	using TestVector_WithoutIUnknown = typename mpl::remove_if<TestVector, detail::is_strict_base_of<IClassFactory>>::type;
 	static_assert(mpl::size<TestVector_WithoutIUnknown>::value == 2);
 	static_assert(mpl::contains<TestVector_WithoutIUnknown,IClassFactory>::value);
 	static_assert(!mpl::contains<TestVector_WithoutIUnknown,IUnknown>::value);
 	static_assert(mpl::contains<TestVector_WithoutIUnknown,ITypeInfo>::value);
 
 	using TestVector2 = mpl::vector<IClassFactory2,IClassFactory,IDispatch>;
-	using TestVector2_WithoutIClassFactory = typename mpl::remove_if<TestVector2, is_strict_base_of<IClassFactory2>>::type;
+	using TestVector2_WithoutIClassFactory = typename mpl::remove_if<TestVector2, detail::is_strict_base_of<IClassFactory2>>::type;
 	static_assert(mpl::size<TestVector2_WithoutIClassFactory>::value == 2);
 	static_assert(mpl::contains<TestVector2_WithoutIClassFactory,IClassFactory2>::value);
 	static_assert(!mpl::contains<TestVector2_WithoutIClassFactory,IClassFactory>::value);
