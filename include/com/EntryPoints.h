@@ -85,10 +85,14 @@ namespace core::com
 		using namespace core::win;
 		using namespace std::string_view_literals;
 
+		com::wstring const classGuid = Traits::class_guid.wstr();
+		std::wstring_view constexpr className = Traits::class_name.wstr();
+		std::wstring_view constexpr programId = Traits::program_id.wstr();
+
 		// Insert class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
-		RegistryKey ourClassId = CLSID.subkey(create_new, Traits::class_guid.wstr());
-		ourClassId[use_default] = Traits::class_name.wstr();
+		RegistryKey ourClassId = CLSID.subkey(create_new, classGuid);
+		ourClassId[use_default] = className;
 		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
 		ourServerPath[use_default] = modulePath;
 		switch (Traits::apartment) {
@@ -98,12 +102,12 @@ namespace core::com
 		}
 		
 		// Insert program-id registration
-		RegistryKey ourProgId{create_new, win::ClassesRoot, Traits::program_id.wstr(), KeyRight::All};
-		ourProgId[use_default] = Traits::class_name.wstr();
+		RegistryKey ourProgId{create_new, win::ClassesRoot, programId, KeyRight::All};
+		ourProgId[use_default] = className;
 		
 		// Link the two ids
-		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[use_default] = Traits::program_id.wstr();
-		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[use_default] = Traits::class_guid.wstr();
+		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[use_default] = programId;
+		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[use_default] = classGuid;
 
 		return S_OK;
 	}
@@ -120,23 +124,26 @@ namespace core::com
 	unregisterServer() 
 	try {
 		using namespace core::win;
+		
+		com::wstring const classGuid = Traits::class_guid.wstr();
+		std::wstring_view constexpr programId = Traits::program_id.wstr();
 
 		// Remove class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		scoped {
-			auto ourClassId = CLSID / Traits::class_guid.wstr();
+			auto ourClassId = CLSID / classGuid;
 			ourClassId.removeKey(L"ProgId");
 			ourClassId.removeKey(L"InProcServer32");
 		}
-		CLSID.removeKey(Traits::class_guid.wstr());
+		CLSID.removeKey(classGuid);
 		
 		// Remove program-id registration
 		RegistryKey allClasses{win::ClassesRoot, KeyRight::All};
 		scoped {
-			RegistryKey ourProgId = allClasses / Traits::program_id.wstr();
+			RegistryKey ourProgId = allClasses / programId;
 			ourProgId.removeKey(L"CLSID");
 		}
-		allClasses.removeKey(Traits::program_id.wstr());
+		allClasses.removeKey(programId);
 		return S_OK;
 	}
 	catch (std::exception const& /*e*/)
