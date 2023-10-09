@@ -61,9 +61,9 @@ namespace core::com
 	
 		//! @brief	Query whether @c Derived is a public and unambiguous descendant of @c Base (but is not @c Base)
 		template <meta::ComInterface Derived>
-		struct is_strict_base_of {
+		metafunc is_strict_base_of {
 			template <meta::ComInterface Base>
-			struct apply : std::conjunction<
+			metafunc apply : std::conjunction<
 				std::is_convertible<Derived const*,Base const*>,
 				std::negation<std::is_same<Derived,Base>>
 			>
@@ -71,18 +71,18 @@ namespace core::com
 		};
 	
 		template <meta::ForwardSequence ForwardSequence>
-		struct distinct_interfaces_impl : std::type_identity_t<ForwardSequence>{};
+		metafunc distinct_interfaces_impl : std::type_identity_t<ForwardSequence>{};
 
 		template <template<typename...> typename ForwardSequence, meta::ComInterface I>
-		struct distinct_interfaces_impl<ForwardSequence<I>> : std::type_identity_t<ForwardSequence<I>>{};
+		metafunc distinct_interfaces_impl<ForwardSequence<I>> : std::type_identity_t<ForwardSequence<I>>{};
 
 		template <template<typename...> typename ForwardSequence, meta::ComInterface I, typename ...R>
-		struct distinct_interfaces_impl<ForwardSequence<I,R...>> : std::type_identity_t<
+		metafunc distinct_interfaces_impl<ForwardSequence<I,R...>> : std::type_identity_t<
 			typename mpl::remove_if<ForwardSequence<I,R...>,is_strict_base_of<I>>::type
 		>{};
 
 		template <meta::ComInterface... I>
-		struct distinct_interfaces : distinct_interfaces_impl<mpl::vector<I...>>
+		metafunc distinct_interfaces : distinct_interfaces_impl<mpl::vector<I...>>
 		{};
 
 		//! @brief	Type-list of distinct COM interfaces (ie. with ancestral interfaces removed)
