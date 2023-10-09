@@ -551,6 +551,18 @@ namespace core::com
 	extern template wstring;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+bool constexpr
+operator==(gsl::cwzstring lhs, core::com::wstring const& rhs) noexcept {
+	return lhs == (std::wstring_view)rhs;
+}
+
+bool constexpr
+operator==(core::com::wstring const& lhs, gsl::cwzstring rhs) noexcept {
+	return (std::wstring_view)lhs == rhs;
+}
+
+bool constexpr operator==(gsl::czstring, core::com::wstring const&) noexcept = delete;
+bool constexpr operator==(core::com::wstring const&, gsl::czstring) noexcept = delete;
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com 
@@ -573,7 +585,35 @@ namespace core::com
 	}
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com::testing
+{
+	using namespace com::string_literals;
+	using namespace std::string_view_literals;
 
+	//! @test  Verify @c core::com::wstring is default-constructible at compile-time
+	static_assert(wstring{} == std::wstring_view{L""});
+	
+	//! @test  Verify @c core::com::wstring converts to @c std::wstring_view
+	static_assert(std::convertible_to<decltype(L"abc"_bstr),std::wstring_view>);
+
+	//! @test  Verify @c core::com::wstring can be compared against @c std::wstring_view
+	//static_assert(L"abc"_bstr == L"abc"sv);
+
+	//! @test  Verify @c core::com::wstring::font() returns the first character
+	static_assert(L"abc"_bstr.front() == 'a');
+
+	//! @test  Verify @c core::com::wstring::back() returns the last character
+	static_assert(L"abc"_bstr.back() == 'c');
+
+	//! @test  Verify @c core::com::wstring::size() returns the size in characters
+	static_assert(L"abc"_bstr.size() == 3);
+
+	//! @test  Verify @c core::com::wstring::empty() returns false when non-empty
+	static_assert(!L"abc"_bstr.empty());
+	
+	//! @test  Verify @c core::com::wstring::c_str() returns valid character-pointer
+	static_assert(L"abc"_bstr.c_str() == L"abc"sv);
+}
 // o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Separator o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
