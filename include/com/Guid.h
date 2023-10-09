@@ -52,7 +52,7 @@ namespace core::com
 		using reference = type&;
 		
     public:
-        //! @brief  Generate GUID from string representation (adapted from boost::uuid)
+        //! @brief  Generate GUID from string representation
         template <std::input_iterator CharIterator>
         class GuidParser 
         {
@@ -90,6 +90,8 @@ namespace core::com
 
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~o
         public:
+            //! @brief  Parse string representation (adapted from boost)
+            //! @see  @c boost::uuids::string_generator::operator()
             Guid constexpr
             parse() 
             {
