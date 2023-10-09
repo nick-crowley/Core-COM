@@ -477,67 +477,6 @@ add_dependencies(dllOutProcProxy
 	exeOutProcServer
 )
 
-##############################################################
-#  ___________              __       _____                   #
-#  \__    ___/___   _______/  |_    /  _  \ ______ ______    #
-#    |    |_/ __ \ /  ___/\   __\  /  /_\  \\____ \\____ \   #
-#    |    |\  ___/ \___ \  |  |   /    |    \  |_> >  |_> >  #
-#    |____| \___  >____  > |__|   \____|__  /   __/|   __/   #
-#               \/     \/                 \/|__|   |__|      #
-##############################################################
-
-# Resource files
-#file(GLOB_RECURSE PROJECT_RESOURCE_FILES
-#	"${PROJECT_RESOURCE_FOLDER}*.*"
-#)
-
-# Project: appCoreCOM
-add_executable(appCoreCOM
-	"${PROJECT_SAMPLE_FOLDER}appCoreCom.cpp"
-	#${PROJECT_RESOURCE_FILES}
-)
-
-# Include folders
-target_include_directories(appCoreCOM BEFORE
-    PRIVATE
-	${PROJECT_SAMPLE_FOLDER} 
-	${PROJECT_RESOURCE_FOLDER} 
-    PUBLIC
-    ${PROJECT_INCLUDE_FOLDER}            
-)
-	
-# Set linker dependencies
-target_link_libraries(appCoreCOM
-	libCoreCOM
-	"${BASE_FOLDER}../Core-Platform/build/$(Configuration)/libCorePlatform.lib"
-)
-
-# Set compiler & linker flags
-set_target_properties(appCoreCOM PROPERTIES
-					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
-					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:CONSOLE"
-					  OUTPUT_NAME "appCoreCOM"
-					  FOLDER "Samples"
-)
-
-# Set export macros for 'extern' for all dependencies
-target_compile_definitions(appCoreCOM
-	PRIVATE CORE_PLATFORM_STATIC 
-	        ${PROJECT_STATIC_MACRO}
-)
-
-# Link CRT statically
-target_compile_options(appCoreCOM
-	PRIVATE $<$<CONFIG:Release>:/MT>
-	PRIVATE $<$<CONFIG:Debug>:/MTd>
-)
-
-# Set project dependencies
-add_dependencies(appCoreCOM
-	libCoreCOM
-	#libCorePlatform
-)
-
 ###############################################################################
 #   ________                     .__           ___________              __    #
 #  /  _____/  ____   ____   ____ |  |   ____   \__    ___/___   _______/  |_  #
