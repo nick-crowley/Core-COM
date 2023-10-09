@@ -23,8 +23,8 @@
 * and should not be interpreted as representing official policies, either expressed or implied, of
 * the projects which contain it.
 */
-#pragma once
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+#pragma once
 #ifndef ComFramework_h_included
 #	error Including this header directly may cause a circular dependency; include <comFramework.h> directly
 #endif

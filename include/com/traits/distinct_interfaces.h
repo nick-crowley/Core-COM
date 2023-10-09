@@ -26,29 +26,10 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #pragma once
 #ifndef ComFramework_h_included
-#	define ComFramework_h_included
-#endif
-
-#ifdef _INC_WINDOWS
-#	error <Windows.h> has been included prior <core.COM.h>
+#	error Including this header directly may cause a circular dependency; include <comFramework.h> directly
 #endif
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-#include "library/core.Platform.h"
-
-#include "../../src/PlatformSdk.h"
-#include "../../src/libBoost.h"
-
-#include "../../src/library/ComExport.h"
-
 #include "com/Concepts.h"
-#include "com/traits/distinct_interfaces.h"
-
-#ifdef COMAPI
-#	error COMAPI macro is already in use
-#else
-#	define COMAPI __stdcall
-#endif
-#include "com/Implements.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -58,7 +39,48 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com
+{
+	// clang-format off
+	namespace detail
+	{
+		//! @brief	Query whether @c Derived is a public and unambiguous descendant of @c Base (but is not @c Base)
+		template <meta::ComInterface Derived>
+		metafunc is_strict_base_of {
+			template <meta::ComInterface Base>
+			metafunc apply : std::conjunction<
+				std::is_convertible<Derived const*,Base const*>,
+				std::negation<std::is_same<Derived,Base>>
+			>
+			{};
+		};
+	
+		//! @brief  Applies @c detail::is_strict_base_of to each element of @p ForwardSequence
+		template <meta::ForwardSequence ForwardSequence>
+		metafunc distinct_interfaces_impl : std::type_identity_t<ForwardSequence>{};
 
+		template <template<typename...> typename ForwardSequence, meta::ComInterface I>
+		metafunc distinct_interfaces_impl<ForwardSequence<I>> : std::type_identity_t<ForwardSequence<I>>{};
+
+		template <template<typename...> typename ForwardSequence, meta::ComInterface I, typename ...R>
+		metafunc distinct_interfaces_impl<ForwardSequence<I,R...>> : std::type_identity_t<
+			typename mpl::remove_if<ForwardSequence<I,R...>,is_strict_base_of<I>>::type
+		>{};
+	}
+	
+	//! @brief	Sequence of distinct COM interfaces (ie. with ancestral interfaces removed)
+	//! 
+	//! @tparam	Interfaces...	Set of COM interfaces, possibly including common base classes
+	template <meta::ComInterface... I>
+	metafunc distinct_interfaces : detail::distinct_interfaces_impl<mpl::vector<I...>>
+	{};
+
+	// Type-accessor
+	template <meta::ComInterface... Interfaces>
+	using distinct_interfaces_t = typename distinct_interfaces<Interfaces...>::type;
+
+	// clang-format on
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

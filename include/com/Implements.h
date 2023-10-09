@@ -41,32 +41,6 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	namespace detail
-	{
-		//! @brief	Query whether @c Derived is a public and unambiguous descendant of @c Base (but is not @c Base)
-		template <meta::ComInterface Derived>
-		metafunc is_strict_base_of {
-			template <meta::ComInterface Base>
-			metafunc apply : std::conjunction<
-				std::is_convertible<Derived const*,Base const*>,
-				std::negation<std::is_same<Derived,Base>>
-			>
-			{};
-		};
-	
-		//! @brief  Applies @c detail::is_strict_base_of to each element of @p ForwardSequence
-		template <meta::ForwardSequence ForwardSequence>
-		metafunc distinct_interfaces_impl : std::type_identity_t<ForwardSequence>{};
-
-		template <template<typename...> typename ForwardSequence, meta::ComInterface I>
-		metafunc distinct_interfaces_impl<ForwardSequence<I>> : std::type_identity_t<ForwardSequence<I>>{};
-
-		template <template<typename...> typename ForwardSequence, meta::ComInterface I, typename ...R>
-		metafunc distinct_interfaces_impl<ForwardSequence<I,R...>> : std::type_identity_t<
-			typename mpl::remove_if<ForwardSequence<I,R...>,is_strict_base_of<I>>::type
-		>{};
-	}
-	
 	//! @brief	Realizes an arbitrary set COM interfaces
 	template <meta::ForwardSequence ForwardSequence>
 	class MultipleRealization; 
@@ -82,17 +56,6 @@ namespace core::com
 		);
 	};
 	
-	//! @brief	Sequence of distinct COM interfaces (ie. with ancestral interfaces removed)
-	//! 
-	//! @tparam	Interfaces...	Set of COM interfaces, possibly including common base classes
-	template <meta::ComInterface... I>
-	metafunc distinct_interfaces : detail::distinct_interfaces_impl<mpl::vector<I...>>
-	{};
-
-	// Type-accessor
-	template <meta::ComInterface... Interfaces>
-	using distinct_interfaces_t = typename distinct_interfaces<Interfaces...>::type;
-
 
 	//! @brief	Implements @c ::IUnknown for a set of COM interfaces
 	//! @tparam	Interfaces	Set of _all_ COM interfaces to be realized including ancestral interfaces (eg. @c ::IUnknown)
