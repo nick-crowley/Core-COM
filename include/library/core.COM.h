@@ -25,8 +25,8 @@
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #pragma once
-#ifndef ComFramework_h_included
-#	define ComFramework_h_included
+#ifndef CoreCom_h_included
+#	define CoreCom_h_included
 #endif
 
 #ifdef _INC_WINDOWS

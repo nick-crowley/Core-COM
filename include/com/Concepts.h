@@ -25,8 +25,8 @@
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #pragma once
-#ifndef ComFramework_h_included
-#	error Including this header directly may cause a circular dependency; include <comFramework.h> directly
+#ifndef CoreCom_h_included
+#	error Including this header directly may cause a circular dependency; include <core.COM.h> directly
 #endif
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "../src/PlatformSdk.h"
