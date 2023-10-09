@@ -317,4 +317,17 @@ bool constexpr
 operator!=(core::com::Guid const& l, ::GUID const& r) noexcept {
     return l != core::com::Guid{r};
 }
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com::testing
+{
+    //! @test  Verify @c core::com::Guid::fromString() correctly parses string representations
+    static_assert(
+        com::Guid::fromString(L"{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}") == ::GUID{0xFE2C8ED8,0x98DA,0x4BF7,{0xBD,0x5E,0x0A,0xA1,0xD3,0x8F,0xB5,0xE6}}
+    );
+
+    //! @test  Verify @c core::com::operator""_guid produces the correct GUID
+    static_assert(
+        "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid == ::GUID{0x42C386F4,0x95A0,0x43A7,{0xB2,0x4C,0x72,0x88,0xD3,0x1E,0x98,0xC2}}
+    );
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

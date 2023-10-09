@@ -132,49 +132,6 @@ void testComSharedPtr()
 }
 
 
-//    ________ ____ ___.___________          
-//   /  _____/|    |   \   \______ \   ______
-//  /   \  ___|    |   /   ||    |  \ /  ___/
-//  \    \_\  \    |  /|   ||    `   \\___ \ 
-//   \______  /______/ |___/_______  /____  >
-//          \/                     \/     \/ 
-/////////////////////////////////////////////////
-
-#define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
-        type constexpr static name = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
-
-// "{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}"
-MIDL_DEFINE_GUID(GUID, IID_IExample,0xFE2C8ED8,0x98DA,0x4BF7,0xBD,0x5E,0x0A,0xA1,0xD3,0x8F,0xB5,0xE6);
-
-// "{D0DCF441-AA4C-4EAC-ACC1-32EDD2ED16F6}"
-MIDL_DEFINE_GUID(GUID, LIBID_ExampleLib,0xD0DCF441,0xAA4C,0x4EAC,0xAC,0xC1,0x32,0xED,0xD2,0xED,0x16,0xF6);
-
-// "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"
-MIDL_DEFINE_GUID(GUID, CLSID_Example,0x42C386F4,0x95A0,0x43A7,0xB2,0x4C,0x72,0x88,0xD3,0x1E,0x98,0xC2);
-
-void testComGuid()
-{
-	constexpr static com::Guid gN;
-
-	auto constexpr static g1 = com::Guid::fromString(L"{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}");
-	bool result = g1 == IID_IExample;
-
-	auto constexpr static g2 = com::Guid::fromString(L"{D0DCF441-AA4C-4EAC-ACC1-32EDD2ED16F6}");
-	result = g2 == LIBID_ExampleLib;
-	
-	auto constexpr static g4 = com::Guid::fromString("{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}");
-	result = g4 == IID_IExample;
-
-	auto constexpr static g5 = "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid;
-	result = g5 == CLSID_Example;
-
-	auto constexpr static r1 = g1 == g2;
-	auto constexpr static r2 = g1 == IID_IExample;
-	auto constexpr static r3 = IID_IExample == g1;
-
-}
-
-
 //                .__        
 //   _____ _____  |__| ____  
 //  /     \\__  \ |  |/    \ 
@@ -188,5 +145,4 @@ int main()
 	testComString();
 	testLiteralString();
 	testComSharedPtr();
-	testComGuid();
 }
