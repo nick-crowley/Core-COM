@@ -72,18 +72,6 @@ void testComString()
 
 }
 
-void testLiteralString()
-{	
-	// Test constexpr string
-	wchar_t buf[10] {L"abcdfeg"};
-	LiteralString cs{buf};
-
-	wchar_t constexpr lhs[10] {L"abcdfeg"};
-	wchar_t constexpr rhs[10] {L"abcdfeg"};
-	auto constexpr cs2 = LiteralString{lhs} + LiteralString{rhs};
-	auto constexpr cs3 = LiteralString{lhs} + L'x';
-}
-
 //                 __                      .__                             .___ 
 //   _____ _____  |  | __ ____        _____|  |__ _____ _______   ____   __| _/ 
 //  /     \\__  \ |  |/ // __ \      /  ___/  |  \\__  \\_  __ \_/ __ \ / __ |  
@@ -143,6 +131,5 @@ void testComSharedPtr()
 int main()
 {
 	testComString();
-	testLiteralString();
 	testComSharedPtr();
 }
