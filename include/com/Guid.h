@@ -33,8 +33,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-bool
-ComExport operator<(::GUID const& l, ::GUID const& r);
+
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Macro Definitions o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -390,6 +389,14 @@ operator==(core::com::Guid const& l, ::GUID const& r) noexcept {
 bool constexpr
 operator!=(core::com::Guid const& l, ::GUID const& r) noexcept {
     return l != core::com::Guid{r};
+}
+
+bool constexpr
+operator<(::GUID const& l, ::GUID const& r) noexcept {
+	return l.Data1 < r.Data1
+		&& l.Data2 < r.Data2
+		&& l.Data3 < r.Data3
+		&& std::array{l.Data4} < std::array{r.Data4};
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com::testing
