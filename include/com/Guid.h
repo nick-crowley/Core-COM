@@ -28,6 +28,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
 #include "com/BinaryString.h"
+#include "core/LiteralString.h"
 #include "core/ZString.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
@@ -313,9 +314,9 @@ namespace core::com
         
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
-		std::wstring constexpr
+		LiteralString<wchar_t,39> constexpr
 		wstr() const {
-            return GuidFormatter::format(this->Value);
+            return LiteralString<wchar_t,39>{GuidFormatter::format(this->Value).c_str()};
         }
 		
 		bool constexpr
@@ -405,7 +406,7 @@ namespace core::com::testing
 
     //! @test  Verify @c core::com::Guid::wstr() produces string-representation of the correct length
     static_assert(
-        "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid.wstr().length() == 38
+        "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid.wstr().size() == 38
     );
 
     //! @test  Verify @c core::com::Guid::wstr() produces correct string-representation

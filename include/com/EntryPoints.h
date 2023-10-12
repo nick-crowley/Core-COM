@@ -85,9 +85,9 @@ namespace core::com
 		using namespace core::win;
 		using namespace std::string_view_literals;
 
-		std::wstring const classGuid = Traits::class_guid.wstr();
-		std::wstring_view constexpr className = Traits::class_name.wstr();
-		std::wstring_view constexpr programId = Traits::program_id.wstr();
+		auto constexpr classGuid = Traits::class_guid.wstr();
+		auto constexpr className = Traits::class_name.wstr();
+		auto constexpr programId = Traits::program_id.wstr();
 
 		// Insert class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
@@ -125,8 +125,8 @@ namespace core::com
 	try {
 		using namespace core::win;
 		
-		std::wstring const classGuid = Traits::class_guid.wstr();
-		std::wstring_view constexpr programId = Traits::program_id.wstr();
+		auto constexpr classGuid = Traits::class_guid.wstr();
+		auto constexpr programId = Traits::program_id.wstr();
 
 		// Remove class-id registration
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
