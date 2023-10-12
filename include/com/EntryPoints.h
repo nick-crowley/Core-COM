@@ -85,7 +85,7 @@ namespace core::com
 		using namespace core::win;
 		using namespace std::string_view_literals;
 
-		com::wstring const classGuid = Traits::class_guid.wstr();
+		std::wstring const classGuid = Traits::class_guid.wstr();
 		std::wstring_view constexpr className = Traits::class_name.wstr();
 		std::wstring_view constexpr programId = Traits::program_id.wstr();
 
@@ -125,7 +125,7 @@ namespace core::com
 	try {
 		using namespace core::win;
 		
-		com::wstring const classGuid = Traits::class_guid.wstr();
+		std::wstring const classGuid = Traits::class_guid.wstr();
 		std::wstring_view constexpr programId = Traits::program_id.wstr();
 
 		// Remove class-id registration

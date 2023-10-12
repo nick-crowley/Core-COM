@@ -52,6 +52,77 @@ namespace core::com
 		using reference = type&;
 		
     public:
+        //! @brief  Generate string representation from GUID
+        class GuidFormatter {
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+            using type = GuidFormatter;
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+            
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~o
+            
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+        public:
+            satisfies(GuidFormatter,
+                constexpr IsSemiRegular noexcept,
+                NotEqualityComparable,
+                NotSortable
+            );
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+        public:
+            std::wstring constexpr
+            static format(::GUID const& g) {
+                std::wstring result;
+                result.push_back('{');
+                type::formatTo(g.Data1, result);
+                result.push_back('-');
+                type::formatTo(g.Data2, result);
+                result.push_back('-');
+                type::formatTo(g.Data3, result);
+                result.push_back('-');
+                type::formatTo(std::span{&g.Data4[0], 2}, result);
+                result.push_back('-');
+                type::formatTo(std::span{&g.Data4[2], 6}, result);
+                result.push_back('}');
+                return result;
+            }
+
+        private:
+            nstd::return_t<std::wstring&> constexpr
+            static formatByte(unsigned char ch, std::wstring& out)
+            {
+                char constexpr
+		        digits[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+	
+		        out.push_back(digits[ch / 16]);
+			    out.push_back(digits[ch % 16]);
+                return out;
+            }
+            
+            nstd::return_t<std::wstring&> constexpr
+            static formatTo(unsigned short value, std::wstring& out) {
+                formatByte(static_cast<unsigned char>((value >> 8) & 0xff), out);
+                formatByte(static_cast<unsigned char>((value >> 0) & 0xff), out);
+                return out;
+            }
+            
+            nstd::return_t<std::wstring&> constexpr
+            static formatTo(unsigned long value, std::wstring& out) {
+                formatByte(static_cast<unsigned char>((value >> 24) & 0xff), out);
+                formatByte(static_cast<unsigned char>((value >> 16) & 0xff), out);
+                formatByte(static_cast<unsigned char>((value >> 8) & 0xff), out);
+                formatByte(static_cast<unsigned char>((value >> 0) & 0xff), out);
+                return out;
+            }
+            
+            nstd::return_t<std::wstring&> constexpr
+            static formatTo(std::span<unsigned char const> bytes, std::wstring& out) {
+                for (auto const& b : bytes)
+                    formatByte(b, out);
+                return out;
+            }
+            // o~=~-~=~-~=~-~=~-~=~-~=~-~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~o
+        };
+
         //! @brief  Generate GUID from string representation
         template <std::input_iterator CharIterator>
         class GuidParser 
@@ -242,8 +313,10 @@ namespace core::com
         
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
-		wstring 
-		wstr() const;
+		std::wstring constexpr
+		wstr() const {
+            return GuidFormatter::format(this->Value);
+        }
 		
 		bool constexpr
 		operator==(type const& r) const noexcept {
@@ -328,6 +401,17 @@ namespace core::com::testing
     //! @test  Verify @c core::com::operator""_guid produces the correct GUID
     static_assert(
         "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid == ::GUID{0x42C386F4,0x95A0,0x43A7,{0xB2,0x4C,0x72,0x88,0xD3,0x1E,0x98,0xC2}}
+    );
+
+    //! @test  Verify @c core::com::Guid::wstr() produces string-representation of the correct length
+    static_assert(
+        "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid.wstr().length() == 38
+    );
+
+    //! @test  Verify @c core::com::Guid::wstr() produces correct string-representation
+    using namespace std::string_view_literals;
+    static_assert(
+          "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid.wstr() == L"{42C386F4-95A0-43A7-B24C-7288D31E98C2}"sv
     );
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

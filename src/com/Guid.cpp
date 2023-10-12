@@ -40,9 +40,6 @@ namespace
 	coCreateGuid = com::function<1>(::CoCreateGuid);
 
 	auto constexpr 
-	stringFromCLSID = com::function<1>(::StringFromCLSID);
-
-	auto constexpr 
 	clsIdFromProgId = com::function<1>(::CLSIDFromProgID);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Construction & Destruction o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -63,32 +60,19 @@ com::Guid::generate()
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Instance Methods & Operators o=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
-com::wstring
-com::Guid::wstr() const
-{
-    return wstring{adopt, stringFromCLSID(this->Value)};
-}
-
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Non-member Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 std::string
 com::to_string(Guid const& g)
 {
-	if (com::KnownGuids.contains(g.Value)) 
-		return std::string{com::KnownGuids[g]};
-	
-	return as_string(static_cast<std::wstring_view>(g.wstr()));
+	return ::to_string(g.Value);
 }
 
 std::wstring
 com::to_wstring(Guid const& g)
 {
-	if (com::KnownGuids.contains(g.Value)) {
-		auto const s = com::KnownGuids[g.Value];
-		return {s.begin(), s.end()};
-	}
-
-	return std::wstring{static_cast<std::wstring_view>(g.wstr())};
+	
+	return ::to_wstring(g.Value);
 }
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -99,7 +83,7 @@ to_string(::GUID const& g)
 	if (com::KnownGuids.contains(g)) 
 		return std::string{com::KnownGuids[g]};
 
-	auto const ws = com::Guid{g}.wstr();
+	auto const ws = com::Guid::GuidFormatter::format(g);
 	return {
 		boost::make_transform_iterator(ws.begin(), nstd::convert_to<char>),
 		boost::make_transform_iterator(ws.end(), nstd::convert_to<char>)
@@ -114,7 +98,7 @@ to_wstring(::GUID const& g)
 		return {s.begin(), s.end()};
 	}
 
-	return std::wstring{static_cast<std::wstring_view>(core::com::Guid{g}.wstr())};
+	return com::Guid::GuidFormatter::format(g);
 }
 
 bool
