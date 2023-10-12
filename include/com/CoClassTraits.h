@@ -173,7 +173,7 @@ namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-namespace core::com::detail::testing
+namespace core::com::testing
 {
 	// Verify class GUID is detected from either source
 	MIDL_INTERFACE("1D61B23A-5A26-48DA-A280-CE743C1B53F1")
