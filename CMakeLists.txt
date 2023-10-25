@@ -152,7 +152,7 @@ set(PROJECT_STATIC_MACRO "CORE_COM_STATIC")
 #       /_______  /|__| (____  /__| |__|\___  > |_______ \__||___  /         #
 #               \/           \/             \/          \/       \/          #
 ##############################################################################
-message("StaticLib: Generating project(s) from ${PROJECT_SOURCE_FOLDER} with ${PROJECT_INCLUDE_FOLDER}")
+message("StaticLib: Generating project from ./src with ./include")
 
 # Project: libCoreCOM
 add_library(libCoreCOM STATIC 
@@ -199,7 +199,7 @@ target_compile_options(libCoreCOM
 #  /_______  / ____|___|  (____  /__|_|  /__|\___  >  |_______ \__||___  /  #
 #          \/\/         \/     \/      \/        \/           \/       \/   #
 #############################################################################
-message("DynamicLib: Generating project(s) from ${PROJECT_SOURCE_FOLDER} with ${PROJECT_INCLUDE_FOLDER}")
+message("DynamicLib: Generating project from ./src with ./include")
 
 # Project: dllCoreCOM
 add_library(dllCoreCOM SHARED 
@@ -486,7 +486,7 @@ add_dependencies(dllOutProcProxy
 #  \______  /\____/ \____/\___  /|____/\___  >   |____| \___  >____  > |__|   #
 #         \/             /_____/           \/               \/     \/         #
 ###############################################################################
-message("dllGoogleTest: Generating project(s) from ${GTEST_SOURCE_FOLDER} with ${GMOCK_SOURCE_FOLDER}")
+message("dllGoogleTest: Generating project from ./3rdparty/googletest and ./3rdparty/googlemock folders")
 
 # Project: dllGoogleTest
 add_library(dllGoogleTest SHARED 
@@ -532,7 +532,7 @@ target_compile_options(dllGoogleTest
 # |______/|___|  /__||__|     |____| \___  >____  > |__| /____  >  #
 #              \/                        \/     \/            \/   #
 ####################################################################
-message("exeComTests: Generating project(s) from ${PROJECT_SOURCE_FOLDER} with ${PROJECT_SOURCE_FOLDER}")
+message("exeComTests: Generating project from ./test and ./mock with ./src and ./include folders")
 
 # Test files
 file(GLOB_RECURSE PROJECT_UNIT_TEST_FILES
