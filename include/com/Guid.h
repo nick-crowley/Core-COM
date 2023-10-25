@@ -361,14 +361,17 @@ static_assert(core::meta::Stringable<::GUID>);
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-    namespace literals
+    inline namespace literals
 	{
-        template <ZString<char const> Buffer>
-		com::Guid consteval
-		operator""_guid() {
-            return Guid::GuidParser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();
-        }
-	}
+        inline namespace guid_literals
+	    {
+            template <ZString<char const> Buffer>
+		    com::Guid consteval
+		    operator""_guid() {
+                return Guid::GuidParser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();
+            }
+	    }
+    }
 }
 
 bool constexpr
