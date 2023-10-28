@@ -43,23 +43,21 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	//! @brief	Adapts built-in @c bool values to equivalent COM values (@c S_OK and @c S_FALSE)
+	//! @brief	Adapts built-in @c bool Values to equivalent COM Values (@c S_OK and @c S_FALSE)
 	class Boolean
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		bool value;
-
+		bool Value;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		constexpr 
 		explicit 
-		Boolean(bool expr) noexcept : value{expr}
+		Boolean(bool expr) noexcept : Value{expr}
 		{
 		}
-		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		satisfies(Boolean,
@@ -68,7 +66,6 @@ namespace core::com
 			constexpr IsEqualityComparable noexcept,
 			NotSortable
 		);
-		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -77,14 +74,13 @@ namespace core::com
 		implicit operator 
 		::HRESULT() const noexcept
 		{
-			return this->value ? S_OK : S_FALSE;
+			return this->Value ? S_OK : S_FALSE;
 		}
 		
 		template <nstd::AnyArithmeticExcept<::HRESULT> Unwanted>
 		constexpr
 		implicit operator
 		Unwanted() const noexcept = delete;
-
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
 }
