@@ -37,17 +37,15 @@
 
 #include "../../src/PlatformSdk.h"
 #include "../../src/libBoost.h"
-
 #include "../../src/library/ComExport.h"
-
-#include "com/Concepts.h"
-#include "com/traits/distinct_interfaces.h"
 
 #ifdef COMAPI
 #	error COMAPI macro is already in use
 #else
 #	define COMAPI __stdcall
 #endif
+
+#include "com/Concepts.h"
 #include "com/Boolean.h"
 #include "com/Implements.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

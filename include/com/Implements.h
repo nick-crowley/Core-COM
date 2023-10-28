@@ -25,8 +25,13 @@
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #pragma once
+#ifndef CoreCom_h_included
+#	error Including this header directly may cause a circular dependency; include <core.COM.h> directly
+#endif
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-#include "library/core.COM.h"
+#include "../../src/library/ComExport.h"
+#include "com/Concepts.h"
+#include "com/traits/distinct_interfaces.h"
 #include "win/HResult.h"
 #include "core/FunctionLogging.h"
 #include "com/GlobalRefCount.h"
