@@ -53,8 +53,7 @@ namespace core::com
 		bool Value;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		constexpr 
-		explicit 
+		explicit constexpr 
 		Boolean(bool expr) noexcept : Value{expr}
 		{
 		}
@@ -70,17 +69,15 @@ namespace core::com
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		constexpr
-		implicit operator 
-		::HRESULT() const noexcept
+		implicit constexpr
+		operator ::HRESULT() const noexcept
 		{
 			return this->Value ? S_OK : S_FALSE;
 		}
 		
 		template <nstd::AnyArithmeticExcept<::HRESULT> Unwanted>
-		constexpr
-		implicit operator
-		Unwanted() const noexcept = delete;
+		constexpr implicit
+		operator Unwanted() const noexcept = delete;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
 }
