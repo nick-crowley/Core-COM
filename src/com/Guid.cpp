@@ -71,7 +71,6 @@ com::to_string(Guid const& g)
 std::wstring
 com::to_wstring(Guid const& g)
 {
-	
 	return ::to_wstring(g.Value);
 }
 
@@ -83,20 +82,14 @@ to_string(::GUID const& g)
 	if (com::KnownGuids.contains(g)) 
 		return std::string{com::KnownGuids[g]};
 
-	auto const ws = com::Guid::GuidFormatter::format(g);
-	return {
-		boost::make_transform_iterator(ws.begin(), nstd::convert_to<char>),
-		boost::make_transform_iterator(ws.end(), nstd::convert_to<char>)
-	};
+	return cnarrow(com::Guid::GuidFormatter::format(g));
 }
 
 std::wstring 
 to_wstring(::GUID const& g)
 {
-	if (com::KnownGuids.contains(g)) {
-		auto const s = com::KnownGuids[g];
-		return {s.begin(), s.end()};
-	}
+	if (com::KnownGuids.contains(g)) 
+		return cwiden(com::KnownGuids[g]);
 
 	return com::Guid::GuidFormatter::format(g);
 }
