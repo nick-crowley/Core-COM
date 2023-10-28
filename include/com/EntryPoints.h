@@ -29,7 +29,6 @@
 #include "library/core.COM.h"
 #include "com/CoClassTraits.h"
 #include "win/RegistryKey.h"
-#include "com/Boolean.h"
 #include "com/Function.h"
 #include "com/GlobalRefCount.h"
 #include "com/SharedPtr.h"

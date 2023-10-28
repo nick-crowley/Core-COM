@@ -48,6 +48,7 @@
 #else
 #	define COMAPI __stdcall
 #endif
+#include "com/Boolean.h"
 #include "com/Implements.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
