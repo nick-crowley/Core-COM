@@ -420,7 +420,6 @@ namespace core::com::testing
     );
 
     //! @test  Verify @c core::com::Guid::wstr() produces correct string-representation
-    using namespace std::string_view_literals;
     static_assert(
           "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid.wstr() == L"{42C386F4-95A0-43A7-B24C-7288D31E98C2}"sv
     );

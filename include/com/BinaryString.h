@@ -588,7 +588,6 @@ namespace core::com
 namespace core::com::testing
 {
 	using namespace com::string_literals;
-	using namespace std::string_view_literals;
 
 	//! @test  Verify @c core::com::wstring is default-constructible at compile-time
 	static_assert(wstring{} == std::wstring_view{L""});

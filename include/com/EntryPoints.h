@@ -82,7 +82,6 @@ namespace core::com
 	try {
 		ThrowIfEmpty(modulePath);
 		using namespace core::win;
-		using namespace std::string_view_literals;
 
 		auto constexpr classGuid = Traits::class_guid.wstr();
 		auto constexpr className = Traits::class_name.wstr();
