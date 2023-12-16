@@ -82,7 +82,7 @@ to_string(::GUID const& g)
 	if (com::KnownGuids.contains(g)) 
 		return std::string{com::KnownGuids[g]};
 
-	return cnarrow(com::Guid::GuidFormatter::format(g));
+	return cnarrow(com::Guid::Stringifier::wstr(g));
 }
 
 std::wstring 
@@ -91,6 +91,6 @@ to_wstring(::GUID const& g)
 	if (com::KnownGuids.contains(g)) 
 		return cwiden(com::KnownGuids[g]);
 
-	return com::Guid::GuidFormatter::format(g);
+	return com::Guid::Stringifier::wstr(g);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

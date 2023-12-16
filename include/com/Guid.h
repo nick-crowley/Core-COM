@@ -53,16 +53,16 @@ namespace core::com
 		
     public:
         //! @brief  Generate string representation from GUID
-        class GuidFormatter {
+        class Stringifier {
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-            using type = GuidFormatter;
+            using type = Stringifier;
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
             
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~o
             
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
         public:
-            satisfies(GuidFormatter,
+            satisfies(Stringifier,
                 constexpr IsSemiRegular noexcept,
                 NotEqualityComparable,
                 NotSortable
@@ -70,7 +70,7 @@ namespace core::com
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
         public:
             std::wstring constexpr
-            static format(::GUID const& g) {
+            static wstr(::GUID const& g) {
                 std::wstring result;
                 result.push_back('{');
                 type::formatTo(g.Data1, result);
@@ -125,11 +125,11 @@ namespace core::com
 
         //! @brief  Generate GUID from string representation
         template <std::input_iterator CharIterator>
-        class GuidParser 
+        class Parser 
         {
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
         private:
-            using type = GuidParser<CharIterator>;
+            using type = Parser<CharIterator>;
             using character_type = typename std::iterator_traits<CharIterator>::value_type;
             
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -140,13 +140,13 @@ namespace core::com
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~o
         public:
             constexpr
-            GuidParser(CharIterator begin, CharIterator end)
+            Parser(CharIterator begin, CharIterator end)
                 : sourceBegin{begin}, sourceEnd{end}
             {}
             
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
         public:
-            satisfies(GuidParser,
+            satisfies(Parser,
                 constexpr NotDefaultConstructible,
                 constexpr IsCopyConstructible,
                 constexpr IsMoveConstructible,
@@ -300,12 +300,12 @@ namespace core::com
 
         Guid constexpr
 		static fromString(std::string_view str) {
-            return GuidParser{str.begin(), str.end()}.parse();
+            return Parser{str.begin(), str.end()}.parse();
         }
 
         Guid constexpr
 		static fromString(std::wstring_view str) {
-            return GuidParser{str.begin(), str.end()}.parse();
+            return Parser{str.begin(), str.end()}.parse();
         }
         
 		Guid 
@@ -315,7 +315,7 @@ namespace core::com
     public:
 		LiteralString<wchar_t,39> constexpr
 		wstr() const {
-            return LiteralString<wchar_t,39>{GuidFormatter::format(this->Value).c_str()};
+            return LiteralString<wchar_t,39>{Stringifier::wstr(this->Value).c_str()};
         }
 		
 		bool constexpr
@@ -368,7 +368,7 @@ namespace core::com
             template <ZString<char const> Buffer>
 		    com::Guid consteval
 		    operator""_guid() {
-                return Guid::GuidParser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();
+                return Guid::Parser{Buffer.Text, Buffer.Text+Buffer.Length}.parse();
             }
 	    }
     }
