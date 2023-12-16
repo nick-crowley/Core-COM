@@ -63,7 +63,7 @@ namespace core::com
             // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
         public:
             satisfies(Stringifier,
-                constexpr IsSemiRegular noexcept,
+                NotDefaultConstructible,
                 NotEqualityComparable,
                 NotSortable
             );
