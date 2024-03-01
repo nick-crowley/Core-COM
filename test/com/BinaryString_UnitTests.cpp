@@ -90,10 +90,9 @@ TEST(BinaryString_UT, IteratorPairConstructor_ClonesInputRange)
 
 TEST(BinaryString_UT, AdoptConstructor_TakesOwnershipOfInputBuffer) 
 {
-	wchar_t* buffer = com::HeapAllocator<wchar_t>{}.allocate(4);
-	::wcscpy(buffer, L"abc");
+	wchar_t* buffer = ::SysAllocString(L"abc");
 	
-	//! @test  Verify buffer has been transferred into string
+	//! @test  Verify buffer has been transferred, not copied, into string
 	EXPECT_EQ(
 		(void*)com::wstring(adopt, buffer).c_str(),
 		(void*)buffer
@@ -108,6 +107,22 @@ TEST(BinaryString_UT, Assign_ClonesInputRange)
 	com::wstring obj{};
 	obj.assign(src.begin(), src.end());
 	EXPECT_TRUE(obj == L"abc");
+}
+
+TEST(BinaryString_UT, Data_CompatibleWithSysFreeString) 
+{
+	com::wstring src{L"abc"};
+
+	//! @test  Verify @c SysFreeString() can free the detached BSTR
+	EXPECT_NO_FATAL_FAILURE(::SysFreeString(src.detach()));
+}
+
+TEST(BinaryString_UT, Data_CompatibleWithSysStringLen) 
+{
+	com::wstring src{L"abc"};
+
+	//! @test  Verify @c SysStringLen() can obtain the length from the BSTR
+	EXPECT_EQ(3u, ::SysStringLen(src.bstr()));
 }
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
