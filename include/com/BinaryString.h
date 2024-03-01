@@ -136,7 +136,7 @@ namespace core::com
 			this->assign(first,end);
 		}
 		
-		//! @brief	Prevent construction from null pointers
+		//! @brief	Prevent construction from null pointer literals
 		constexpr 
 		BinaryString(nullptr_t, nullptr_t, Allocator = Allocator{}) noexcept = delete;
 
@@ -232,9 +232,9 @@ namespace core::com
 		 * 
 		 * @param r		Other string
 		*/
-		template <typename Other>
+		template <typename A>
 		constexpr 
-		BinaryString(BinaryString<Other> const& r) noexcept
+		BinaryString(BinaryString<A> const& r) noexcept
           : BinaryString{r.begin(), r.end()}
 		{
 		}
@@ -303,9 +303,9 @@ namespace core::com
 		 * 
 		 * @param r		Other string
 		*/
-		template <typename Other>
+		template <typename A>
 		type constexpr&
-		operator=(BinaryString<Other> const& r) noexcept
+		operator=(BinaryString<A> const& r) noexcept
 		{
 			type{r}.swap(*this);
 			return *this;
