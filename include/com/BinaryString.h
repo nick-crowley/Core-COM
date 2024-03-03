@@ -104,10 +104,12 @@ namespace core::com
 		 * 
 		 * @param first		First element in range
 		 * @param end		Immediately beyond last element in range
+		 * 
+		 * @throws std::bad_alloc		Out of memory
 		*/
 		template <std::forward_iterator ForwardIterator>
 			requires nstd::IndirectlyConvertibleTo<ForwardIterator, wchar_t>
-		BinaryString(ForwardIterator first, ForwardIterator end) noexcept
+		BinaryString(ForwardIterator first, ForwardIterator end)
         {
 			this->assign(first,end);
 		}
@@ -120,9 +122,11 @@ namespace core::com
 		 * @brief	Construct with elements copied from a null-terminated C-string
 		 * 
 		 * @param str		Null-terminated wide-character array
+		 * 
+		 * @throws std::bad_alloc		Out of memory
 		*/
 		explicit 
-		BinaryString(gsl::cwzstring const str) noexcept
+		BinaryString(gsl::cwzstring const str) 
 		  : BinaryString{str, str + BinaryString::measure(str)}
         {
 		}
@@ -143,8 +147,10 @@ namespace core::com
 		 * @brief	Construct with elements copied from an ATL string
 		 *
 		 * @param str		ATL string
+		 * 
+		 * @throws std::bad_alloc		Out of memory
 		*/
-		explicit BinaryString(ATL::CSimpleStringT<wchar_t> const& str) noexcept
+		explicit BinaryString(ATL::CSimpleStringT<wchar_t> const& str) 
 			: BinaryString(str.GetString(), str.GetString() + str.GetLength())
 		{
 		}
@@ -160,10 +166,12 @@ namespace core::com
 		 * @brief	Construct with elements copied from a std::basic_string
 		 * 
 		 * @param str		Standard library string
+		 * 
+		 * @throws std::bad_alloc		Out of memory
 		*/
 		template <typename C, typename T, typename A>
 		constexpr explicit 
-		BinaryString(std::basic_string<C,T,A> const& str) noexcept
+		BinaryString(std::basic_string<C,T,A> const& str)
           : BinaryString(str.begin(), str.end())
         {
 		}
@@ -179,8 +187,10 @@ namespace core::com
 		 * @brief	Construct with elements copied from another string
 		 * 
 		 * @param r		Other string
+		 * 
+		 * @throws std::bad_alloc		Out of memory
 		*/
-		BinaryString(type const& r) noexcept
+		BinaryString(type const& r)
           : BinaryString{r.begin(), r.end()}
 		{
 		}
@@ -200,9 +210,11 @@ namespace core::com
 		 * @brief	Overwrite with elements copied from a null-terminated C-string 
 		 * 
 		 * @param r		Other string
+		 * 
+		 * @throws std::bad_alloc		Out of memory
 		*/
 		type constexpr& 
-		operator=(gsl::cwzstring const str) noexcept
+		operator=(gsl::cwzstring const str)
 		{
 			type{str}.swap(*this);
 			return *this;
@@ -212,9 +224,11 @@ namespace core::com
 		 * @brief	Overwrite with elements copied from another string 
 		 * 
 		 * @param r		Other string
+		 * 
+		 * @throws std::bad_alloc		Out of memory
 		*/
 		type constexpr&
-		operator=(type const& r) noexcept
+		operator=(type const& r)
 		{
 			type{r}.swap(*this);
 			return *this;
@@ -381,27 +395,28 @@ namespace core::com
 		/**
 		 * @brief	Overwrite with elements copied from the range [first, end]
 		 * 
-		 * @param first		First element in range
+		 * @param pos		First element in range
 		 * @param end		One past last element in range
 		*/
 		template <std::forward_iterator ForwardIterator>
 			requires nstd::IndirectlyConvertibleTo<ForwardIterator, wchar_t>
 		void 
-		assign(ForwardIterator first, ForwardIterator end) noexcept
+		assign(ForwardIterator pos, ForwardIterator end)
         {
-			if (detail::is_valid_range(first,end))
+			ThrowIf(end, !detail::is_valid_range(pos, end));
+
+			// Allocate an empty buffer with space for additional null terminator
+			auto const nChars = std::distance(pos, end);
+			if (wchar_t* newBuffer = ::SysAllocStringByteLen(nullptr, (UINT)nstd::sizeof_n<wchar_t>(nChars)); !newBuffer)
+				throw std::bad_alloc{};
+			else
 			{
-				// Allocate an empty buffer with space for additional null terminator
-				auto const nChars = std::distance(first, end);
-				if (wchar_t* newBuffer = ::SysAllocStringByteLen(nullptr, (UINT)nstd::sizeof_n<wchar_t>(nChars)); newBuffer)
-				{
-					if (this->Buffer)
-						::SysFreeString(this->Buffer);
+				if (this->Buffer)
+					::SysFreeString(this->Buffer);
 					
-					this->Buffer = newBuffer;
-					std::copy(first, end, this->Buffer);
-					this->Buffer[nChars] = null;
-				}
+				this->Buffer = newBuffer;
+				std::copy(pos, end, this->Buffer);
+				this->Buffer[nChars] = null;
 			}
 		}
 		
