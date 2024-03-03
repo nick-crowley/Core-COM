@@ -177,13 +177,6 @@ namespace core::com
 		}
 		
 		/**
-		 * @brief	Prevent moving from std::basic_string
-		*/
-		template <typename C, typename T, typename A>
-		constexpr 
-		BinaryString(std::basic_string<C,T,A>&&) noexcept = delete;
-				
-		/**
 		 * @brief	Construct with elements copied from another string
 		 * 
 		 * @param r		Other string
