@@ -328,7 +328,7 @@ namespace core::com
 		 * @param	str		Pointer to first element, possibly @c nullptr
 		*/
 		size_type constexpr
-		static measure(gsl::cwzstring str) {
+		static measure(gsl::cwzstring str) noexcept {
 			return static_cast<size_type>(ZString<wchar_t>::measure(str));
 		}
 		
