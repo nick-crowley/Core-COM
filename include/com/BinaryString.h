@@ -136,7 +136,7 @@ namespace core::com
 		 * 
 		 * @param str		Null-terminated wide-character array
 		*/
-		constexpr explicit 
+		constexpr
 		BinaryString(meta::adopt_t, gsl::wzstring const str) noexcept
 		  : Buffer{str}
         {
