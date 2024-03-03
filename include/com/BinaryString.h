@@ -277,16 +277,6 @@ namespace core::com
 		 * @brief	Retrieve pointer to internal character buffer
 		*/
 		template <typename Self>
-		gsl::cwzstring constexpr
-		c_str(this Self&& self) noexcept
-		{
-			return self.initialized() ? &self.Buffer[0] : L"";
-		}
-
-		/**
-		 * @brief	Retrieve pointer to internal character buffer
-		*/
-		template <typename Self>
 		if_const_then_t<Self, gsl::cwzstring, gsl::wzstring> constexpr
 		data(this Self&& self) noexcept
 		{
@@ -330,6 +320,15 @@ namespace core::com
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
+		/**
+		 * @brief	Retrieve pointer to internal character buffer
+		*/
+		gsl::cwzstring constexpr
+		c_str() const noexcept
+		{
+			return this->initialized() ? &this->Buffer[0] : L"";
+		}
+
 		/**
 		 * @brief	Query whether string is empty
 		 * 
