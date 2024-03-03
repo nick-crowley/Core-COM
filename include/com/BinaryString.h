@@ -170,7 +170,7 @@ namespace core::com
 		 * @throws std::bad_alloc		Out of memory
 		*/
 		template <typename C, typename T, typename A>
-		constexpr explicit 
+		explicit constexpr 
 		BinaryString(std::basic_string<C,T,A> const& str)
           : BinaryString(str.begin(), str.end())
         {
