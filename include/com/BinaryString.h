@@ -408,7 +408,7 @@ namespace core::com
 		/**
 		 * @brief	Retrieve pointer to internal character buffer
 		*/
-		wchar_t*
+		gsl::wzstring
 		bstr() noexcept
 		{
 			return this->Buffer;
