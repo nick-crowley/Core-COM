@@ -44,10 +44,13 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-	protected:
+	private:
 		std::atomic_long 
-		inline static SumInstances = 0;		// TODO: Make private once logging macro supports rvalues
+		inline static SumInstances = 0;
 
+	public:
+		nstd::return_t<std::atomic_long const&>
+		inline static CurrentValueForLoggingSentryWorkaround = GlobalRefCount::SumInstances;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		satisfies(GlobalRefCount,
