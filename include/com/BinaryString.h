@@ -45,7 +45,7 @@ namespace core::com
 	{
 		template <std::forward_iterator ForwardIterator>
 		bool constexpr
-		static is_valid_range(ForwardIterator first, ForwardIterator end)
+		is_valid_range(ForwardIterator first, ForwardIterator end)
         {
 			if constexpr (std::is_pointer_v<ForwardIterator>) {
 				return first && end && first <= end;
