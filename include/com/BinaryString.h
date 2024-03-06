@@ -371,6 +371,34 @@ namespace core::com
 			return {this->Buffer, this->Buffer + this->size()};
 		}
 		
+		bool constexpr
+		operator==(gsl::cwzstring rhs) noexcept {
+			return (std::wstring_view)*this == rhs;
+		}
+
+		bool constexpr
+		friend operator==(gsl::cwzstring lhs, type const& rhs) noexcept {
+			return lhs == (std::wstring_view)rhs;
+		}
+		
+		bool constexpr
+		operator==(std::wstring_view rhs) noexcept {
+			return (std::wstring_view)*this == rhs;
+		}
+
+		bool constexpr
+		friend operator==(std::wstring_view lhs, type const& rhs) noexcept {
+			return lhs == (std::wstring_view)rhs;
+		}
+
+		// Disable accidental comparisons between narrow-char and @c core::com::wstring
+		bool constexpr friend operator==(gsl::czstring,    type const&) noexcept = delete;
+		bool constexpr friend operator==(std::string_view, type const&) noexcept = delete;
+		bool constexpr friend operator==(std::string,      type const&) noexcept = delete;
+		bool constexpr operator==(gsl::czstring) noexcept = delete;
+		bool constexpr operator==(std::string_view) noexcept = delete;
+		bool constexpr operator==(std::string) noexcept = delete;
+
 	protected:
 		/**
 		 * @brief	Query whether initialized
@@ -449,18 +477,6 @@ namespace core::com
 	using wstring = BinaryString;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-bool constexpr
-operator==(gsl::cwzstring lhs, core::com::wstring const& rhs) noexcept {
-	return lhs == (std::wstring_view)rhs;
-}
-
-bool constexpr
-operator==(core::com::wstring const& lhs, gsl::cwzstring rhs) noexcept {
-	return (std::wstring_view)lhs == rhs;
-}
-
-bool constexpr operator==(gsl::czstring, core::com::wstring const&) noexcept = delete;
-bool constexpr operator==(core::com::wstring const&, gsl::czstring) noexcept = delete;
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
