@@ -351,14 +351,18 @@ TEST(Variant_UT, kind_CorrectWhenHResult)
 
 TEST(Variant_UT, kind_CorrectWhenIUnknown) 
 {
+	auto obj = make_mock_coclass<NiceMock<MockComObject>>();
+
 	//! @test  Verify @c IUnknown variants are @c VT_UNKNOWN
-	EXPECT_EQ(VT_UNKNOWN, variant{(IUnknown*)nullptr}.kind());
+	EXPECT_EQ(VT_UNKNOWN, variant{obj.get()}.kind());
 }
 
 TEST(Variant_UT, kind_CorrectWhenIDispatch) 
 {
+	auto obj = make_mock_coclass<NiceMock<MockDispatchObject>>();
+
 	//! @test  Verify @c IDispatch variants are @c VT_DISPATCH
-	EXPECT_EQ(VT_DISPATCH, variant{(IDispatch*)nullptr}.kind());
+	EXPECT_EQ(VT_DISPATCH, variant{obj.get()}.kind());
 }
 
 TEST(Variant_UT, str_CorrectWhenEmpty) 
@@ -486,7 +490,7 @@ TEST(Variant_UT, str_CorrectWhenCurrency)
 
 TEST(Variant_UT, str_CorrectWhenIUnknown)
 {
-	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+	auto obj = make_mock_coclass<NiceMock<MockComObject>>();
 	
 	//! @test  Verify @c IUnknown variants return a fixed string
 	EXPECT_EQ(L"IUnknown", variant{obj.get()}.wstr());
@@ -494,7 +498,7 @@ TEST(Variant_UT, str_CorrectWhenIUnknown)
 
 TEST(Variant_UT, str_CorrectWhenIDispatch)
 {
-	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+	auto obj = make_mock_coclass<NiceMock<MockDispatchObject>>();
 	
 	//! @test  Verify @c IDispatch variants return a fixed string
 	EXPECT_EQ(L"IDispatch", variant{obj.get()}.wstr());

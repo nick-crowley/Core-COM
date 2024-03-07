@@ -637,8 +637,8 @@ namespace core::com
             case VT_ERROR:    return std::format("{:x}", this->Value.scode);
             case VT_DATE:     ThrowNotImplemented("String representation of VT_DATE");
 
-            case VT_DISPATCH: return "IUnknown";
-            case VT_UNKNOWN:  return "IDispatch";
+            case VT_DISPATCH: return "IDispatch";
+            case VT_UNKNOWN:  return "IUnknown";
             
             default:
                 throw logic_error{"Invalid runtime type {:#x}", this->kind()};
