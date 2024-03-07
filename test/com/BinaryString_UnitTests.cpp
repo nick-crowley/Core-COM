@@ -45,32 +45,33 @@ using namespace core;
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-
+namespace core::com
+{
 TEST(BinaryString_UT, Constructor_Succeeds) 
 {
 	//! @test  Verify string can be constructed
 	EXPECT_NO_THROW(
-		com::wstring{L"hello"}
+		wstring{L"hello"}
 	);
 }
 
 TEST(BinaryString_UT, CopyConstructor_ClonesInput) 
 {
-	com::wstring const src{L"abc"};
+	wstring const src{L"abc"};
 	
 	//! @test  Verify characters were copied
 	EXPECT_TRUE(
-		com::wstring{src} == L"abc"
+		wstring{src} == L"abc"
 	);
 }
 
 TEST(BinaryString_UT, MoveConstructor_TransfersInput) 
 {
-	com::wstring src{L"abc"};
+	wstring src{L"abc"};
 	
 	//! @test  Verify characters were moved
 	EXPECT_TRUE(
-		com::wstring{std::move(src)} == L"abc"
+		wstring{std::move(src)} == L"abc"
 	);
 
 	//! @post  Input string is empty
@@ -85,7 +86,7 @@ TEST(BinaryString_UT, IteratorPairConstructor_ClonesInputRange)
 	
 	//! @test  Verify characters of source range were copied
 	EXPECT_TRUE(
-		com::wstring(src.begin(), src.end()) == L"abc"
+		wstring(src.begin(), src.end()) == L"abc"
 	);
 }
 
@@ -95,7 +96,7 @@ TEST(BinaryString_UT, AdoptConstructor_TakesOwnershipOfInputBuffer)
 	
 	//! @test  Verify buffer has been transferred, not copied, into string
 	EXPECT_EQ(
-		(void*)com::wstring(adopt, buffer).c_str(),
+		(void*)wstring(adopt, buffer).c_str(),
 		(void*)buffer
 	);
 }
@@ -105,14 +106,14 @@ TEST(BinaryString_UT, Assign_ClonesInputRange)
 	std::wstring const src{L"abc"};
 
 	//! @test  Verify characters of source range were assigned
-	com::wstring obj{};
+	wstring obj{};
 	obj.assign(src.begin(), src.end());
 	EXPECT_TRUE(obj == L"abc");
 }
 
 TEST(BinaryString_UT, Data_CompatibleWithSysFreeString) 
 {
-	com::wstring src{L"abc"};
+	wstring src{L"abc"};
 
 	//! @test  Verify @c SysFreeString() can free the detached BSTR
 	EXPECT_NO_FATAL_FAILURE(::SysFreeString(src.detach()));
@@ -120,11 +121,11 @@ TEST(BinaryString_UT, Data_CompatibleWithSysFreeString)
 
 TEST(BinaryString_UT, Data_CompatibleWithSysStringLen) 
 {
-	com::wstring src{L"abc"};
+	wstring src{L"abc"};
 
 	//! @test  Verify @c SysStringLen() can obtain the length from the BSTR
 	EXPECT_EQ(3u, ::SysStringLen(src.bstr()));
 }
-
+} // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #endif	// DISABLE_BINARY_STRING_UNIT_TESTS

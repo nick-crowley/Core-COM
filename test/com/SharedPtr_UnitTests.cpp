@@ -78,14 +78,15 @@ public:
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-
+namespace core::com
+{
 TEST(SharedPtr_UT, MakeShared_ConstructsComObject) 
 {
-	auto code = []() { auto ptr = com::make_shared<IExample,Example>(); };
+	auto code = []() { auto ptr = make_shared<IExample,Example>(); };
 	EXPECT_NO_THROW(
 		code()
 	);
 }
-
+} // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #endif	// DISABLE_SHARED_PTR_UNIT_TESTS
