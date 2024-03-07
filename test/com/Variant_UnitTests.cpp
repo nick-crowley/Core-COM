@@ -741,7 +741,7 @@ TEST(Variant_UT, assignment_ValueChangedWhenFloat)
 	EXPECT_FLOAT_EQ(43.3f, (float)obj);
 }
 
-TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotFloar)
+TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotFloat)
 {
 	variant obj{42};
 	obj = 43.0f;
