@@ -28,10 +28,10 @@
 #ifndef DISABLE_SHARED_PTR_UNIT_TESTS
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include <gtest/gtest.h>
-#include <com/SharedPtr.h>
-#include <com/Annotations.h>
-#include <core/LiteralString.h>
-#include <com/Guid.h>
+#include "com/SharedPtr.h"
+#include "com/Annotations.h"
+#include "core/LiteralString.h"
+#include "com/Guid.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 using namespace core;
 using namespace com::literals;

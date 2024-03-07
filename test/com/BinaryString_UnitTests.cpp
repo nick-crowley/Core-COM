@@ -27,7 +27,7 @@
 #ifndef DISABLE_BINARY_STRING_UNIT_TESTS
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include <gtest/gtest.h>
-#include <com/BinaryString.h>
+#include "com/BinaryString.h"
 #include <string.h>
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 using namespace core;
