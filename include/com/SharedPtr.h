@@ -45,18 +45,15 @@ namespace core::com
 	{
 		template <meta::ComInterface> 
 		friend class shared_ptr;
-
+		
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	private:
 		using type = shared_ptr<Interface>;
-
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
 		Interface* m_object = nullptr;
-
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		satisfies(shared_ptr,
-			IsDefaultConstructible noexcept,
-			IsEqualityComparable noexcept
-		);
-		
 		explicit
 		shared_ptr(Interface* ptr) noexcept 
 		  : m_object{ptr}
@@ -75,17 +72,28 @@ namespace core::com
 		  : shared_ptr{adopt,ptr}
 		{}
 		
-		shared_ptr(type const& r) noexcept 
-		  : shared_ptr{r.m_object}
-		{
-		}
-	
 		template <meta::ComInterface Other> 
 		explicit
 		shared_ptr(shared_ptr<Other> const& r) noexcept 
 		{
 			if (r.m_object)
 				r.m_object->QueryInterface(__uuidof(Interface), std::out_ptr<Interface*>(this->m_object));
+		}
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	public:
+		satisfies(shared_ptr,
+			IsDefaultConstructible noexcept,
+			IsEqualityComparable noexcept
+		);
+
+		shared_ptr(type const& r) noexcept 
+		  : shared_ptr{r.m_object}
+		{
+		}
+
+		shared_ptr(type&& r) noexcept 
+			: m_object{std::exchange(r.m_object,nullptr)}
+		{
 		}
 
 		type& 
@@ -102,11 +110,6 @@ namespace core::com
 			return *this;
 		}
 
-		shared_ptr(type&& r) noexcept 
-			: m_object{std::exchange(r.m_object,nullptr)}
-		{
-		}
-
 		type& 
 		operator=(type&& r) noexcept
 		{
@@ -119,14 +122,40 @@ namespace core::com
 			if (this->m_object)
 				this->m_object->Release();
 		}
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		bool
 		empty() const noexcept
 		{
 			return this->m_object == nullptr;
 		}
+
+		Interface*
+		operator->() const noexcept
+		{
+			return this->m_object;
+		}
 		
+		Interface&
+		operator*() const noexcept
+		{
+			return *this->m_object;
+		}
+		
+		implicit operator 
+		Interface*() const noexcept
+		{
+			return this->m_object;
+		}
+
+		explicit operator 
+		bool() const noexcept
+		{
+			return this->m_object != nullptr;
+		}
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		/**
 		 * @brief	Detach and return the object pointer, leaving this object empty
@@ -161,30 +190,6 @@ namespace core::com
 		swap(type& r) noexcept
 		{
 			std::swap(this->m_object, r.m_object);
-		}
-
-		Interface*
-		operator->() const noexcept
-		{
-			return this->m_object;
-		}
-		
-		Interface&
-		operator*() const noexcept
-		{
-			return *this->m_object;
-		}
-		
-		implicit operator 
-		Interface*() const noexcept
-		{
-			return this->m_object;
-		}
-
-		explicit operator 
-		bool() const noexcept
-		{
-			return this->m_object != nullptr;
 		}
 	};
 }
