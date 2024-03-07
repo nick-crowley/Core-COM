@@ -122,7 +122,7 @@ namespace core::com
 
 	public:
 		bool
-		empty() const
+		empty() const noexcept
 		{
 			return this->m_object == nullptr;
 		}
@@ -132,28 +132,28 @@ namespace core::com
 		 * @brief	Detach and return the object pointer, leaving this object empty
 		*/
 		Interface*
-		detach() {
+		detach() noexcept {
 			return std::exchange(this->m_object, nullptr);
 		}
 
 		void
-		reset() {
+		reset() noexcept {
 			type{}.swap(*this);
 		}
 		
 		void
-		reset(Interface* ptr) {
+		reset(Interface* ptr) noexcept {
 			type{ptr}.swap(*this);
 		}
 		
 		void
-		reset(meta::adopt_t, Interface* ptr) {
+		reset(meta::adopt_t, Interface* ptr) noexcept {
 			type{ptr,adopt}.swap(*this);
 		}
 		
 		// DUP: std::out_ptr() supports appending, not prepending, arguments
 		void
-		reset(Interface* ptr, meta::adopt_t) {
+		reset(Interface* ptr, meta::adopt_t) noexcept {
 			type{ptr,adopt}.swap(*this);
 		}
 		
