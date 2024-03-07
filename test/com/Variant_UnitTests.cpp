@@ -518,7 +518,28 @@ TEST(Variant_UT, valid_FalseForInvalidRuntimeType)
 TEST(Variant_UT, valid_TrueForValidRuntimeType) 
 {
 	//! @test  Verify variants with recognised runtime type are @e valid
+	EXPECT_TRUE(variant::valid(VT_EMPTY));
+	EXPECT_TRUE(variant::valid(VT_NULL));
+	EXPECT_TRUE(variant::valid(VT_BOOL));
+	EXPECT_TRUE(variant::valid(VT_I1));
+	EXPECT_TRUE(variant::valid(VT_UI1));
+	EXPECT_TRUE(variant::valid(VT_I2));
+	EXPECT_TRUE(variant::valid(VT_UI2));
+	EXPECT_TRUE(variant::valid(VT_INT));
+	EXPECT_TRUE(variant::valid(VT_UINT));
+	EXPECT_TRUE(variant::valid(VT_I4));
+	EXPECT_TRUE(variant::valid(VT_UI4));
+	EXPECT_TRUE(variant::valid(VT_I8));
+	EXPECT_TRUE(variant::valid(VT_UI8));
 	EXPECT_TRUE(variant::valid(VT_R4));
+	EXPECT_TRUE(variant::valid(VT_R8));
+	EXPECT_TRUE(variant::valid(VT_DECIMAL));
+	EXPECT_TRUE(variant::valid(VT_BSTR));
+	EXPECT_TRUE(variant::valid(VT_CY));
+	EXPECT_TRUE(variant::valid(VT_DATE));
+	EXPECT_TRUE(variant::valid(VT_ERROR));
+	EXPECT_TRUE(variant::valid(VT_UNKNOWN));
+	EXPECT_TRUE(variant::valid(VT_DISPATCH));
 }
 
 TEST(Variant_UT, assignment_ValueChangedWhenBool)
