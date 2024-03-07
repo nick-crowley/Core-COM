@@ -866,24 +866,24 @@ namespace core::com
 
         //! @brief Equality operator
         //! 
-        //! @throws std::invalid_argument  Invalid runtime type
+        //! @throws std::invalid_argument  Both variants have (the same) unsupported runtime type
         bool 
         operator==(variant const& r) const {
-            return this->equal(&r.Value);
+            return this->equal(r.Value);
         }
 
         //! @brief Equality operator for ::VARIANT
         //! 
-        //! @throws std::invalid_argument  Invalid runtime type
+        //! @throws std::invalid_argument  Both variants have (the same) unsupported runtime type
         bool 
         operator==(::VARIANT const& r) const {
-            return this->equal(&r);
+            return this->equal(r);
         }
 
     private:
         //! @brief Equality operator
         //! 
-        //! @throws std::invalid_argument  Missing argument -or- invalid runtime type
+        //! @throws std::invalid_argument  Both variants have (the same) unsupported runtime type
         bool
         equal(::VARIANT const& r) const
         {
