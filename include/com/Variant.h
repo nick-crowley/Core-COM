@@ -36,10 +36,10 @@
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
-//! @brief	@c ::VARTYPE is a bitflag
-metadata bool core::meta::Settings<core::bitwise_enum, ::VARTYPE> = true;
+//! @brief	@c ::VARENUM is a bitflag
+//metadata bool core::meta::Settings<core::bitwise_enum, ::VARENUM> = true;
 
-//! @todo @c ::VARTYPE isn't a bitflag; change this as @c false and define values (can we do this by range?)
+//! @todo @c ::VARENUM isn't a bitflag; change this as @c false and define values (can we do this by range?)
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
@@ -593,8 +593,8 @@ namespace core::com
         
         //! @brief  Validate a runtime type descriptor
         bool
-        static valid(variant const& v) noexcept {
-            return core::is_valid_enumerator(v.kind());
+        static valid(::VARENUM rt) noexcept {
+            return core::is_valid_enumerator(static_cast<::VARENUM>(rt & VT_TYPEMASK));
         }
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
@@ -657,7 +657,7 @@ namespace core::com
         bool
         valid() const noexcept
         {
-            return type::valid(*this);
+            return type::valid(this->kind());
         }
 
 #pragma region Conversion operators

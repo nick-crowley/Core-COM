@@ -369,18 +369,14 @@ TEST(Variant_UT, wstr_CorrectWideStringRepresentation)
 
 TEST(Variant_UT, valid_FalseForInvalidRuntimeType) 
 {
-	::VARIANT const Invalid{VT_VERSIONED_STREAM + 1};
-	
 	//! @test  Verify variants with unrecognised runtime type are @e invalid
-	EXPECT_FALSE(com::variant{Invalid}.valid());
+	EXPECT_FALSE(com::variant::valid(static_cast<::VARENUM>(VT_VERSIONED_STREAM + 1)));
 }
 
 TEST(Variant_UT, valid_TrueForValidRuntimeType) 
 {
-	::VARIANT const Valid{VT_R4};
-	
 	//! @test  Verify variants with recognised runtime type are @e valid
-	EXPECT_TRUE(com::variant{Valid}.valid());
+	EXPECT_TRUE(com::variant::valid(VT_R4));
 }
 
 TEST(Variant_UT, assignment_ValueChangedWhenChar)
