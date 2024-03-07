@@ -28,6 +28,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
 #include "com/BinaryString.h"
+#include "com/SharedPtr.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -258,25 +259,37 @@ namespace core::com
         }
         
         //! @brief Construct as @c VT_UNKNOWN
-        //! 
-        //! @throws std::invalid_argument   Missing argument
         explicit
-        variant(::IUnknown* r) 
+        variant(::IUnknown* r) noexcept
           : Value{VT_UNKNOWN}
         {
-            this->Value.punkVal = ThrowIfNull(r);
-            r->AddRef();
+            if (this->Value.punkVal = r; r)
+                r->AddRef();
+        }
+        
+        //! @brief Construct as @c VT_UNKNOWN
+        explicit
+        variant(shared_ptr<::IUnknown> r) noexcept
+          : Value{VT_UNKNOWN}
+        {
+            this->Value.punkVal = r.detach();
         }
         
         //! @brief Construct as @c VT_DISPATCH
-        //! 
-        //! @throws std::invalid_argument   Missing argument
         explicit
-        variant(::IDispatch* r) 
+        variant(::IDispatch* r) noexcept
           : Value{VT_DISPATCH}
         {
-            this->Value.pdispVal = ThrowIfNull(r);
-            r->AddRef();
+            if (this->Value.pdispVal = r; r)
+                r->AddRef();
+        }
+        
+        //! @brief Construct as @c VT_DISPATCH
+        explicit
+        variant(shared_ptr<::IDispatch> r) noexcept
+          : Value{VT_DISPATCH}
+        {
+            this->Value.pdispVal = r.detach();
         }
 #pragma endregion
 
@@ -547,20 +560,38 @@ namespace core::com
             return *this;
         }
         
-        //! @brief  Assign/replace content with @c IUnknown
+        //! @brief  Assign/replace content with @c ::IUnknown
         type&
-		operator=(::IUnknown* newValue)
+		operator=(::IUnknown* newValue) noexcept
         {
-            type tmp{ThrowIfNull(newValue)};
+            type tmp{newValue};
             this->swap(tmp);
             return *this;
         }
         
-        //! @brief  Assign/replace content with @c IDispatch
+        //! @brief  Assign/replace content with @c shared_ptr<::IUnknown>
         type&
-		operator=(::IDispatch* newValue)
+		operator=(shared_ptr<::IUnknown> newValue) noexcept
         {
-            type tmp{ThrowIfNull(newValue)};
+            type tmp{newValue};
+            this->swap(tmp);
+            return *this;
+        }
+        
+        //! @brief  Assign/replace content with @c ::IDispatch
+        type&
+		operator=(::IDispatch* newValue) noexcept
+        {
+            type tmp{newValue};
+            this->swap(tmp);
+            return *this;
+        }
+        
+        //! @brief  Assign/replace content with @c shared_ptr<::IDispatch>
+        type&
+		operator=(shared_ptr<::IDispatch> newValue) noexcept
+        {
+            type tmp{newValue};
             this->swap(tmp);
             return *this;
         }
@@ -834,24 +865,20 @@ namespace core::com
 
         //! @brief  Extract value or convert to @c IUnknown
         implicit operator
-        ::IUnknown*() const
+        shared_ptr<::IUnknown>() const
         {
-            if (this->kind() == VT_UNKNOWN) {
-                this->Value.punkVal->AddRef();
-                return this->Value.punkVal;
-            }
+            if (this->kind() == VT_UNKNOWN) 
+                return shared_ptr<::IUnknown>{this->Value.punkVal};
 
             return type::cast<VT_UNKNOWN>(*this);
         }
 
         //! @brief  Extract value or convert to @c IDispatch
         implicit operator
-        ::IDispatch*() const
+        shared_ptr<::IDispatch>() const
         {
-            if (this->kind() == VT_DISPATCH) {
-                this->Value.pdispVal->AddRef();
-                return this->Value.pdispVal;
-            }
+            if (this->kind() == VT_DISPATCH) 
+                return shared_ptr<::IDispatch>{this->Value.pdispVal};
 
             return type::cast<VT_DISPATCH>(*this);
         }
@@ -947,9 +974,9 @@ namespace core::com
             if (win::HResult hr = ::VariantCopy(&this->Value, const_cast<::VARIANT*>(&r)); hr == E_OUTOFMEMORY)
                 throw std::bad_alloc{};
             else if (hr == DISP_E_ARRAYISLOCKED)
-                ThrowInvalidArg(v, "Variant contains locked array");
+                ThrowInvalidArg(r, "Variant contains locked array");
             else if (hr == DISP_E_BADVARTYPE)
-                ThrowInvalidArg(v, "Variant has invalid runtime type {:#x}", r.vt);
+                ThrowInvalidArg(r, "Variant has invalid runtime type {:#x}", r.vt);
             else if (!hr)
                 ThrowInvalidArg(r, hr.str());
         }

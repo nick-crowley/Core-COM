@@ -116,7 +116,7 @@ TEST(Variant_UT, CopyConstructor_ClonesStrings)
 	EXPECT_EQ(VT_BSTR, s.kind());
 }
 
-TEST(Variant_UT, CopyConstructor_BumpsIUnknownRefCount)
+TEST(Variant_UT, CopyConstructor_BumpsRefCountWhenIUnknown)
 {	
 	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
 	
@@ -135,7 +135,7 @@ TEST(Variant_UT, CopyConstructor_BumpsIUnknownRefCount)
 	EXPECT_EQ(VT_UNKNOWN, s.kind());
 }
 
-TEST(Variant_UT, CopyConstructor_BumpsIDispatchRefCount)
+TEST(Variant_UT, CopyConstructor_BumpsRefCountWhenIDispatch)
 {
 	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
 	
@@ -167,7 +167,7 @@ TEST(Variant_UT, MoveConstructor_TransfersInput)
 	EXPECT_EQ(VT_EMPTY, r.kind());
 }
 
-TEST(Variant_UT, MoveConstructor_MaintainsIUnknownRefCount)
+TEST(Variant_UT, MoveConstructor_MaintainsRefCountWhenIUnknown)
 {
 	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
 	
@@ -186,7 +186,7 @@ TEST(Variant_UT, MoveConstructor_MaintainsIUnknownRefCount)
 	EXPECT_EQ(VT_UNKNOWN, s.kind());
 }
 
-TEST(Variant_UT, MoveConstructor_MaintainsIDispatchRefCount)
+TEST(Variant_UT, MoveConstructor_MaintainsRefCountWhenIDispatch)
 {
 	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
 	
@@ -205,7 +205,7 @@ TEST(Variant_UT, MoveConstructor_MaintainsIDispatchRefCount)
 	EXPECT_EQ(VT_DISPATCH, s.kind());
 }
 
-TEST(Variant_UT, Constructor_BumpsIUnknownRefCount)
+TEST(Variant_UT, Constructor_BumpsRefCountWhenIUnknown)
 {
 	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
 
@@ -222,7 +222,7 @@ TEST(Variant_UT, Constructor_BumpsIUnknownRefCount)
 	EXPECT_EQ(VT_UNKNOWN, r.kind());
 }
 
-TEST(Variant_UT, Constructor_BumpsIDispatchRefCount)
+TEST(Variant_UT, Constructor_BumpsRefCountWhenIDispatch)
 {
 	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
 
@@ -231,6 +231,40 @@ TEST(Variant_UT, Constructor_BumpsIDispatchRefCount)
 	EXPECT_CALL(*obj, Release).Times(1);
 
 	variant const r{obj.get()};
+	
+	//! @test  Verify value is present
+	EXPECT_FALSE(r.empty());
+
+	//! @test  Verify runtime type
+	EXPECT_EQ(VT_DISPATCH, r.kind());
+}
+
+TEST(Variant_UT, Constructor_BumpsRefCountWhenIUnknownSharedPtr)
+{
+	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+
+	//! @post  Construction cause pair of calls to @c AddRef() and @c Release()
+	EXPECT_CALL(*obj, AddRef).Times(1);
+	EXPECT_CALL(*obj, Release).Times(1);
+	
+	variant const r{shared_ptr<::IUnknown>{obj.get()}};
+	
+	//! @test  Verify value is present
+	EXPECT_FALSE(r.empty());
+
+	//! @test  Verify runtime type
+	EXPECT_EQ(VT_UNKNOWN, r.kind());
+}
+
+TEST(Variant_UT, Constructor_BumpsRefCountWhenIDispatchSharedPtr)
+{
+	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+
+	//! @post  Construction cause pair of calls to @c AddRef() and @c Release()
+	EXPECT_CALL(*obj, AddRef).Times(1);
+	EXPECT_CALL(*obj, Release).Times(1);
+
+	variant const r{shared_ptr<::IDispatch>{obj.get()}};
 	
 	//! @test  Verify value is present
 	EXPECT_FALSE(r.empty());
@@ -906,22 +940,54 @@ TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotHResult)
 
 TEST(Variant_UT, assignment_ValueChangedWhenIUnknown)
 {
-	FAIL();
+	auto v1 = make_mock_coclass<NiceMock<MockComObject>>();
+	auto v2 = make_mock_coclass<NiceMock<MockComObject>>();
+
+	variant obj{v1.get()};
+	obj = v2.get();
+
+	//! @test  Verify assignment changed value
+	EXPECT_EQ(v2.get(), (shared_ptr<::IUnknown>)obj);
 }
 
 TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotIUnknown)
 {
-	FAIL();
+	auto v1 = make_mock_coclass<NiceMock<MockComObject>>();
+	
+	variant obj{42.0f};
+	obj = v1.get();
+
+	//! @test  Verify assignment changed value
+	EXPECT_EQ(v1.get(), (shared_ptr<::IUnknown>)obj);
+	
+	//! @test  Verify assignment changed runtime type
+	EXPECT_EQ(VT_UNKNOWN, obj.kind());
 }
 
 TEST(Variant_UT, assignment_ValueChangedWhenIDispatch)
 {
-	FAIL();
+	auto v1 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	auto v2 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+
+	variant obj{v1.get()};
+	obj = v2.get();
+
+	//! @test  Verify assignment changed value
+	EXPECT_EQ(v2.get(), (shared_ptr<::IDispatch>)obj);
 }
 
 TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotIDispatch)
 {
-	FAIL();
+	auto v1 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	
+	variant obj{42.0f};
+	obj = v1.get();
+
+	//! @test  Verify assignment changed value
+	EXPECT_EQ(v1.get(), (shared_ptr<::IDispatch>)obj);
+	
+	//! @test  Verify assignment changed runtime type
+	EXPECT_EQ(VT_DISPATCH, obj.kind());
 }
 
 TEST(Variant_UT, conversion_IntegerConversionsSucceedWhenValueCanBeRepresented) 
@@ -1005,7 +1071,10 @@ TEST(Variant_UT, conversion_FailsWhenValueCannotBeRepresented)
 TEST(Variant_UT, conversion_FailsWhenConversionIsIllegal) 
 {
 	//! @test  Verify illegal type conversions fail
-	EXPECT_THROW((::IUnknown*)variant{42}, logic_error);
+	EXPECT_THROW((shared_ptr<::IUnknown>)variant{42}, logic_error);
+	
+	//! @test  Verify illegal type conversions fail
+	EXPECT_THROW((shared_ptr<::IDispatch>)variant{42}, logic_error);
 }
 
 TEST(Variant_UT, conversion_FailsWhenRuntimeTypeIsInvalid) 
@@ -1345,12 +1414,21 @@ TEST(Variant_UT, roundtrip_WideStringValueIsUnchanged)
 
 TEST(Variant_UT, roundtrip_IUnknownValueIsUnchanged) 
 {
-	FAIL();
+	auto v1 = make_mock_coclass<NiceMock<MockComObject>>();
+	
+	//! @test  Verify value is unmodified
+	EXPECT_EQ(v1.get(), (shared_ptr<::IUnknown>)variant{v1.get()});
+	
+	//! @test  Verify value is unmodified
+	EXPECT_EQ(v1.get(), (shared_ptr<::IUnknown>)variant{shared_ptr<::IUnknown>{v1.get()}});
 }
 
 TEST(Variant_UT, roundtrip_IDispatchValueIsUnchanged) 
 {
-	FAIL();
+	auto v1 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	
+	//! @test  Verify value is unmodified
+	EXPECT_EQ(v1.get(), (shared_ptr<::IDispatch>)variant{shared_ptr<::IDispatch>{v1.get()}});
 }
 } // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
