@@ -539,14 +539,26 @@ target_compile_options(dllGoogleTest
 message("exeComTests: Generating unit-test project")
 
 # Test files
-file(GLOB_RECURSE PROJECT_UNIT_TEST_FILES
+file(GLOB_RECURSE PROJECT_TEST_FILES
     "${PROJECT_TEST_FOLDER}*.h"
     "${PROJECT_TEST_FOLDER}*.cpp"
+    )
+	
+# Test files
+file(GLOB_RECURSE PROJECT_TEST_CC_FILES
+    "${PROJECT_TEST_FOLDER}*.h"
+    "${PROJECT_TEST_FOLDER}*.cc"
     )
 
 # Project: exeComTests
 add_executable(exeComTests
-	${PROJECT_UNIT_TEST_FILES}
+	${PROJECT_TEST_CC_FILES}
+	${PROJECT_TEST_FILES}
+)
+
+# Exclude .cpp files from building
+set_source_files_properties(${PROJECT_TEST_FILES} PROPERTIES 
+    HEADER_FILE_ONLY ON
 )
 
 # Include folders
@@ -576,7 +588,7 @@ target_link_libraries(exeComTests
 	dllCoreCOM
 )
 
-# Set header declarations to 'dllimport'
+# Link dependencies dynamically
 target_compile_definitions(exeComTests
 	PRIVATE CORE_PLATFORM_IMPORT 
 	        ${PROJECT_IMPORT_MACRO}
