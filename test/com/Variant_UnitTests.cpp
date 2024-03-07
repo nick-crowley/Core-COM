@@ -372,6 +372,15 @@ TEST(Variant_UT, str_CorrectWhenNull)
 	EXPECT_EQ("Null", variant{nullptr}.str());
 }
 
+TEST(Variant_UT, str_CorrectWhenBool) 
+{
+	//! @test  Verify @c bool variants return string-representation of their value
+	EXPECT_EQ("True", variant{true}.str());
+
+	//! @test  Verify @c bool variants return string-representation of their value
+	EXPECT_EQ("False", variant{false}.str());
+}
+
 TEST(Variant_UT, str_CorrectWhenChar) 
 {
 	//! @test  Verify @c char variants return string-representation of their value
@@ -465,7 +474,8 @@ TEST(Variant_UT, str_CorrectWhenDate)
 
 TEST(Variant_UT, str_CorrectWhenHResult)
 {
-	FAIL();
+	//! @test  Verify @c win::HResult variants return string-representation of their value
+	EXPECT_EQ("S_OK", variant{win::HResult{S_OK}}.str());
 }
 
 TEST(Variant_UT, str_CorrectWhenCurrency)
@@ -475,18 +485,27 @@ TEST(Variant_UT, str_CorrectWhenCurrency)
 
 TEST(Variant_UT, str_CorrectWhenIUnknown)
 {
-	FAIL();
+	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+	
+	//! @test  Verify @c IUnknown variants return a fixed string
+	EXPECT_EQ(L"IUnknown", variant{obj.get()}.wstr());
 }
 
 TEST(Variant_UT, str_CorrectWhenIDispatch)
 {
-	FAIL();
+	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+	
+	//! @test  Verify @c IDispatch variants return a fixed string
+	EXPECT_EQ(L"IDispatch", variant{obj.get()}.wstr());
 }
 
 TEST(Variant_UT, wstr_CorrectWideStringRepresentation) 
 {	
 	//! @test  Verify string variants return their value
 	EXPECT_EQ(L"wstr", variant{L"wstr"}.wstr());
+
+	//! @test  Verify non-string variants return their string representation
+	EXPECT_EQ(L"42", variant{42}.wstr());
 }
 
 TEST(Variant_UT, valid_FalseForInvalidRuntimeType) 
