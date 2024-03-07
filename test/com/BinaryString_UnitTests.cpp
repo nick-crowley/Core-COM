@@ -24,6 +24,7 @@
 * the projects which contain it.
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+//#define DISABLE_BINARY_STRING_UNIT_TESTS
 #ifndef DISABLE_BINARY_STRING_UNIT_TESTS
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include <gtest/gtest.h>

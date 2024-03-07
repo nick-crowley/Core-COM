@@ -24,7 +24,7 @@
 * the projects which contain it.
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-#define DISABLE_SHARED_PTR_UNIT_TESTS
+//#define DISABLE_SHARED_PTR_UNIT_TESTS
 #ifndef DISABLE_SHARED_PTR_UNIT_TESTS
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include <gtest/gtest.h>
