@@ -34,6 +34,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 using namespace core;
 using ::testing::Return;
+using ::testing::NiceMock;
 using ::testing::StrictMock;
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
@@ -977,6 +978,226 @@ TEST(Variant_UT, conversion_FailsWhenRuntimeTypeIsInvalid)
 	
 	//! @test  Verify conversions fails when runtime type is invalid
 	EXPECT_ANY_THROW((int)variant{Invalid});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsEmpty)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{}, variant{});
+
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{nullptr}, variant{nullptr});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsBool)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{true}, variant{true});
+	
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{false}, variant{true});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsChar)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(char)1}, variant{(char)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(char)2}, variant{(char)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsByte)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(unsigned char)1}, variant{(unsigned char)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(unsigned char)2}, variant{(unsigned char)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsShort)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(short)1}, variant{(short)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(short)2}, variant{(short)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsUnsignedShort)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(unsigned short)1}, variant{(unsigned short)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(unsigned short)2}, variant{(unsigned short)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsInt)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(signed)1}, variant{(signed)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(signed)2}, variant{(signed)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsUnsignedInt)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(unsigned)1}, variant{(unsigned)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(unsigned)2}, variant{(unsigned)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsLong)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(long)1}, variant{(long)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(long)2}, variant{(long)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsUnsignedLong)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(unsigned long)1}, variant{(unsigned long)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(unsigned long)2}, variant{(unsigned long)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsLongLong)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(long long)1}, variant{(long long)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(long long)2}, variant{(long long)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsUnsignedLongLong)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{(unsigned long long)1}, variant{(unsigned long long)1});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{(unsigned long long)2}, variant{(unsigned long long)1});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsFloat)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_FLOAT_EQ(variant{1.0f}, variant{1.0f});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{2.0f}, variant{1.0f});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsDouble)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_DOUBLE_EQ(variant{1.0}, variant{1.0});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{2.0}, variant{1.0});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsDecimal)
+{
+	FAIL();
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsString)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{L"abc"}, variant{L"abc"});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{L"abc"}, variant{L"ABC"});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsCurrency)
+{
+	FAIL();
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsDate)
+{
+	FAIL();
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsHResult)
+{
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{win::HResult{E_FAIL}}, variant{win::HResult{E_FAIL}});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{win::HResult{S_OK}}, variant{win::HResult{E_FAIL}});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsIUnknown)
+{
+	auto obj1 = make_mock_coclass<NiceMock<MockComObject>>();
+	auto obj2 = make_mock_coclass<NiceMock<MockComObject>>();
+
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{obj1.get()}, variant{obj1.get()});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{obj2.get()}, variant{obj1.get()});
+}
+
+TEST(Variant_UT, equality_WhenBothOperandsIDispatch)
+{
+	auto obj1 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	auto obj2 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+
+	//! @test  Verify equality when runtime type are the same and values are equal
+	EXPECT_EQ(variant{obj1.get()}, variant{obj1.get()});
+
+	//! @test  Verify inequality when runtime type are the same and values are different
+	EXPECT_NE(variant{obj2.get()}, variant{obj1.get()});
+}
+
+TEST(Variant_UT, equality_WhenOperandsExhibitReferenceEquality)
+{
+	variant v{42};
+	
+	//! @test  Verify equality when comparing against itself
+	EXPECT_EQ(v, v);
+}
+
+TEST(Variant_UT, equality_WhenEitherOperandIsCorrupt)
+{
+	::VARIANT Invalid { VT_VERSIONED_STREAM+1 };
+
+	//! @test  Verify corrupt variants cannot be compared
+	EXPECT_ANY_THROW(variant{&Invalid} == Invalid);
+	EXPECT_ANY_THROW(Invalid == variant{&Invalid});
+}
+
+TEST(Variant_UT, inequality_WhenOperandsDifferentType)
+{
+	//! @test  Verify inequality when runtime type are different
+	EXPECT_NE(variant{}, variant{nullptr});
+	EXPECT_NE(variant{}, variant{true});
+
+	//! @test  Verify inequality when runtime type are different but values the same
+	EXPECT_NE(variant{(char)42}, variant{(short)42});
+	EXPECT_NE(variant{(short)42}, variant{(signed)42});
+	EXPECT_NE(variant{(signed)42}, variant{(long)42});
+	EXPECT_NE(variant{(long)42}, variant{(long long)42});
+	EXPECT_NE(variant{(float)42.0f}, variant{(double)42.0});
+
+	//! @test  Verify inequality when runtime type are different but values equivalent
+	EXPECT_NE(variant{42}, variant{42.0f});
+	EXPECT_NE(variant{false}, variant{0});
+	EXPECT_NE(variant{true}, variant{1});
+	EXPECT_NE(variant{"42"}, variant{42});
 }
 
 TEST(Variant_UT, roundtrip_BoolValueIsUnchanged) 

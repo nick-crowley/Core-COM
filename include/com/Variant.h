@@ -885,50 +885,48 @@ namespace core::com
         //! 
         //! @throws std::invalid_argument  Missing argument -or- invalid runtime type
         bool
-        equal(::VARIANT const* r) const
+        equal(::VARIANT const& r) const
         {
-            ThrowIfNull(r);
-
-            if (r == &this->Value)
+            if (&r == &this->Value)
                 return true;
 
             // Variants not equal if types don't match
-            if (this->kind() != r->vt)
+            if (this->kind() != r.vt)
                 return false;
 
             // Check type specific values
-            switch (r->vt) {
+            switch (r.vt) {
             case VT_EMPTY:
             case VT_NULL:
                 return true;
                 
-            case VT_BOOL:     return this->Value.boolVal == r->boolVal;
-            case VT_I1:       return this->Value.cVal == r->cVal;
-            case VT_UI1:      return this->Value.bVal == r->bVal;
-            case VT_I2:       return this->Value.iVal == r->iVal;
-            case VT_UI2:      return this->Value.uiVal == r->uiVal;
-            case VT_I4:       return this->Value.lVal == r->lVal;
-            case VT_UI4:      return this->Value.ulVal == r->ulVal;
-            case VT_INT:      return this->Value.intVal == r->intVal;
-            case VT_UINT:     return this->Value.uintVal == r->uintVal;
+            case VT_BOOL:     return this->Value.boolVal == r.boolVal;
+            case VT_I1:       return this->Value.cVal == r.cVal;
+            case VT_UI1:      return this->Value.bVal == r.bVal;
+            case VT_I2:       return this->Value.iVal == r.iVal;
+            case VT_UI2:      return this->Value.uiVal == r.uiVal;
+            case VT_I4:       return this->Value.lVal == r.lVal;
+            case VT_UI4:      return this->Value.ulVal == r.ulVal;
+            case VT_INT:      return this->Value.intVal == r.intVal;
+            case VT_UINT:     return this->Value.uintVal == r.uintVal;
 #if (_WIN32_WINNT >= 0x0501)
-            case VT_I8:       return this->Value.llVal == r->llVal;
-            case VT_UI8:      return this->Value.ullVal == r->ullVal;
+            case VT_I8:       return this->Value.llVal == r.llVal;
+            case VT_UI8:      return this->Value.ullVal == r.ullVal;
 #endif
-            case VT_R4:       return this->Value.fltVal == r->fltVal;
-            case VT_R8:       return this->Value.dblVal == r->dblVal;
-            case VT_DECIMAL:  return !std::memcmp(&this->Value.decVal, &r->decVal, sizeof(::DECIMAL));
+            case VT_R4:       return this->Value.fltVal == r.fltVal;
+            case VT_R8:       return this->Value.dblVal == r.dblVal;
+            case VT_DECIMAL:  return !std::memcmp(&this->Value.decVal, &r.decVal, sizeof(::DECIMAL));
             
-            case VT_BSTR:     return !std::wcscmp(this->Value.bstrVal, r->bstrVal);
-            case VT_CY:       return !std::memcmp(&this->Value.cyVal, &r->cyVal, sizeof(::CY));
-            case VT_DATE:     return this->Value.date == r->date;
-            case VT_ERROR:    return this->Value.scode == r->scode;
+            case VT_BSTR:     return !std::wcscmp(this->Value.bstrVal, r.bstrVal);
+            case VT_CY:       return !std::memcmp(&this->Value.cyVal, &r.cyVal, sizeof(::CY));
+            case VT_DATE:     return this->Value.date == r.date;
+            case VT_ERROR:    return this->Value.scode == r.scode;
 
-            case VT_DISPATCH: return this->Value.punkVal == r->punkVal;
-            case VT_UNKNOWN:  return this->Value.pdispVal == r->pdispVal;
+            case VT_DISPATCH: return this->Value.punkVal == r.punkVal;
+            case VT_UNKNOWN:  return this->Value.pdispVal == r.pdispVal;
             
             default:
-                ThrowInvalidArg(r, "Invalid runtime type {:#x}", r->vt);
+                ThrowInvalidArg(r, "Invalid runtime type {:#x}", r.vt);
             }
         }
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
