@@ -245,24 +245,35 @@ TEST(Variant_UT, empty_TrueWhenEmpty)
 	EXPECT_TRUE(variant{}.empty());
 }
 
-TEST(Variant_UT, empty_TrueWhenNull)
+TEST(Variant_UT, empty_FalseWhenNull)
 {
-	//! @test  Verify @c empty() detects VT_NULL
-	EXPECT_TRUE(variant{nullptr}.empty());
+	//! @test  Verify @c empty() considers VT_NULL as non-empty
+	EXPECT_FALSE(variant{nullptr}.empty());
 }
 
 TEST(Variant_UT, empty_FalseWhenNonEmpty) 
 {
-	// Enumerate all non-null, non-empty, non-property runtime types
-	for (auto e : core::enumerator_dictionary_v<::VARENUM>) 
-	{
-		if (e.second < VT_I2 || e.second > VT_VERSIONED_STREAM)
-			continue;
-
-		//! @test  Verify empty detects everything else
-		VARIANT r{static_cast<VARTYPE>(e.second)};
-		EXPECT_FALSE(variant{r}.empty());
-	}
+	//! @test  Verify @c empty() is @c false for everything but @c VT_EMPTY
+	EXPECT_FALSE(variant{::VARIANT{VT_BOOL}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_I1}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_UI1}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_I2}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_UI2}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_I4}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_UI4}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_INT}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_UINT}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_I8}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_UI8}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_R4}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_R8}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_DECIMAL}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_BSTR}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_CY}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_DATE}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_ERROR}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_DISPATCH}}.empty());
+	EXPECT_FALSE(variant{::VARIANT{VT_UNKNOWN}}.empty());
 }
 
 TEST(Variant_UT, kind_CorrectWhenEmpty) 

@@ -992,8 +992,8 @@ namespace core::com
         }
 	};
 
-    //! @brief  Empty variant sentinel value
-    variant const  nullvar;
+    //! @brief  Null-variant sentinel value
+    variant const  nullvar{nullptr};
 }
 
 namespace core {
