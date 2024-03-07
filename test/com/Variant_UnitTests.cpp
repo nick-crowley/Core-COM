@@ -520,6 +520,27 @@ TEST(Variant_UT, valid_TrueForValidRuntimeType)
 	EXPECT_TRUE(variant::valid(VT_R4));
 }
 
+TEST(Variant_UT, assignment_ValueChangedWhenBool)
+{
+	variant obj{true};
+	obj = false;
+
+	//! @test  Verify assignment changed value
+	EXPECT_EQ(false, (bool)obj);
+}
+
+TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotBool)
+{
+	variant obj{42};
+	obj = true;
+
+	//! @test  Verify assignment changed value
+	EXPECT_EQ(true, (bool)obj);
+	
+	//! @test  Verify assignment changed runtime type
+	EXPECT_EQ(VT_BOOL, obj.kind());
+}
+
 TEST(Variant_UT, assignment_ValueChangedWhenChar)
 {
 	variant obj{(char)42};
@@ -869,13 +890,49 @@ TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotIDispatch)
 TEST(Variant_UT, conversion_IntegerConversionsSucceedWhenValueCanBeRepresented) 
 {
 	//! @test  Verify integer conversions succeed
-	EXPECT_EQ((char)42, (char)variant{42});
+	EXPECT_EQ(true, (bool)variant{42});
+
+	//! @test  Verify integer conversions succeed
+	EXPECT_EQ(42, (char)variant{(unsigned char)42});
+
+	//! @test  Verify integer conversions succeed
+	EXPECT_EQ(42, (char)variant{(short)42});
+	
+	//! @test  Verify integer conversions succeed
+	EXPECT_EQ(42, (short)variant{(int)42});
+
+	//! @test  Verify integer conversions succeed
+	EXPECT_EQ(42, (int)variant{(long)42});
+
+	//! @test  Verify integer conversions succeed
+	EXPECT_EQ(42, (long)variant{(long long)42});
 }
 
 TEST(Variant_UT, conversion_IntegerPromotionsSucceedWhenValueCanBeRepresented) 
 {
 	//! @test  Verify integer promotions succeed
-	EXPECT_EQ(42l, (long)variant{42});
+	EXPECT_EQ(42, (short)variant{(char)42});
+
+	//! @test  Verify integer promotions succeed
+	EXPECT_EQ(42u, (unsigned short)variant{(char)42});
+	
+	//! @test  Verify integer promotions succeed
+	EXPECT_EQ(42, (signed)variant{(short)42});
+
+	//! @test  Verify integer promotions succeed
+	EXPECT_EQ(42u, (unsigned)variant{(short)42});
+	
+	//! @test  Verify integer promotions succeed
+	EXPECT_EQ(42, (long)variant{42});
+	
+	//! @test  Verify integer promotions succeed
+	EXPECT_EQ(42u, (unsigned long)variant{42});
+	
+	//! @test  Verify integer promotions succeed
+	EXPECT_EQ(42, (long long)variant{42l});
+	
+	//! @test  Verify integer promotions succeed
+	EXPECT_EQ(42u, (unsigned long long)variant{42l});
 }
 
 TEST(Variant_UT, conversion_FloatingPointConversionsSucceedWhenValueCanBeRepresented) 
