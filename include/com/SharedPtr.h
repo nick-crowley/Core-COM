@@ -51,19 +51,19 @@ namespace core::com
 		using type = shared_ptr<Interface>;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		Interface* m_object = nullptr;
+		Interface* Object = nullptr;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		explicit
 		shared_ptr(Interface* ptr) noexcept 
-		  : m_object{ptr}
+		  : Object{ptr}
 		{
-			if (this->m_object)
-				this->m_object->AddRef();
+			if (this->Object)
+				this->Object->AddRef();
 		}
 		
 		shared_ptr(meta::adopt_t, Interface* ptr) noexcept 
-		  : m_object{ptr}
+		  : Object{ptr}
 		{
 		}
 		
@@ -76,8 +76,8 @@ namespace core::com
 		explicit
 		shared_ptr(shared_ptr<Other> const& r) noexcept 
 		{
-			if (r.m_object)
-				r.m_object->QueryInterface(__uuidof(Interface), std::out_ptr<Interface*>(this->m_object));
+			if (r.Object)
+				r.Object->QueryInterface(__uuidof(Interface), std::out_ptr<Interface*>(this->Object));
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
@@ -87,12 +87,12 @@ namespace core::com
 		);
 
 		shared_ptr(type const& r) noexcept 
-		  : shared_ptr{r.m_object}
+		  : shared_ptr{r.Object}
 		{
 		}
 
 		shared_ptr(type&& r) noexcept 
-			: m_object{std::exchange(r.m_object,nullptr)}
+			: Object{std::exchange(r.Object,nullptr)}
 		{
 		}
 
@@ -119,8 +119,8 @@ namespace core::com
 
 		~shared_ptr() noexcept
 		{
-			if (this->m_object)
-				this->m_object->Release();
+			if (this->Object)
+				this->Object->Release();
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
@@ -129,31 +129,31 @@ namespace core::com
 		bool
 		empty() const noexcept
 		{
-			return this->m_object == nullptr;
+			return this->Object == nullptr;
 		}
 
 		Interface*
 		operator->() const noexcept
 		{
-			return this->m_object;
+			return this->Object;
 		}
 		
 		Interface&
 		operator*() const noexcept
 		{
-			return *this->m_object;
+			return *this->Object;
 		}
 		
 		implicit operator 
 		Interface*() const noexcept
 		{
-			return this->m_object;
+			return this->Object;
 		}
 
 		explicit operator 
 		bool() const noexcept
 		{
-			return this->m_object != nullptr;
+			return this->Object != nullptr;
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
@@ -162,7 +162,7 @@ namespace core::com
 		*/
 		Interface*
 		detach() noexcept {
-			return std::exchange(this->m_object, nullptr);
+			return std::exchange(this->Object, nullptr);
 		}
 
 		void
@@ -189,7 +189,7 @@ namespace core::com
 		void 
 		swap(type& r) noexcept
 		{
-			std::swap(this->m_object, r.m_object);
+			std::swap(this->Object, r.Object);
 		}
 	};
 }
