@@ -28,9 +28,13 @@
 #ifndef DISABLE_VARIANT_UNIT_TESTS
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include "com/SharedPtr.h"
 #include "com/Variant.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 using namespace core;
+using ::testing::Return;
+using ::testing::StrictMock;
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Macro Definitions o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -38,7 +42,34 @@ using namespace core;
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+struct MockComObject : ::IUnknown 
+{
+	MOCK_METHOD(HRESULT, QueryInterface, (REFIID riid, void** ppvObject), (Calltype(COMAPI), override));
+	MOCK_METHOD(ULONG, AddRef, (), (Calltype(COMAPI), override));
+	MOCK_METHOD(ULONG, Release, (), (Calltype(COMAPI), override));
+};
 
+struct MockDispatchObject : ::IDispatch
+{
+	MOCK_METHOD(HRESULT, QueryInterface, (REFIID riid, void** ppvObject), (Calltype(COMAPI), override));
+	MOCK_METHOD(ULONG, AddRef, (), (Calltype(COMAPI), override));
+	MOCK_METHOD(ULONG, Release, (), (Calltype(COMAPI), override));
+
+	MOCK_METHOD(HRESULT, GetTypeInfoCount, (UINT *pctinfo), (Calltype(COMAPI), override));
+    MOCK_METHOD(HRESULT, GetTypeInfo, (UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo), (Calltype(COMAPI), override));
+    MOCK_METHOD(HRESULT, GetIDsOfNames, (REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId), (Calltype(COMAPI), override));
+    MOCK_METHOD(HRESULT, Invoke, (DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr), (Calltype(COMAPI), override));
+};
+
+template <typename Mock>
+std::shared_ptr<Mock>
+make_mock_coclass() {
+	auto obj = std::make_shared<Mock>();
+	ON_CALL(*obj, QueryInterface).WillByDefault(Return(E_NOINTERFACE));
+	ON_CALL(*obj, AddRef).WillByDefault(Return(1));
+	ON_CALL(*obj, Release).WillByDefault(Return(1));
+	return obj;
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -85,13 +116,41 @@ TEST(Variant_UT, CopyConstructor_ClonesStrings)
 }
 
 TEST(Variant_UT, CopyConstructor_BumpsIUnknownRefCount)
-{
-	FAIL();
+{	
+	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+	
+	//! @post  Copy-construction causes pair of calls to @c AddRef() and @c Release()
+	EXPECT_CALL(*obj, AddRef).Times(2);
+	EXPECT_CALL(*obj, Release).Times(2);
+
+	variant const r{obj.get()}, s{r};
+	
+	//! @test  Verify value was copied
+	EXPECT_FALSE(r.empty());
+	EXPECT_FALSE(s.empty());
+
+	//! @test  Verify runtime type was copied
+	EXPECT_EQ(VT_UNKNOWN, r.kind());
+	EXPECT_EQ(VT_UNKNOWN, s.kind());
 }
 
 TEST(Variant_UT, CopyConstructor_BumpsIDispatchRefCount)
 {
-	FAIL();
+	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+	
+	//! @post  Copy-construction causes pair of calls to @c AddRef() and @c Release()
+	EXPECT_CALL(*obj, AddRef).Times(2);
+	EXPECT_CALL(*obj, Release).Times(2);
+
+	variant const r{obj.get()}, s{r};
+	
+	//! @test  Verify value was copied
+	EXPECT_FALSE(r.empty());
+	EXPECT_FALSE(s.empty());
+
+	//! @test  Verify runtime type was copied
+	EXPECT_EQ(VT_DISPATCH, r.kind());
+	EXPECT_EQ(VT_DISPATCH, s.kind());
 }
 
 TEST(Variant_UT, MoveConstructor_TransfersInput)
@@ -109,12 +168,74 @@ TEST(Variant_UT, MoveConstructor_TransfersInput)
 
 TEST(Variant_UT, MoveConstructor_MaintainsIUnknownRefCount)
 {
-	FAIL();
+	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+	
+	//! @post  Move-construction does not cause calls to @c AddRef() and @c Release()
+	EXPECT_CALL(*obj, AddRef).Times(1);
+	EXPECT_CALL(*obj, Release).Times(1);
+
+	variant r{obj.get()}, s{std::move(r)};
+	
+	//! @test  Verify value was moved
+	EXPECT_TRUE(r.empty());
+	EXPECT_FALSE(s.empty());
+
+	//! @test  Verify runtime type was moved
+	EXPECT_EQ(VT_EMPTY, r.kind());
+	EXPECT_EQ(VT_UNKNOWN, s.kind());
 }
 
 TEST(Variant_UT, MoveConstructor_MaintainsIDispatchRefCount)
 {
-	FAIL();
+	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+	
+	//! @post  Move-construction does not cause calls to @c AddRef() and @c Release()
+	EXPECT_CALL(*obj, AddRef).Times(1);
+	EXPECT_CALL(*obj, Release).Times(1);
+
+	variant r{obj.get()}, s{std::move(r)};
+	
+	//! @test  Verify value was moved
+	EXPECT_TRUE(r.empty());
+	EXPECT_FALSE(s.empty());
+
+	//! @test  Verify runtime type was moved
+	EXPECT_EQ(VT_EMPTY, r.kind());
+	EXPECT_EQ(VT_DISPATCH, s.kind());
+}
+
+TEST(Variant_UT, Constructor_BumpsIUnknownRefCount)
+{
+	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+
+	//! @post  Construction cause pair of calls to @c AddRef() and @c Release()
+	EXPECT_CALL(*obj, AddRef).Times(1);
+	EXPECT_CALL(*obj, Release).Times(1);
+
+	variant const r{obj.get()};
+	
+	//! @test  Verify value is present
+	EXPECT_FALSE(r.empty());
+
+	//! @test  Verify runtime type
+	EXPECT_EQ(VT_UNKNOWN, r.kind());
+}
+
+TEST(Variant_UT, Constructor_BumpsIDispatchRefCount)
+{
+	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+
+	//! @post  Construction cause pair of calls to @c AddRef() and @c Release()
+	EXPECT_CALL(*obj, AddRef).Times(1);
+	EXPECT_CALL(*obj, Release).Times(1);
+
+	variant const r{obj.get()};
+	
+	//! @test  Verify value is present
+	EXPECT_FALSE(r.empty());
+
+	//! @test  Verify runtime type
+	EXPECT_EQ(VT_DISPATCH, r.kind());
 }
 
 TEST(Variant_UT, empty_TrueWhenEmpty) 
