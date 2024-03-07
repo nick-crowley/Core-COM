@@ -335,6 +335,24 @@ namespace core::com
 		{
 			return this->initialized() ? &this->Buffer[0] : L"";
 		}
+		
+		/**
+		 * @brief	Query whether string contains a character/substring
+		*/
+		template <nstd::AnyCvOf<wchar_t, gsl::cwzstring, std::wstring_view> Parameter>
+		bool
+		contains(Parameter right) const noexcept {
+			return this->wsv().contains(right);
+		}
+
+		/**
+		 * @brief	Query whether string ends with a character/substring
+		*/
+		template <nstd::AnyCvOf<wchar_t, gsl::cwzstring, std::wstring_view> Parameter>
+		bool
+		ends_with(Parameter right) const noexcept {
+			return this->wsv().ends_with(right);
+		}
 
 		/**
 		 * @brief	Query whether string is empty
@@ -361,6 +379,15 @@ namespace core::com
         {
 			return this->Buffer ? ::SysStringLen(this->Buffer) : 0u;
 		}
+
+		/**
+		 * @brief	Query whether string starts with a character/substring
+		*/
+		template <nstd::AnyCvOf<wchar_t, gsl::cwzstring, std::wstring_view> Parameter>
+		bool
+		starts_with(Parameter right) const noexcept {
+			return this->wsv().starts_with(right);
+		}
 		
 		/**
 		 * @brief	Convert to wide-character string-view
@@ -368,7 +395,7 @@ namespace core::com
 		implicit constexpr 
 		operator std::wstring_view() const noexcept
 		{
-			return {this->Buffer, this->Buffer + this->size()};
+			return this->wsv();
 		}
 		
 		bool constexpr
@@ -411,6 +438,14 @@ namespace core::com
 			return this->Buffer != nullptr;
 		}
 		
+		/**
+		 * @brief	Retrieve string-view of buffer
+		*/
+		std::wstring_view constexpr 
+		wsv() const noexcept
+		{
+			return {this->Buffer, this->Buffer + this->size()};
+		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		/**
