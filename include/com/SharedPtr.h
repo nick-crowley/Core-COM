@@ -40,6 +40,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
+	//! @brief Smart-point for objects which implement COM interfaces
 	template <meta::ComInterface Interface>
 	class shared_ptr
 	{
@@ -92,7 +93,7 @@ namespace core::com
 		}
 
 		shared_ptr(type&& r) noexcept 
-			: Object{std::exchange(r.Object,nullptr)}
+		  : Object{std::exchange(r.Object,nullptr)}
 		{
 		}
 
