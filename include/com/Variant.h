@@ -993,6 +993,14 @@ namespace core::com
             std::swap(this->Value, r.Value);
         }
 	};
+
+    //! @brief  Empty variant sentinel value
+    variant const  nullvar;
+}
+
+namespace core {
+    // Ensure @c nullvar can be used like first-class citizen
+    using com::nullvar;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
