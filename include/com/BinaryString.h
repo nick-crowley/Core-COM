@@ -43,19 +43,23 @@ namespace core::com
 {
 	namespace detail 
 	{
-		template <std::forward_iterator ForwardIterator>
+		template <std::forward_iterator BeginIterator, std::forward_iterator EndIterator>
+			requires nstd::IndirectlyConvertibleTo<BeginIterator, wchar_t>
+			      && nstd::IndirectlyConvertibleTo<EndIterator, wchar_t>
+			      && requires(BeginIterator a, EndIterator b) { a <= b; }
 		bool constexpr
-		is_valid_range(ForwardIterator first, ForwardIterator end)
+		is_valid_range(BeginIterator pos, EndIterator end)
         {
-			if constexpr (std::is_pointer_v<ForwardIterator>) {
-				return first && end && first <= end;
-			}
-			else if constexpr (std::random_access_iterator<ForwardIterator>) {
-				return first <= end;
-			}
-            else {
+			if constexpr (std::is_pointer_v<BeginIterator> 
+			           && std::is_pointer_v<EndIterator>)
+				return static_cast<void const* const>(pos) <= static_cast<void const* const>(end);
+			
+			else if constexpr (std::random_access_iterator<BeginIterator>
+			                && std::random_access_iterator<EndIterator>)
+				return pos <= end;
+			
+            else
 				return true;
-			}
 		}
 	}
 	
@@ -93,48 +97,61 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		/**
-		 * @brief	Construct around @c nullptr (ie. uninitialized)
+		 * @brief	Construct null @c BSTR
 		*/
 		constexpr 
-		BinaryString() noexcept
-		{}
+		BinaryString() noexcept = default;
 		
-		/**
-		 * @brief	Construct with elements copied from input range
-		 * 
-		 * @param first		First element in range
-		 * @param end		Immediately beyond last element in range
-		 * 
-		 * @throws std::bad_alloc		Out of memory
-		*/
-		template <std::forward_iterator ForwardIterator>
-			requires nstd::IndirectlyConvertibleTo<ForwardIterator, wchar_t>
-		BinaryString(ForwardIterator first, ForwardIterator end)
-        {
-			this->assign(first,end);
-		}
-		
-		//! @brief	Prevent construction from null pointer literals
+		//! @brief	Unnecessary; use the default-constructor to create null @c BSTR
 		constexpr 
-		BinaryString(nullptr_t, nullptr_t) noexcept = delete;
+		BinaryString(nullptr_t) noexcept = delete;
 
 		/**
+		 * @brief	Construct with elements copied from a (possibly empty) input range
+		 * @details	If both @p pos and @p end are @c nullptr then a null @c BSTR is created
+		 * 
+		 * @param pos		First element in range
+		 * @param end		Immediately beyond last element in range
+		 * 
+		 * @throws std::bad_alloc          Out of memory
+		 * @throws std::invalid_argument   Missing either argument (but not both)
+		 * @throws std::invalid_argument   @p pos and @p end specify an invalid range
+		*/
+		template <std::forward_iterator BeginIterator, std::forward_iterator EndIterator>
+			requires nstd::IndirectlyConvertibleTo<BeginIterator, wchar_t>
+			      && nstd::IndirectlyConvertibleTo<EndIterator, wchar_t>
+		BinaryString(BeginIterator pos, EndIterator end)
+        {
+			if constexpr (std::is_pointer_v<BeginIterator> && std::is_pointer_v<EndIterator>) {
+				if (!pos != !end) {
+					ThrowIfNull(pos);
+					ThrowIfNull(end);
+				}
+			}
+
+			this->assign(pos,end);
+		}
+		
+		/**
 		 * @brief	Construct with elements copied from a null-terminated C-string
+		 * @details	If @p src is @c nullptr then a null @c BSTR is created
 		 * 
-		 * @param str		Null-terminated wide-character array
+		 * @param str	[optional] Null-terminated source buffer
 		 * 
-		 * @throws std::bad_alloc		Out of memory
+		 * @throws std::bad_alloc      Out of memory
 		*/
 		explicit 
-		BinaryString(gsl::cwzstring const str) 
-		  : BinaryString{str, str + BinaryString::measure(str)}
+		BinaryString(gsl::cwzstring const str)
         {
+			if (str)
+				this->assign(str, str + BinaryString::measure(str));
 		}
 		
 		/**
 		 * @brief	Take ownership of elements within a null-terminated buffer
+		 * @details	If @p src is @c nullptr then a null @c BSTR is created
 		 * 
-		 * @param str		Null-terminated wide-character array
+		 * @param str	[optional] Null-terminated source buffer
 		*/
 		constexpr
 		BinaryString(meta::adopt_t, gsl::wzstring const str) noexcept
@@ -201,6 +218,7 @@ namespace core::com
 		
 		/**
 		 * @brief	Overwrite with elements copied from a null-terminated C-string 
+		 * @details	If @p r is @c nullptr then a null @c BSTR is created
 		 * 
 		 * @param r		Source buffer
 		 * 
@@ -216,7 +234,7 @@ namespace core::com
 		/**
 		 * @brief	Overwrite with elements copied from another binary string
 		 * 
-		 * @param r		Other string
+		 * @param r		Other binary string
 		 * 
 		 * @throws std::bad_alloc		Out of memory
 		*/
@@ -257,13 +275,15 @@ namespace core::com
 		/**
 		 * @brief	Retrieve reference to back character
 		 * 
-		 * @remarks	Undefined behaviour when the string is empty
+		 * @throws  std::logic_error  string is empty
 		*/
 		template <typename Self>
 		if_const_then_t<Self, const_reference, reference> constexpr
-		back(this Self&& self) noexcept
+		back(this Self&& self)
 		{
-			return self.Buffer[self.size()-1];
+			if (self.empty())
+				throw logic_error{"String is empty"};
+			return self.Buffer[self.size() - 1];
 		}
 
 		/**
@@ -303,12 +323,14 @@ namespace core::com
 		/**
 		 * @brief	Retrieve reference to front character
 		 * 
-		 * @remarks	Undefined behaviour when the string is empty
+		 * @throws  std::logic_error  string is empty
 		*/
 		template <typename Self>
 		if_const_then_t<Self, const_reference, reference> constexpr
-		front(this Self&& self) noexcept
+		front(this Self&& self)
 		{
+			if (self.empty())
+				throw logic_error{"String is empty"};
 			return self.Buffer[0];
 		}
 
@@ -316,7 +338,7 @@ namespace core::com
 		/**
 		 * @brief	Measure string, in characters
 		 * 
-		 * @param	str		Pointer to first element, possibly @c nullptr
+		 * @param	str		[optional] Pointer to first element
 		*/
 		size_type constexpr
 		static measure(gsl::cwzstring str) noexcept {
@@ -331,7 +353,7 @@ namespace core::com
 		gsl::cwzstring constexpr
 		c_str() const noexcept
 		{
-			return this->initialized() ? &this->Buffer[0] : L"";
+			return this->initialized() ? &this->Buffer[0] : nullptr;
 		}
 		
 		/**
@@ -353,9 +375,7 @@ namespace core::com
 		}
 
 		/**
-		 * @brief	Query whether string is empty
-		 * 
-		 * @return	true iff empty
+		 * @brief	Query whether string is either a @e null @c BSTR or it's empty
 		*/
 		bool constexpr
 		empty() const noexcept
@@ -453,15 +473,31 @@ namespace core::com
 	public:
 		/**
 		 * @brief	Overwrite with elements copied from the range [first, end]
+		 * @details	If both @p pos and @p end are @c nullptr then a null @c BSTR is created
 		 * 
 		 * @param pos		First element in range
 		 * @param end		One past last element in range
+		 * 
+		 * @throws  std::invalid_argument   Missing either argument (but not both)
+		 * @throws  std::invalid_argument   @p pos and @p end specify an invalid range
 		*/
-		template <std::forward_iterator ForwardIterator>
-			requires nstd::IndirectlyConvertibleTo<ForwardIterator, wchar_t>
+		template <std::forward_iterator BeginIterator, std::forward_iterator EndIterator>
+			requires nstd::IndirectlyConvertibleTo<BeginIterator, wchar_t>
+			      && nstd::IndirectlyConvertibleTo<EndIterator, wchar_t>
 		void 
-		assign(ForwardIterator pos, ForwardIterator end)
+		assign(BeginIterator pos, EndIterator end)
         {
+			if constexpr (std::is_pointer_v<BeginIterator> && std::is_pointer_v<EndIterator>) {
+				if (!pos != !end) {
+					ThrowIfNull(pos);
+					ThrowIfNull(end);
+				}
+				else if (!pos && !end) {
+					if (this->Buffer)
+						::SysFreeString(std::exchange(this->Buffer, nullptr));
+					return;
+				}
+			}
 			ThrowIf(end, !detail::is_valid_range(pos, end));
 
 			// Allocate an empty buffer with space for additional null terminator
@@ -526,6 +562,12 @@ namespace core::com::testing
 	
 	//! @test  Verify @c core::com::wstring converts to @c std::wstring_view
 	static_assert(std::convertible_to<BinaryString, std::wstring_view>);
+	
+	//! @test  Verify @c core::com::wstring can be constructed from @c std::string
+	static_assert(std::constructible_from<BinaryString, std::string>);
+
+	//! @test  Verify @c core::com::wstring can be constructed from @c std::wstring
+	static_assert(std::constructible_from<BinaryString, std::wstring>);
 }
 // o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Separator o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
