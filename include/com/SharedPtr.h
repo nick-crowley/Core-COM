@@ -80,6 +80,12 @@ namespace core::com
 			if (r.Object)
 				r.Object->QueryInterface(__uuidof(Interface), std::out_ptr<Interface*>(this->Object));
 		}
+
+		~shared_ptr() noexcept
+		{
+			if (this->Object)
+				this->Object->Release();
+		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		satisfies(shared_ptr,
@@ -116,12 +122,6 @@ namespace core::com
 		{
 			r.swap(*this);
 			return *this;
-		}
-
-		~shared_ptr() noexcept
-		{
-			if (this->Object)
-				this->Object->Release();
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
