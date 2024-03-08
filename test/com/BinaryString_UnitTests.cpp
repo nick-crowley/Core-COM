@@ -126,6 +126,50 @@ TEST(BinaryString_UT, Data_CompatibleWithSysStringLen)
 	//! @test  Verify @c SysStringLen() can obtain the length from the BSTR
 	EXPECT_EQ(3u, ::SysStringLen(src.bstr()));
 }
+
+TEST(BinaryString_UT, equality_WhenComparedToCStrings) 
+{	
+	//! @test  Verify result when equal
+	EXPECT_EQ(L"abc", wstring{L"abc"});
+	EXPECT_EQ(wstring{L"abc"}, L"abc");
+
+	//! @test  Verify result when unequal
+	EXPECT_NE(L"abc", wstring{L"ABC"});
+	EXPECT_NE(wstring{L""}, L"abc");
+}
+
+TEST(BinaryString_UT, equality_WhenComparedToComStrings) 
+{	
+	//! @test  Verify result when equal
+	EXPECT_EQ(wstring{L"abc"}, wstring{L"abc"});
+
+	//! @test  Verify result when unequal
+	EXPECT_NE(wstring{L"abc"}, wstring{L""});
+	EXPECT_NE(wstring{L"ABC"}, wstring{L"abc"});
+}
+
+TEST(BinaryString_UT, equality_WhenComparedToStdStrings) 
+{	
+	//! @test  Verify result when equal
+	EXPECT_EQ(std::wstring{L"abc"}, wstring{L"abc"});
+	EXPECT_EQ(wstring{L"abc"}, std::wstring{L"abc"});
+
+	//! @test  Verify result when unequal
+	EXPECT_NE(std::wstring{L"abc"}, wstring{L"ABC"});
+	EXPECT_NE(wstring{L""}, std::wstring{L"abc"});
+}
+
+TEST(BinaryString_UT, equality_WhenComparedToStdStringViews) 
+{	
+	//! @test  Verify result when equal
+	EXPECT_EQ(std::wstring_view{L"abc"}, wstring{L"abc"});
+	EXPECT_EQ(wstring{L"abc"}, std::wstring_view{L"abc"});
+
+	//! @test  Verify result when unequal
+	EXPECT_NE(std::wstring_view{L"AB"}, wstring{L"abc"});
+	EXPECT_NE(wstring{L"abc"}, std::wstring_view{L""});
+}
+
 } // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #endif	// DISABLE_BINARY_STRING_UNIT_TESTS
