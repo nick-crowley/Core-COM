@@ -40,7 +40,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	//! @brief Smart-point for objects which implement COM interfaces
+	//! @brief Smart-pointer for objects which implement COM interfaces
 	template <meta::ComInterface Interface>
 	class shared_ptr
 	{
