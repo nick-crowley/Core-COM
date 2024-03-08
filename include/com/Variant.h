@@ -1028,7 +1028,21 @@ namespace core {
     using com::nullvar;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-
+namespace core::com 
+{
+    //! @brief  Coerce @c variant into another runtime type
+    //! 
+    //! @throws std::bad_alloc         Failed to allocate memory
+    //! @throws std::invalid_argument  Variant is corrupt
+    //! @throws std::range_error       Value cannot be represented within destination type
+    //! @throws std::logic_error       Type cannot be converted to destination type
+    //! @throws std::system_error      Operation failed
+    template <::VARTYPE To>
+    variant
+    variant_cast(variant const& v) {
+        return variant::cast<To>(v);
+    }
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
