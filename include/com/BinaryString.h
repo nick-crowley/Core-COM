@@ -518,7 +518,7 @@ namespace core::com
 		/**
 		 * @brief	Retrieve pointer to internal character buffer
 		*/
-		gsl::wzstring
+		gsl::wzstring constexpr
 		bstr() noexcept
 		{
 			return this->Buffer;
