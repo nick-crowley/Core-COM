@@ -569,6 +569,4 @@ namespace core::com::testing
 	//! @test  Verify @c core::com::wstring can be constructed from @c std::wstring
 	static_assert(std::constructible_from<BinaryString, std::wstring>);
 }
-// o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Separator o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
