@@ -1030,6 +1030,12 @@ namespace core {
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com 
 {
+	//! @brief  Query whether @c variant is @e empty
+	bool
+	empty(variant const& str) {
+		return str.empty();
+	}
+
     //! @brief  Coerce @c variant into another runtime type
     //! 
     //! @throws std::bad_alloc         Failed to allocate memory
@@ -1045,4 +1051,10 @@ namespace core::com
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com::testing
+{
+	//! @test  Verify @c core::com::variant models @c meta::EmptyCompatible
+	static_assert(meta::EmptyCompatible<variant>);
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
