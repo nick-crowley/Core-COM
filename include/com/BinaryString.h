@@ -163,7 +163,7 @@ namespace core::com
 #endif // 0
 
 		/**
-		 * @brief	Construct with elements copied from a std::basic_string
+		 * @brief	Construct with elements copied from a @c std::basic_string
 		 * 
 		 * @param str		Standard library string
 		 * 
@@ -177,9 +177,9 @@ namespace core::com
 		}
 		
 		/**
-		 * @brief	Construct with elements copied from another string
+		 * @brief	Construct with elements copied from another binary string
 		 * 
-		 * @param r		Other string
+		 * @param r		Other binary string
 		 * 
 		 * @throws std::bad_alloc		Out of memory
 		*/
@@ -202,7 +202,7 @@ namespace core::com
 		/**
 		 * @brief	Overwrite with elements copied from a null-terminated C-string 
 		 * 
-		 * @param r		Other string
+		 * @param r		Source buffer
 		 * 
 		 * @throws std::bad_alloc		Out of memory
 		*/
@@ -214,7 +214,7 @@ namespace core::com
 		}
 		
 		/**
-		 * @brief	Overwrite with elements copied from another string 
+		 * @brief	Overwrite with elements copied from another binary string
 		 * 
 		 * @param r		Other string
 		 * 
@@ -228,11 +228,9 @@ namespace core::com
 		}
 		
 		/**
-		 * @brief	Overwrite with buffer moved from another string 
+		 * @brief	Overwrite with buffer moved from another binary string
 		 * 
-		 * @param r		Other string
-		 * 
-		 * @remarks	If @p r has a different allocator to @p this, a copy is performed
+		 * @param r		Other binary string
 		*/
 		type constexpr& 
 		operator=(type&& r) noexcept
@@ -328,7 +326,7 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		/**
-		 * @brief	Retrieve pointer to internal character buffer
+		 * @brief	Retrieve const-pointer to null-terminated string buffer, if any
 		*/
 		gsl::cwzstring constexpr
 		c_str() const noexcept
