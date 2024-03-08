@@ -231,4 +231,10 @@ namespace core::com
 		return shared_ptr<Interface>{ptr};
 	}
 }
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com::testing
+{
+	//! @test  Verify @c core::com::shared_ptr models @c meta::EmptyCompatible
+	static_assert(meta::EmptyCompatible<shared_ptr<IUnknown>>);
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
