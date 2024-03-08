@@ -194,6 +194,33 @@ namespace core::com
 		}
 		
 		/**
+		 * @brief	Overwrite with elements copied from a null-terminated C-string 
+		 * @details	If @p r is @c nullptr then a null @c BSTR is created
+		 * 
+		 * @param r		Source buffer
+		 * 
+		 * @throws std::bad_alloc		Out of memory
+		*/
+		type constexpr& 
+		operator=(gsl::cwzstring const str)
+		{
+			type{str}.swap(*this);
+			return *this;
+		}
+		
+		//! @brief	De-allocate string buffer
+		constexpr 
+		~BinaryString() noexcept
+		{
+			if (this->initialized())
+			{
+				::SysFreeString(this->Buffer);
+				this->Buffer = nullptr;
+			}
+		}	
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	public:
+		/**
 		 * @brief	Construct with elements copied from another binary string
 		 * 
 		 * @param r		Other binary string
@@ -214,21 +241,6 @@ namespace core::com
 		BinaryString(type&& r) noexcept
 		{
 			r.swap(*this);
-		}
-		
-		/**
-		 * @brief	Overwrite with elements copied from a null-terminated C-string 
-		 * @details	If @p r is @c nullptr then a null @c BSTR is created
-		 * 
-		 * @param r		Source buffer
-		 * 
-		 * @throws std::bad_alloc		Out of memory
-		*/
-		type constexpr& 
-		operator=(gsl::cwzstring const str)
-		{
-			type{str}.swap(*this);
-			return *this;
 		}
 		
 		/**
@@ -257,19 +269,6 @@ namespace core::com
 			return *this;
 		}
 		
-		//! @brief	De-allocate string buffer
-		constexpr 
-		~BinaryString() noexcept
-		{
-			if (this->initialized())
-			{
-				::SysFreeString(this->Buffer);
-				this->Buffer = nullptr;
-			}
-		}
-		
-		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		/**
