@@ -551,7 +551,14 @@ namespace core::com
 	using wstring = BinaryString;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-
+namespace core::com
+{
+	//! @brief  Query whether @c BinaryString is @e empty
+	bool
+	empty(BinaryString const& str) {
+		return str.empty();
+	}
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -568,5 +575,8 @@ namespace core::com::testing
 
 	//! @test  Verify @c core::com::wstring can be constructed from @c std::wstring
 	static_assert(std::constructible_from<BinaryString, std::wstring>);
+	
+	//! @test  Verify @c core::com::wstring models @c meta::EmptyCompatible
+	static_assert(meta::EmptyCompatible<wstring>);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
