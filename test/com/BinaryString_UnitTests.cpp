@@ -434,16 +434,15 @@ TEST(BinaryString_UT, equality_WhenNullBStr)
 	EXPECT_EQ(wstring{}, wstring{(wchar_t const*)nullptr});
 }
 
-TEST(BinaryString_UT, inequality_BetweenNullBStrAndEmptyBStr) 
+TEST(BinaryString_UT, equality_BetweenNullBStrAndEmptyBStr) 
 {	
-	//! @test  Verify result is inequality between @e null and @e empty @c BSTR
-	EXPECT_NE(wstring{L""}, wstring{});
-	EXPECT_NE(wstring{}, wstring{L""});
-	EXPECT_NE(wstring{L""}, wstring{(wchar_t const*)nullptr});
-	EXPECT_NE(wstring{(wchar_t const*)nullptr}, wstring{L""});
+	//! @test  Verify result is @e equality between @e null and @e empty @c BSTR
+	EXPECT_EQ(wstring{L""}, wstring{});
+	EXPECT_EQ(wstring{}, wstring{L""});
+	EXPECT_EQ(wstring{L""}, wstring{(wchar_t const*)nullptr});
+	EXPECT_EQ(wstring{(wchar_t const*)nullptr}, wstring{L""});
 
-	//! @remarks  Apparently .NET marshalls empty to @c String.Empty and @e null @c BSTR to @c null
-	//!           so we model the same behaviour.
+	//! @remarks  This behaviour is consistent with Microsoft's @c BSTR wrapper @c _bstr_t
 }
 
 TEST(BinaryString_UT, Empty_TrueWhenNullBStr) 
