@@ -31,6 +31,7 @@
 #include <gmock/gmock.h>
 #include "com/SharedPtr.h"
 #include "com/Variant.h"
+#include "com/MockDispatch.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 using namespace core;
 using ::testing::Return;
@@ -43,34 +44,7 @@ using ::testing::StrictMock;
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-struct MockUnknown : ::IUnknown 
-{
-	MOCK_METHOD(HRESULT, QueryInterface, (REFIID riid, void** ppvObject), (Calltype(COMAPI), override));
-	MOCK_METHOD(ULONG, AddRef, (), (Calltype(COMAPI), override));
-	MOCK_METHOD(ULONG, Release, (), (Calltype(COMAPI), override));
-};
 
-struct MockDispatch : ::IDispatch
-{
-	MOCK_METHOD(HRESULT, QueryInterface, (REFIID riid, void** ppvObject), (Calltype(COMAPI), override));
-	MOCK_METHOD(ULONG, AddRef, (), (Calltype(COMAPI), override));
-	MOCK_METHOD(ULONG, Release, (), (Calltype(COMAPI), override));
-
-	MOCK_METHOD(HRESULT, GetTypeInfoCount, (UINT *pctinfo), (Calltype(COMAPI), override));
-    MOCK_METHOD(HRESULT, GetTypeInfo, (UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo), (Calltype(COMAPI), override));
-    MOCK_METHOD(HRESULT, GetIDsOfNames, (REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId), (Calltype(COMAPI), override));
-    MOCK_METHOD(HRESULT, Invoke, (DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr), (Calltype(COMAPI), override));
-};
-
-template <typename Mock>
-std::shared_ptr<Mock>
-make_mock_coclass() {
-	auto obj = std::make_shared<Mock>();
-	ON_CALL(*obj, QueryInterface).WillByDefault(Return(E_NOINTERFACE));
-	ON_CALL(*obj, AddRef).WillByDefault(Return(1));
-	ON_CALL(*obj, Release).WillByDefault(Return(1));
-	return obj;
-}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
