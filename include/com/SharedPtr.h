@@ -125,6 +125,7 @@ namespace core::com
 		operator=(type&& r) noexcept
 		{
 			r.swap(*this);
+			r.reset();
 			return *this;
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
