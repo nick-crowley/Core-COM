@@ -43,14 +43,14 @@ using ::testing::StrictMock;
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-struct MockComObject : ::IUnknown 
+struct MockUnknown : ::IUnknown 
 {
 	MOCK_METHOD(HRESULT, QueryInterface, (REFIID riid, void** ppvObject), (Calltype(COMAPI), override));
 	MOCK_METHOD(ULONG, AddRef, (), (Calltype(COMAPI), override));
 	MOCK_METHOD(ULONG, Release, (), (Calltype(COMAPI), override));
 };
 
-struct MockDispatchObject : ::IDispatch
+struct MockDispatch : ::IDispatch
 {
 	MOCK_METHOD(HRESULT, QueryInterface, (REFIID riid, void** ppvObject), (Calltype(COMAPI), override));
 	MOCK_METHOD(ULONG, AddRef, (), (Calltype(COMAPI), override));
@@ -118,7 +118,7 @@ TEST(Variant_UT, CopyConstructor_ClonesStrings)
 
 TEST(Variant_UT, CopyConstructor_BumpsRefCountWhenIUnknown)
 {	
-	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+	auto obj = make_mock_coclass<StrictMock<MockUnknown>>();
 	
 	//! @post  Copy-construction causes pair of calls to @c AddRef() and @c Release()
 	EXPECT_CALL(*obj, AddRef).Times(2);
@@ -137,7 +137,7 @@ TEST(Variant_UT, CopyConstructor_BumpsRefCountWhenIUnknown)
 
 TEST(Variant_UT, CopyConstructor_BumpsRefCountWhenIDispatch)
 {
-	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+	auto obj = make_mock_coclass<StrictMock<MockDispatch>>();
 	
 	//! @post  Copy-construction causes pair of calls to @c AddRef() and @c Release()
 	EXPECT_CALL(*obj, AddRef).Times(2);
@@ -169,7 +169,7 @@ TEST(Variant_UT, MoveConstructor_TransfersInput)
 
 TEST(Variant_UT, MoveConstructor_MaintainsRefCountWhenIUnknown)
 {
-	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+	auto obj = make_mock_coclass<StrictMock<MockUnknown>>();
 	
 	//! @post  Move-construction does not cause calls to @c AddRef() and @c Release()
 	EXPECT_CALL(*obj, AddRef).Times(1);
@@ -188,7 +188,7 @@ TEST(Variant_UT, MoveConstructor_MaintainsRefCountWhenIUnknown)
 
 TEST(Variant_UT, MoveConstructor_MaintainsRefCountWhenIDispatch)
 {
-	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+	auto obj = make_mock_coclass<StrictMock<MockDispatch>>();
 	
 	//! @post  Move-construction does not cause calls to @c AddRef() and @c Release()
 	EXPECT_CALL(*obj, AddRef).Times(1);
@@ -207,7 +207,7 @@ TEST(Variant_UT, MoveConstructor_MaintainsRefCountWhenIDispatch)
 
 TEST(Variant_UT, Constructor_BumpsRefCountWhenIUnknown)
 {
-	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+	auto obj = make_mock_coclass<StrictMock<MockUnknown>>();
 
 	//! @post  Construction cause pair of calls to @c AddRef() and @c Release()
 	EXPECT_CALL(*obj, AddRef).Times(1);
@@ -224,7 +224,7 @@ TEST(Variant_UT, Constructor_BumpsRefCountWhenIUnknown)
 
 TEST(Variant_UT, Constructor_BumpsRefCountWhenIDispatch)
 {
-	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+	auto obj = make_mock_coclass<StrictMock<MockDispatch>>();
 
 	//! @post  Construction cause pair of calls to @c AddRef() and @c Release()
 	EXPECT_CALL(*obj, AddRef).Times(1);
@@ -241,7 +241,7 @@ TEST(Variant_UT, Constructor_BumpsRefCountWhenIDispatch)
 
 TEST(Variant_UT, Constructor_BumpsRefCountWhenIUnknownSharedPtr)
 {
-	auto obj = make_mock_coclass<StrictMock<MockComObject>>();
+	auto obj = make_mock_coclass<StrictMock<MockUnknown>>();
 
 	//! @post  Construction cause pair of calls to @c AddRef() and @c Release()
 	EXPECT_CALL(*obj, AddRef).Times(1);
@@ -258,7 +258,7 @@ TEST(Variant_UT, Constructor_BumpsRefCountWhenIUnknownSharedPtr)
 
 TEST(Variant_UT, Constructor_BumpsRefCountWhenIDispatchSharedPtr)
 {
-	auto obj = make_mock_coclass<StrictMock<MockDispatchObject>>();
+	auto obj = make_mock_coclass<StrictMock<MockDispatch>>();
 
 	//! @post  Construction cause pair of calls to @c AddRef() and @c Release()
 	EXPECT_CALL(*obj, AddRef).Times(1);
@@ -396,7 +396,7 @@ TEST(Variant_UT, kind_CorrectWhenHResult)
 
 TEST(Variant_UT, kind_CorrectWhenIUnknown) 
 {
-	auto obj = make_mock_coclass<NiceMock<MockComObject>>();
+	auto obj = make_mock_coclass<NiceMock<MockUnknown>>();
 
 	//! @test  Verify @c IUnknown variants are @c VT_UNKNOWN
 	EXPECT_EQ(VT_UNKNOWN, variant{obj.get()}.kind());
@@ -404,7 +404,7 @@ TEST(Variant_UT, kind_CorrectWhenIUnknown)
 
 TEST(Variant_UT, kind_CorrectWhenIDispatch) 
 {
-	auto obj = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	auto obj = make_mock_coclass<NiceMock<MockDispatch>>();
 
 	//! @test  Verify @c IDispatch variants are @c VT_DISPATCH
 	EXPECT_EQ(VT_DISPATCH, variant{obj.get()}.kind());
@@ -535,7 +535,7 @@ TEST(Variant_UT, str_CorrectWhenCurrency)
 
 TEST(Variant_UT, str_CorrectWhenIUnknown)
 {
-	auto obj = make_mock_coclass<NiceMock<MockComObject>>();
+	auto obj = make_mock_coclass<NiceMock<MockUnknown>>();
 	
 	//! @test  Verify @c IUnknown variants return a fixed string
 	EXPECT_EQ(L"IUnknown", variant{obj.get()}.wstr());
@@ -543,7 +543,7 @@ TEST(Variant_UT, str_CorrectWhenIUnknown)
 
 TEST(Variant_UT, str_CorrectWhenIDispatch)
 {
-	auto obj = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	auto obj = make_mock_coclass<NiceMock<MockDispatch>>();
 	
 	//! @test  Verify @c IDispatch variants return a fixed string
 	EXPECT_EQ(L"IDispatch", variant{obj.get()}.wstr());
@@ -940,8 +940,8 @@ TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotHResult)
 
 TEST(Variant_UT, assignment_ValueChangedWhenIUnknown)
 {
-	auto v1 = make_mock_coclass<NiceMock<MockComObject>>();
-	auto v2 = make_mock_coclass<NiceMock<MockComObject>>();
+	auto v1 = make_mock_coclass<NiceMock<MockUnknown>>();
+	auto v2 = make_mock_coclass<NiceMock<MockUnknown>>();
 
 	variant obj{v1.get()};
 	obj = v2.get();
@@ -952,7 +952,7 @@ TEST(Variant_UT, assignment_ValueChangedWhenIUnknown)
 
 TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotIUnknown)
 {
-	auto v1 = make_mock_coclass<NiceMock<MockComObject>>();
+	auto v1 = make_mock_coclass<NiceMock<MockUnknown>>();
 	
 	variant obj{42.0f};
 	obj = v1.get();
@@ -966,8 +966,8 @@ TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotIUnknown)
 
 TEST(Variant_UT, assignment_ValueChangedWhenIDispatch)
 {
-	auto v1 = make_mock_coclass<NiceMock<MockDispatchObject>>();
-	auto v2 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	auto v1 = make_mock_coclass<NiceMock<MockDispatch>>();
+	auto v2 = make_mock_coclass<NiceMock<MockDispatch>>();
 
 	variant obj{v1.get()};
 	obj = v2.get();
@@ -978,7 +978,7 @@ TEST(Variant_UT, assignment_ValueChangedWhenIDispatch)
 
 TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotIDispatch)
 {
-	auto v1 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	auto v1 = make_mock_coclass<NiceMock<MockDispatch>>();
 	
 	variant obj{42.0f};
 	obj = v1.get();
@@ -1246,8 +1246,8 @@ TEST(Variant_UT, equality_WhenBothOperandsHResult)
 
 TEST(Variant_UT, equality_WhenBothOperandsIUnknown)
 {
-	auto obj1 = make_mock_coclass<NiceMock<MockComObject>>();
-	auto obj2 = make_mock_coclass<NiceMock<MockComObject>>();
+	auto obj1 = make_mock_coclass<NiceMock<MockUnknown>>();
+	auto obj2 = make_mock_coclass<NiceMock<MockUnknown>>();
 
 	//! @test  Verify equality when runtime type are the same and values are equal
 	EXPECT_EQ(variant{obj1.get()}, variant{obj1.get()});
@@ -1258,8 +1258,8 @@ TEST(Variant_UT, equality_WhenBothOperandsIUnknown)
 
 TEST(Variant_UT, equality_WhenBothOperandsIDispatch)
 {
-	auto obj1 = make_mock_coclass<NiceMock<MockDispatchObject>>();
-	auto obj2 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	auto obj1 = make_mock_coclass<NiceMock<MockDispatch>>();
+	auto obj2 = make_mock_coclass<NiceMock<MockDispatch>>();
 
 	//! @test  Verify equality when runtime type are the same and values are equal
 	EXPECT_EQ(variant{obj1.get()}, variant{obj1.get()});
@@ -1414,7 +1414,7 @@ TEST(Variant_UT, roundtrip_WideStringValueIsUnchanged)
 
 TEST(Variant_UT, roundtrip_IUnknownValueIsUnchanged) 
 {
-	auto v1 = make_mock_coclass<NiceMock<MockComObject>>();
+	auto v1 = make_mock_coclass<NiceMock<MockUnknown>>();
 	
 	//! @test  Verify value is unmodified
 	EXPECT_EQ(v1.get(), (shared_ptr<::IUnknown>)variant{v1.get()});
@@ -1425,7 +1425,7 @@ TEST(Variant_UT, roundtrip_IUnknownValueIsUnchanged)
 
 TEST(Variant_UT, roundtrip_IDispatchValueIsUnchanged) 
 {
-	auto v1 = make_mock_coclass<NiceMock<MockDispatchObject>>();
+	auto v1 = make_mock_coclass<NiceMock<MockDispatch>>();
 	
 	//! @test  Verify value is unmodified
 	EXPECT_EQ(v1.get(), (shared_ptr<::IDispatch>)variant{shared_ptr<::IDispatch>{v1.get()}});
