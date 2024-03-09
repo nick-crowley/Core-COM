@@ -55,6 +55,10 @@ namespace core::com
 		Interface* Object = nullptr;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
+		//! @brief  Use the default constructor instead
+		explicit
+		shared_ptr(nullptr_t) noexcept = delete;
+
 		explicit
 		shared_ptr(Interface* ptr) noexcept 
 		  : Object{ptr}
