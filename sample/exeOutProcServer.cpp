@@ -12,6 +12,9 @@ metadata std::string_view meta::Settings<program_version> = "1.0";
 // Auto-generate IDL from the source file
 [module(unspecified, name="OutProcServerLib", version="1.0", uuid="DD45780C-AFD6-45B6-8028-F22A7C8EECCD")];
 
+// Prevent code-injection into attributed types
+[no_injected_text(true)];
+
 // Define COM interface in-line
 [object, uuid("AB4CB84C-CDCC-4525-AFB0-0B0D5798078D")]
 __interface IOutProcServer : IUnknown
@@ -26,7 +29,7 @@ win::ManualResetEvent
 intern g_InstancesDestroyed{false};
 
 // Implementation of our interface
-[uuid("04944F50-6F92-4F77-B405-E04BEED469F8")]
+[coclass, default(IOutProcServer), uuid("04944F50-6F92-4F77-B405-E04BEED469F8")]
 class OutProcServer : public com::implements<IOutProcServer,::IUnknown>
 {
 public:
