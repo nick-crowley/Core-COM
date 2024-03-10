@@ -53,10 +53,10 @@ public:
 };
 
 // Out-of-process server
-int 
-main() try
-{
-	clog.attach(std::cout);
+int16_t
+intern run(std::wstring_view const cmdLine)
+try {
+	clog.createLogFile("outProcServer.log");
 	startupBanner();
 
 	com::coclass_factory_t<OutProcServer> factory;
@@ -73,4 +73,11 @@ catch (std::exception const& e)
 {
 	clog << e;
 	return -1;
+}
+
+int 
+WINAPI wWinMain(::HINSTANCE hInstance, ::HINSTANCE, wchar_t* szCmdLine, int nCmdShow) {
+	auto const r = ::run(szCmdLine);
+	clog << Important{"Process terminating"};
+	return r;
 }
