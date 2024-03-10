@@ -356,8 +356,6 @@ ComExport to_string(::GUID const& g);
 std::wstring 
 ComExport to_wstring(::GUID const& g);
 
-static_assert(core::meta::Stringable<::GUID>);
-
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
@@ -404,6 +402,12 @@ operator<(::GUID const& l, ::GUID const& r) noexcept {
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com::testing
 {
+    //! @test  Verify @c ::GUID models @c meta::Stringable
+    static_assert(core::meta::Stringable<::GUID>);
+    
+    //! @test  Verify @c com::Guid models @c meta::Stringable
+    static_assert(core::meta::Stringable<Guid>);
+
     //! @test  Verify @c core::com::Guid::fromString() correctly parses string representations
     static_assert(
         com::Guid::fromString(L"{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}") == ::GUID{0xFE2C8ED8,0x98DA,0x4BF7,{0xBD,0x5E,0x0A,0xA1,0xD3,0x8F,0xB5,0xE6}}
