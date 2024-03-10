@@ -1,4 +1,5 @@
 #include "library/core.COM.h"
+#include "com/Apartments.h"
 #include "com/ClassObject.h"
 #include "com/Implements.h"
 #include "win/ManualResetEvent.h"
@@ -62,6 +63,7 @@ try {
 	clog.createLogFile("outProcServer.log");
 	startupBanner();
 
+	com::SharedApartment apartment;
 	com::coclass_factory_t<OutProcServer> factory;
 
 	// Register/execute the class object
