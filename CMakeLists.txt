@@ -381,7 +381,7 @@ add_dependencies(dllInProcServer
 message("exeOutProcServer: Generating out-of-process server sample")
 
 # Project: exeOutProcServer
-add_library(exeOutProcServer SHARED 
+add_executable(exeOutProcServer 
 	"${PROJECT_SAMPLE_FOLDER}exeOutProcServer.cpp"
 	"${PROJECT_SAMPLE_FOLDER}exeOutProcServer.midl"
 )
@@ -408,7 +408,7 @@ set(BASIC_SERVER_MIDL_OPTIONS "/MIDL:@${PROJECT_SAMPLE_FOLDER}exeOutProcServer.m
 set_target_properties(exeOutProcServer PROPERTIES
 					  COMPILE_FLAGS "${GLOBAL_COMPILER_OPTIONS}"
 					  LINK_FLAGS "${GLOBAL_LINKER_OPTIONS} /SUBSYSTEM:WINDOWS ${BASIC_SERVER_MIDL_OPTIONS}"
-					  OUTPUT_NAME "dllBasicServer"
+					  OUTPUT_NAME "exeOutProcServer"
 					  FOLDER "Samples"
 )
 
