@@ -79,7 +79,7 @@ namespace core::com
 	//! @brief	@c CoClass::class_name if present, otherwise unqualified class name
 	template <typename CoClass, typename = void> 
 	auto constexpr
-	coclass_name_v = LiteralString<char,unqualified_class_name_v<CoClass>.length()>{ unqualified_class_name_v<CoClass>.data() };
+	coclass_name_v = LiteralString<char,unqualified_class_name_v<CoClass>.length()+1>{ unqualified_class_name_v<CoClass>.data() };
 
 	template <typename CoClass> requires requires { CoClass::class_name; }
 	LiteralString constexpr
