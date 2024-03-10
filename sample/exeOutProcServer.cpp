@@ -1,6 +1,7 @@
 #include "library/core.COM.h"
 #include "com/Apartments.h"
 #include "com/ClassObject.h"
+#include "com/EntryPoints.h"
 #include "com/Implements.h"
 #include "win/ManualResetEvent.h"
 using namespace core;
@@ -63,6 +64,15 @@ try {
 	clog.createLogFile("outProcServer.log");
 	startupBanner();
 
+	if (nstd::wistring_view{cmdLine}.contains(L"/RegServer")) {
+		clog << Important{"Registering {} {}", com::program_id_v<OutProcServer>, com::coclass_guid_v<OutProcServer>};
+		return com::registerServer<OutProcServer>(win::currentProcess.path().native());
+
+	} else if (nstd::wistring_view{cmdLine}.contains(L"/UnregServer")) {
+		clog << Important{"Unregistering {} {}", com::program_id_v<OutProcServer>, com::coclass_guid_v<OutProcServer>};
+		return com::unregisterServer<OutProcServer>();
+	}
+	
 	com::SharedApartment apartment;
 	com::coclass_factory_t<OutProcServer> factory;
 
