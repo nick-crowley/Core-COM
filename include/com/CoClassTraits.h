@@ -136,6 +136,11 @@ namespace core::com
 		LiteralString constexpr 
 		static program_id = library_name_v<library_type> + '.' + coclass_name_v<CoClass>;
 	};
+	
+	//! @brief	Co-class program id string
+	template <meta::detail::CoreCoClassDeclaration CoClass>
+	LiteralString constexpr 
+	program_id_v = coclass_traits<CoClass>::program_id;
 }
 
 namespace core::meta
@@ -225,5 +230,6 @@ namespace core::com::testing
 	
 	//! @test  Verify program ID is correct
 	static_assert(coclass_traits<ValidCoClass>::program_id == "ValidCoLibrary.ValidCoClass");
+	static_assert(program_id_v<ValidCoClass> == "ValidCoLibrary.ValidCoClass");
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
