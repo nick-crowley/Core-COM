@@ -59,9 +59,9 @@ namespace core::com
 	auto constexpr
 	library_name_v = LiteralString<char,unqualified_class_name_v<Library>.length()+1>{ unqualified_class_name_v<Library>.data() };
 	
-	template <typename Library> requires requires { Library::class_name; }
+	template <typename Library> requires requires { Library::library_name; }
 	LiteralString constexpr
-	library_name_v<Library,void> = Library::class_name;
+	library_name_v<Library,void> = Library::library_name;
 	
 	//! @brief	@c Library::class_version if present, otherwise @c core::com::Version{1,0}
 	template <typename Library, typename = void>
@@ -157,14 +157,14 @@ namespace core::com::testing
 	static_assert(library_version_v<LibraryWithoutVersion> == library_version_v<LibraryWithVersion>);
 
 	
-	// Verify library name is detected
+	//! @test  Verify library name is detected from member variable
 	struct LibraryWithName{
 		LiteralString constexpr
-		static library_name = "LibraryWithName";
+		static library_name = "CustomName";
 	};
-	static_assert(!meta::CoreLibrary<LibraryWithName>);
+	static_assert(library_name_v<LibraryWithName> == "CustomName");
 	
-	// Verify library name is optional
+	//! @test  Verify library name is defaulted via reflection
 	struct LibraryWithoutName{};
 	static_assert(library_name_v<LibraryWithoutName> == "LibraryWithoutName");
 	
