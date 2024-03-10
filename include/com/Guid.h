@@ -356,6 +356,28 @@ ComExport to_string(::GUID const& g);
 std::wstring 
 ComExport to_wstring(::GUID const& g);
 
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace std 
+{
+	template <nstd::AnyOf<char,wchar_t> Char>
+	struct formatter<core::com::Guid, Char> 
+    {
+		auto constexpr
+		parse(basic_format_parse_context<Char>& ctx) {
+            return ranges::find(ctx, '}');
+        }
+
+		auto 
+		format(core::com::Guid const& g, format_context& ctx) const requires std::same_as<Char,char> {
+			return format_to(ctx.out(), "{}", ::to_string(g.Value));
+		}
+        
+		auto 
+		format(core::com::Guid const& g, wformat_context& ctx) const requires std::same_as<Char,wchar_t> {
+			return format_to(ctx.out(), L"{}", ::to_wstring(g.Value));
+		}
+	};
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
@@ -427,5 +449,9 @@ namespace core::com::testing
     static_assert(
           "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid.wstr() == L"{42C386F4-95A0-43A7-B24C-7288D31E98C2}"sv
     );
+	
+	//! @test  Verify @c std::format() supports @c core::com::Guid
+	static_assert(requires { std::format("{}", "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid); });
+	static_assert(requires { std::format(L"{}", "{42C386F4-95A0-43A7-B24C-7288D31E98C2}"_guid); });
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
