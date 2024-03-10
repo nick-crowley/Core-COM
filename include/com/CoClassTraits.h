@@ -221,6 +221,9 @@ namespace core::com::testing
 		static class_name = "ValidCoClass";
 	};
 	static_assert(meta::CoreCoClass<ValidCoClass>);
-
+	
+	
+	//! @test  Verify program ID is correct
+	static_assert(coclass_traits<ValidCoClass>::program_id == "ValidCoLibrary.ValidCoClass");
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
