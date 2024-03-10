@@ -122,29 +122,40 @@ namespace core::meta
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com::testing
 {
-	// Verify GUID is optional
+	//! @test  Verify @c com::library_guid_v is empty string when GUID not present
 	struct LibraryWithoutGuid{};
 	static_assert(library_guid_v<LibraryWithoutGuid> == Guid{});
 
-	// Verify library GUID is detected from either source
+	//! @test  Verify @c com::library_guid_v is detected from metadata
 	MIDL_INTERFACE("714C8163-8D3F-4247-8BA8-9C152F131E91")
 	LibraryWithGuidAttribute{};
+	static_assert(meta::CoreLibrary<LibraryWithGuidAttribute>);
+
+	//! @test  Verify @c com::library_guid_v is detected from static member variable
 	struct LibraryWithMemberGuid{
 		Guid constexpr
 		static library_guid = Guid::fromString("714C8163-8D3F-4247-8BA8-9C152F131E91");
 	};
-	static_assert(library_guid_v<LibraryWithGuidAttribute> == library_guid_v<LibraryWithMemberGuid>);
-	static_assert(meta::CoreLibrary<LibraryWithGuidAttribute>);
 	static_assert(meta::CoreLibrary<LibraryWithMemberGuid>);
 
-	// Verify library version is detected or defaulted
+	//! @test  Verify @c com::library_guid_v is the same whether detected from either source
+	static_assert(library_guid_v<LibraryWithGuidAttribute> == library_guid_v<LibraryWithMemberGuid>);
+
+
+	//! @test  Verify @c com::library_version_v is defaulted when not present
 	struct LibraryWithoutVersion{};
+	static_assert(library_version_v<LibraryWithoutVersion> == Version{1,0});
+
+	//! @test  Verify @c com::library_version_v is detected from member variable
 	struct LibraryWithVersion{
 		Version constexpr
 		static library_version = Version{1,0};
 	};
+	static_assert(library_version_v<LibraryWithVersion> == Version{1,0});
+
+	//! @test  Verify @c com::library_version_v is the same whether detected from either source
 	static_assert(library_version_v<LibraryWithoutVersion> == library_version_v<LibraryWithVersion>);
-	static_assert(!meta::CoreLibrary<LibraryWithVersion>);
+
 	
 	// Verify library name is detected
 	struct LibraryWithName{
@@ -156,11 +167,14 @@ namespace core::com::testing
 	// Verify library name is optional
 	struct LibraryWithoutName{};
 	static_assert(library_name_v<LibraryWithoutName> == "LibraryWithoutName");
-	static_assert(!meta::CoreLibrary<LibraryWithoutName>);
+	
 
-	// Verify library concept
+	//! @test Verify library GUID is mandatory to model @c meta::CoreLibrary
 	MIDL_INTERFACE("E5C012CA-0A03-46C9-A996-2601DBEF465B")
 	ValidCoLibrary{};
 	static_assert(meta::CoreLibrary<ValidCoLibrary>);
+	static_assert(!meta::CoreLibrary<LibraryWithVersion>);
+	static_assert(!meta::CoreLibrary<LibraryWithName>);
+	static_assert(!meta::CoreLibrary<LibraryWithoutName>);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
