@@ -1032,7 +1032,7 @@ namespace core::com
 {
 	//! @brief  Query whether @c variant is @e empty
 	bool
-	empty(variant const& str) {
+	inline empty(variant const& str) {
 		return str.empty();
 	}
 

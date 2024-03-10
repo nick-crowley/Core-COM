@@ -554,7 +554,7 @@ namespace core::com
 {
 	//! @brief  Query whether @c BinaryString is @e empty
 	bool
-	empty(BinaryString const& str) {
+	inline empty(BinaryString const& str) {
 		return str.empty();
 	}
 }
