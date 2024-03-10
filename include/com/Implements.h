@@ -114,7 +114,7 @@ namespace core::com
 		::ULONG
 		COMAPI AddRef() override
 		{
-			logFunctionArgs().withRetVals(this->refCount, GlobalRefCount::CurrentValueForLoggingSentryWorkaround);
+			logFunctionArgs().withRetVals(this->refCount, this->globalRefCount);
 
 			return this->refCount++;
 		}
@@ -122,7 +122,7 @@ namespace core::com
 		::ULONG
 		COMAPI Release() override
 		{
-			logFunctionArgs().withRetVals(this->refCount, GlobalRefCount::CurrentValueForLoggingSentryWorkaround);
+			logFunctionArgs().withRetVals(this->refCount, this->globalRefCount);
 
 			if (this->refCount <= 0)
 				clog << Warning{"Coclass has an invalid reference count of {}", this->refCount.load()};

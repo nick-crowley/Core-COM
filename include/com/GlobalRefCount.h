@@ -49,8 +49,9 @@ namespace core::com
 		inline static SumInstances = 0;
 
 	public:
-		nstd::return_t<std::atomic_long const&>
-		inline static CurrentValueForLoggingSentryWorkaround = GlobalRefCount::SumInstances;
+		// Renamed from @c CurrentValueForLoggingSentryBugfix only because name is reflected into log-files
+		std::atomic_long const&
+		globalRefCount = GlobalRefCount::SumInstances;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		satisfies(GlobalRefCount,
