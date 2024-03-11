@@ -251,7 +251,7 @@ TEST(BasicString_UT, StdStringConstructor_ClonesNonEmptyWideString)
 TEST(BasicString_UT, CopyAssignment_ClonesConstexprBString) 
 {
 	bstr dest{L"abc"};
-	basic_string<NoopAllocator<wchar_t>> const lvalue{L"def"_bstr};
+	noopstring const lvalue{L"def"_bstr};
 	
 	//! @test  Verify characters were copied
 	EXPECT_EQ(L"def", dest = lvalue);

@@ -617,6 +617,9 @@ namespace core::com
 	//! @brief	Binary string (ie. @c BSTR) allocated using the @c SysAllocString() function
 	using bstr = basic_string<BStrAllocator<wchar_t>>;
 	
+	//! @brief	Wide-character string-literal which is never deallocated
+	using noopstring = basic_string<NoopAllocator<wchar_t>>;
+
 	//! @brief	Wide-character string allocated on the COM heap using the @c CoTaskMemAlloc() function
 	using wstring = basic_string<HeapAllocator<wchar_t>>;
 }
@@ -642,7 +645,7 @@ namespace core::com
 			 * 
 			 * @param ws	String literal
 			*/
-			basic_string<NoopAllocator<wchar_t>> constexpr
+			noopstring constexpr
 			operator""_bstr(gsl::cwzstring ws, size_t) noexcept
 			{
 				return {adopt, const_cast<gsl::wzstring>(ws)};
@@ -669,8 +672,8 @@ namespace core::com::testing
 	static_assert(meta::EmptyCompatible<wstring>);
 	
 	//! @test  Verify @c core::com::basic_string can be constructed at compile-time
-	static_assert(basic_string<NoopAllocator<wchar_t>>{}.empty());
-	static_assert(basic_string<NoopAllocator<wchar_t>>{adopt, (wchar_t*)L"abc"}.data());
+	static_assert(noopstring{}.empty());
+	static_assert(noopstring{adopt, (wchar_t*)L"abc"}.data());
 	
 	//! @test  Verify @c core::com::operator""_bstr constructs object at compile-time
 	using namespace string_literals;
