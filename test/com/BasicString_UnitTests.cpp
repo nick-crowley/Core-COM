@@ -24,11 +24,11 @@
 * the projects which contain it.
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-//#define DISABLE_BINARY_STRING_UNIT_TESTS
-#ifndef DISABLE_BINARY_STRING_UNIT_TESTS
+//#define DISABLE_BASIC_STRING_UNIT_TESTS
+#ifndef DISABLE_BASIC_STRING_UNIT_TESTS
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include <gtest/gtest.h>
-#include "com/BinaryString.h"
+#include "com/BasicString.h"
 #include <string.h>
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 using namespace core;
@@ -47,7 +47,7 @@ using namespace core;
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-TEST(BinaryString_UT, DefaultConstructor_ConstructsNullBSTR) 
+TEST(BasicString_UT, DefaultConstructor_ConstructsNullBSTR) 
 {
 	bstring obj;
 
@@ -60,13 +60,13 @@ TEST(BinaryString_UT, DefaultConstructor_ConstructsNullBSTR)
 	EXPECT_EQ(nullptr, obj.data());
 }
 
-TEST(BinaryString_UT, CopyConstructor_ClonesConstexprBString) 
+TEST(BasicString_UT, CopyConstructor_ClonesConstexprBString) 
 {	
 	//! @test  Verify characters are copied from string with different allocator
 	EXPECT_EQ(L"abc", bstring{L"abc"_bstr});
 }
 
-TEST(BinaryString_UT, CopyConstructor_ClonesNonEmptyString) 
+TEST(BasicString_UT, CopyConstructor_ClonesNonEmptyString) 
 {
 	bstring const src{L"abc"};
 	
@@ -74,7 +74,7 @@ TEST(BinaryString_UT, CopyConstructor_ClonesNonEmptyString)
 	EXPECT_EQ(L"abc", bstring{src});
 }
 
-TEST(BinaryString_UT, CopyConstructor_ClonesEmptyBStr) 
+TEST(BasicString_UT, CopyConstructor_ClonesEmptyBStr) 
 {
 	bstring const src{L""};
 	
@@ -82,7 +82,7 @@ TEST(BinaryString_UT, CopyConstructor_ClonesEmptyBStr)
 	EXPECT_EQ(L"", bstring{src});
 }
 
-TEST(BinaryString_UT, CopyConstructor_ClonesNullBStr) 
+TEST(BasicString_UT, CopyConstructor_ClonesNullBStr) 
 {
 	bstring const src;
 	
@@ -90,13 +90,13 @@ TEST(BinaryString_UT, CopyConstructor_ClonesNullBStr)
 	EXPECT_EQ(nullptr, bstring{src}.data());
 }
 
-TEST(BinaryString_UT, CopyConstructor_ClonesWString) 
+TEST(BasicString_UT, CopyConstructor_ClonesWString) 
 {	
 	//! @test  Verify characters are copied from string with different allocator
 	EXPECT_EQ(L"abc", bstring{wstring{L"abc"}});
 }
 
-TEST(BinaryString_UT, MoveConstructor_TransfersContentLeavingNullBStr) 
+TEST(BasicString_UT, MoveConstructor_TransfersContentLeavingNullBStr) 
 {
 	bstring src{L"abc"};
 	
@@ -108,7 +108,7 @@ TEST(BinaryString_UT, MoveConstructor_TransfersContentLeavingNullBStr)
 	EXPECT_EQ(nullptr, src.data());
 }
 
-TEST(BinaryString_UT, IteratorPairConstructor_ClonesInputRange) 
+TEST(BasicString_UT, IteratorPairConstructor_ClonesInputRange) 
 {
 	std::wstring const src{L"abc"};
 	
@@ -116,7 +116,7 @@ TEST(BinaryString_UT, IteratorPairConstructor_ClonesInputRange)
 	EXPECT_EQ(L"abc", bstring(src.begin(), src.end()));
 }
 
-TEST(BinaryString_UT, IteratorPairConstructor_ConvertsInputRange) 
+TEST(BasicString_UT, IteratorPairConstructor_ConvertsInputRange) 
 {
 	std::string const src{"abc"};
 	
@@ -124,7 +124,7 @@ TEST(BinaryString_UT, IteratorPairConstructor_ConvertsInputRange)
 	EXPECT_EQ(L"abc", bstring(src.begin(), src.end()));
 }
 
-TEST(BinaryString_UT, IteratorPairConstructor_RejectsInvalidRange) 
+TEST(BasicString_UT, IteratorPairConstructor_RejectsInvalidRange) 
 {
 	std::wstring const src{L"abc"};
 	
@@ -134,7 +134,7 @@ TEST(BinaryString_UT, IteratorPairConstructor_RejectsInvalidRange)
 	);
 }
 
-TEST(BinaryString_UT, IteratorPairConstructor_RejectsMissingArgument) 
+TEST(BasicString_UT, IteratorPairConstructor_RejectsMissingArgument) 
 {
 	std::wstring const src{L"abc"};
 	
@@ -143,7 +143,7 @@ TEST(BinaryString_UT, IteratorPairConstructor_RejectsMissingArgument)
 	EXPECT_ANY_THROW(bstring((wchar_t const*)nullptr, &src[1]));
 }
 
-TEST(BinaryString_UT, IteratorPairConstructor_EmptyStringWhenRangeIsEmpty) 
+TEST(BasicString_UT, IteratorPairConstructor_EmptyStringWhenRangeIsEmpty) 
 {
 	std::wstring const src{L"abc"};
 	bstring obj{src.begin(), src.begin()};
@@ -158,7 +158,7 @@ TEST(BinaryString_UT, IteratorPairConstructor_EmptyStringWhenRangeIsEmpty)
 	EXPECT_STREQ(L"", obj.c_str());
 }
 
-TEST(BinaryString_UT, IteratorPairConstructor_NullStringWhenRangeIsBothNull) 
+TEST(BasicString_UT, IteratorPairConstructor_NullStringWhenRangeIsBothNull) 
 {
 	std::wstring const src{L"abc"};
 	bstring obj{(wchar_t const*)nullptr, (wchar_t const*)nullptr};
@@ -172,7 +172,7 @@ TEST(BinaryString_UT, IteratorPairConstructor_NullStringWhenRangeIsBothNull)
 	EXPECT_EQ(nullptr, obj.data());
 }
 
-TEST(BinaryString_UT, AdoptConstructor_TakesOwnershipOfInputBuffer) 
+TEST(BasicString_UT, AdoptConstructor_TakesOwnershipOfInputBuffer) 
 {
 	wchar_t* buffer = ::SysAllocString(L"abc");
 	
@@ -183,7 +183,7 @@ TEST(BinaryString_UT, AdoptConstructor_TakesOwnershipOfInputBuffer)
 	);
 }
 
-TEST(BinaryString_UT, AdoptConstructor_ConstructsEmptyBStr) 
+TEST(BasicString_UT, AdoptConstructor_ConstructsEmptyBStr) 
 {
 	wchar_t* buffer = ::SysAllocString(L"");
 	
@@ -197,7 +197,7 @@ TEST(BinaryString_UT, AdoptConstructor_ConstructsEmptyBStr)
 	);
 }
 
-TEST(BinaryString_UT, AdoptConstructor_ConstructsNullBStr) 
+TEST(BasicString_UT, AdoptConstructor_ConstructsNullBStr) 
 {
 	//! @test  Verify result is @e null @c BSTR
 	EXPECT_EQ(
@@ -206,7 +206,7 @@ TEST(BinaryString_UT, AdoptConstructor_ConstructsNullBStr)
 	);
 }
 
-TEST(BinaryString_UT, CStringConstructor_ClonesInputBuffer) 
+TEST(BasicString_UT, CStringConstructor_ClonesInputBuffer) 
 {
 	auto const src{L"abc"};
 	
@@ -220,19 +220,19 @@ TEST(BinaryString_UT, CStringConstructor_ClonesInputBuffer)
 	);
 }
 
-TEST(BinaryString_UT, CStringConstructor_ConstructsEmptyBStr) 
+TEST(BasicString_UT, CStringConstructor_ConstructsEmptyBStr) 
 {
 	//! @test  Verify result is @e empty @c BSTR
 	EXPECT_NE(nullptr, bstring(L"").c_str());
 }
 
-TEST(BinaryString_UT, CStringConstructor_ConstructsNullBStr) 
+TEST(BasicString_UT, CStringConstructor_ConstructsNullBStr) 
 {
 	//! @test  Verify result is @e null @c BSTR
 	EXPECT_EQ(nullptr, bstring((const wchar_t*)nullptr).c_str());
 }
 
-TEST(BinaryString_UT, StdStringConstructor_ClonesNonEmptyNarrowString) 
+TEST(BasicString_UT, StdStringConstructor_ClonesNonEmptyNarrowString) 
 {
 	std::string const src{"abc"};
 	
@@ -240,7 +240,7 @@ TEST(BinaryString_UT, StdStringConstructor_ClonesNonEmptyNarrowString)
 	EXPECT_EQ(L"abc", bstring{src});
 }
 
-TEST(BinaryString_UT, StdStringConstructor_ClonesNonEmptyWideString) 
+TEST(BasicString_UT, StdStringConstructor_ClonesNonEmptyWideString) 
 {
 	std::wstring const src{L"abc"};
 	
@@ -248,16 +248,16 @@ TEST(BinaryString_UT, StdStringConstructor_ClonesNonEmptyWideString)
 	EXPECT_EQ(L"abc", bstring{src});
 }
 
-TEST(BinaryString_UT, CopyAssignment_ClonesConstexprBString) 
+TEST(BasicString_UT, CopyAssignment_ClonesConstexprBString) 
 {
 	bstring dest{L"abc"};
-	BinaryString<NoopAllocator<wchar_t>> const lvalue{L"def"_bstr};
+	basic_string<NoopAllocator<wchar_t>> const lvalue{L"def"_bstr};
 	
 	//! @test  Verify characters were copied
 	EXPECT_EQ(L"def", dest = lvalue);
 }
 
-TEST(BinaryString_UT, CopyAssignment_ClonesConstexprBStringRValue) 
+TEST(BasicString_UT, CopyAssignment_ClonesConstexprBStringRValue) 
 {
 	bstring dest{L"abc"};
 
@@ -266,7 +266,7 @@ TEST(BinaryString_UT, CopyAssignment_ClonesConstexprBStringRValue)
 	EXPECT_FALSE(dest.empty());
 }
 
-TEST(BinaryString_UT, CopyAssignment_ClonesNonEmptyString) 
+TEST(BasicString_UT, CopyAssignment_ClonesNonEmptyString) 
 {
 	bstring dest{L"abc"};
 	
@@ -274,7 +274,7 @@ TEST(BinaryString_UT, CopyAssignment_ClonesNonEmptyString)
 	EXPECT_EQ(L"def", dest = L"def");
 }
 
-TEST(BinaryString_UT, CopyAssignment_ClonesEmptyBStr) 
+TEST(BasicString_UT, CopyAssignment_ClonesEmptyBStr) 
 {
 	bstring dest{L"abc"};
 	
@@ -282,7 +282,7 @@ TEST(BinaryString_UT, CopyAssignment_ClonesEmptyBStr)
 	EXPECT_EQ(L"", dest = L"");
 }
 
-TEST(BinaryString_UT, CopyAssignment_ClonesNullBStr) 
+TEST(BasicString_UT, CopyAssignment_ClonesNullBStr) 
 {
 	bstring dest{L"abc"};
 	dest = bstring{};
@@ -291,7 +291,7 @@ TEST(BinaryString_UT, CopyAssignment_ClonesNullBStr)
 	EXPECT_EQ(nullptr, dest.data());
 }
 
-TEST(BinaryString_UT, CopyAssignment_ClonesNullptr) 
+TEST(BasicString_UT, CopyAssignment_ClonesNullptr) 
 {
 	bstring dest{L"abc"};
 	dest = nullptr;
@@ -300,7 +300,7 @@ TEST(BinaryString_UT, CopyAssignment_ClonesNullptr)
 	EXPECT_EQ(nullptr, dest.data());
 }
 
-TEST(BinaryString_UT, CopyAssignment_ClonesWString) 
+TEST(BasicString_UT, CopyAssignment_ClonesWString) 
 {
 	bstring dest{L"abc"};
 	
@@ -308,7 +308,7 @@ TEST(BinaryString_UT, CopyAssignment_ClonesWString)
 	EXPECT_EQ(L"def", dest = wstring{L"def"});
 }
 
-TEST(BinaryString_UT, MoveAssignment_TransfersNonEmptyString)
+TEST(BasicString_UT, MoveAssignment_TransfersNonEmptyString)
 {
 	bstring src{L"abc"};
 	bstring dest{L"def"};
@@ -320,7 +320,7 @@ TEST(BinaryString_UT, MoveAssignment_TransfersNonEmptyString)
 	EXPECT_TRUE(src.empty());
 }
 
-TEST(BinaryString_UT, Assign_ClonesInputRange) 
+TEST(BasicString_UT, Assign_ClonesInputRange) 
 {
 	std::wstring const src{L"abc"};
 
@@ -330,7 +330,7 @@ TEST(BinaryString_UT, Assign_ClonesInputRange)
 	EXPECT_EQ(obj, L"abc");
 }
 
-TEST(BinaryString_UT, Assign_EmptyBStrWhenRangeIsEmpty) 
+TEST(BasicString_UT, Assign_EmptyBStrWhenRangeIsEmpty) 
 {
 	std::wstring const src{L""};
 	bstring obj{};
@@ -346,7 +346,7 @@ TEST(BinaryString_UT, Assign_EmptyBStrWhenRangeIsEmpty)
 	EXPECT_STREQ(L"", obj.c_str());
 }
 
-TEST(BinaryString_UT, Assign_NullBStrWhenRangeIsNull) 
+TEST(BasicString_UT, Assign_NullBStrWhenRangeIsNull) 
 {
 	bstring obj{L"abc"};
 	obj.assign((wchar_t const*)nullptr, (wchar_t const*)nullptr);
@@ -360,7 +360,7 @@ TEST(BinaryString_UT, Assign_NullBStrWhenRangeIsNull)
 	EXPECT_EQ(nullptr, obj.c_str());
 }
 
-TEST(BinaryString_UT, Assign_RejectsMissingArgument) 
+TEST(BasicString_UT, Assign_RejectsMissingArgument) 
 {
 	std::wstring const src{L"abc"};
 	
@@ -369,32 +369,32 @@ TEST(BinaryString_UT, Assign_RejectsMissingArgument)
 	EXPECT_ANY_THROW(bstring{}.assign((wchar_t const*)nullptr, &src[1]));
 }
 
-TEST(BinaryString_UT, Back_ReturnsLastCharacter) 
+TEST(BasicString_UT, Back_ReturnsLastCharacter) 
 {
 	//! @test  Verify result is final character
 	EXPECT_EQ(L'c', bstring{L"abc"}.back());
 }
 
-TEST(BinaryString_UT, Back_ThrowsWhenEmpty) 
+TEST(BasicString_UT, Back_ThrowsWhenEmpty) 
 {
 	//! @test  Verify behaviour when string is @e empty @c BSTR
 	EXPECT_ANY_THROW(bstring{L""}.back());
 }
 
-TEST(BinaryString_UT, Back_ThrowsWhenNull) 
+TEST(BasicString_UT, Back_ThrowsWhenNull) 
 {
 	//! @test  Verify behaviour when string is @e null @c BSTR
 	EXPECT_ANY_THROW(bstring{}.back());
 	EXPECT_ANY_THROW(bstring{(wchar_t const*)nullptr}.back());
 }
 
-TEST(BinaryString_UT, CStr_ReturnsNullTerminatedContentWhenNonEmpty) 
+TEST(BasicString_UT, CStr_ReturnsNullTerminatedContentWhenNonEmpty) 
 {
 	//! @test  Verify result is accurate and null-terminated
 	EXPECT_STREQ(L"abc", bstring{L"abc"}.c_str());
 }
 
-TEST(BinaryString_UT, CStr_ReturnsEmptyNullTerminatedBufferWhenEmptyBStr) 
+TEST(BasicString_UT, CStr_ReturnsEmptyNullTerminatedBufferWhenEmptyBStr) 
 {
 	//! @test  Verify result is not @c nullptr when @e empty
 	EXPECT_STREQ(L"", bstring{L""}.c_str());
@@ -404,14 +404,14 @@ TEST(BinaryString_UT, CStr_ReturnsEmptyNullTerminatedBufferWhenEmptyBStr)
 	EXPECT_EQ(src.data(), src.c_str());
 }
 
-TEST(BinaryString_UT, CStr_ReturnsNullptrWhenNullBStr)
+TEST(BasicString_UT, CStr_ReturnsNullptrWhenNullBStr)
 {
 	//! @test  Verify result is @c nullptr when a @e null @c BSTR
 	EXPECT_EQ(nullptr, bstring{}.c_str());
 	EXPECT_EQ(nullptr, bstring{(wchar_t const*)nullptr}.c_str());
 }
 
-TEST(BinaryString_UT, Data_CompatibleWithSysFreeString) 
+TEST(BasicString_UT, Data_CompatibleWithSysFreeString) 
 {
 	bstring src{L"abc"};
 
@@ -419,7 +419,7 @@ TEST(BinaryString_UT, Data_CompatibleWithSysFreeString)
 	EXPECT_NO_FATAL_FAILURE(::SysFreeString(src.detach()));
 }
 
-TEST(BinaryString_UT, Data_CompatibleWithSysStringLen) 
+TEST(BasicString_UT, Data_CompatibleWithSysStringLen) 
 {
 	bstring src{L"abc"};
 
@@ -427,26 +427,26 @@ TEST(BinaryString_UT, Data_CompatibleWithSysStringLen)
 	EXPECT_EQ(3u, ::SysStringLen(src.bstr()));
 }
 
-TEST(BinaryString_UT, Data_ReturnsNullptrWhenNullBStr) 
+TEST(BasicString_UT, Data_ReturnsNullptrWhenNullBStr) 
 {
 	//! @test  Verify result is @c nullptr when a @e null @c BSTR
 	EXPECT_EQ(nullptr, bstring{}.data());
 	EXPECT_EQ(nullptr, bstring{(wchar_t const*)nullptr}.data());
 }
 
-TEST(BinaryString_UT, Data_ReturnsNonNullWhenEmptyBStr) 
+TEST(BasicString_UT, Data_ReturnsNonNullWhenEmptyBStr) 
 {
 	//! @test  Verify result is not @c nullptr when an @e empty @c BSTR
 	EXPECT_NE(nullptr, bstring{L""}.data());
 }
 
-TEST(BinaryString_UT, Detach_NullWhenEmpty) 
+TEST(BasicString_UT, Detach_NullWhenEmpty) 
 {
 	//! @test  Verify result is nullptr when empty
 	EXPECT_EQ(nullptr, bstring{}.detach());
 }
 
-TEST(BinaryString_UT, Detach_ObjectIsEmptyAfterwards) 
+TEST(BasicString_UT, Detach_ObjectIsEmptyAfterwards) 
 {
 	bstring src{L"abc"};
 	src.detach();
@@ -455,13 +455,13 @@ TEST(BinaryString_UT, Detach_ObjectIsEmptyAfterwards)
 	EXPECT_TRUE(src.empty());
 }
 
-TEST(BinaryString_UT, Detach_ReturnsNullTerminatedBuffer) 
+TEST(BasicString_UT, Detach_ReturnsNullTerminatedBuffer) 
 {
 	//! @test  Verify buffer is complete and null-terminated
 	EXPECT_STREQ(L"abc", bstring{L"abc"}.detach());
 }
 
-TEST(BinaryString_UT, equality_WhenComparedToCStrings) 
+TEST(BasicString_UT, equality_WhenComparedToCStrings) 
 {	
 	//! @test  Verify result when equal
 	EXPECT_EQ(L"abc", bstring{L"abc"});
@@ -472,7 +472,7 @@ TEST(BinaryString_UT, equality_WhenComparedToCStrings)
 	EXPECT_NE(bstring{L""}, L"abc");
 }
 
-TEST(BinaryString_UT, equality_WhenComparedToBStrings) 
+TEST(BasicString_UT, equality_WhenComparedToBStrings) 
 {	
 	//! @test  Verify result when equal
 	EXPECT_EQ(bstring{L"abc"}, bstring{L"abc"});
@@ -482,7 +482,7 @@ TEST(BinaryString_UT, equality_WhenComparedToBStrings)
 	EXPECT_NE(bstring{L"ABC"}, bstring{L"abc"});
 }
 
-TEST(BinaryString_UT, equality_WhenComparedToConstexprBStrings) 
+TEST(BasicString_UT, equality_WhenComparedToConstexprBStrings) 
 {	
 	//! @test  Verify result when equal
 	EXPECT_EQ(bstring{L"abc"}, L"abc"_bstr);
@@ -492,7 +492,7 @@ TEST(BinaryString_UT, equality_WhenComparedToConstexprBStrings)
 	EXPECT_NE(bstring{L"ABC"}, L"abc"_bstr);
 }
 
-TEST(BinaryString_UT, equality_WhenComparedToStdStrings) 
+TEST(BasicString_UT, equality_WhenComparedToStdStrings) 
 {	
 	//! @test  Verify result when equal
 	EXPECT_EQ(std::wstring{L"abc"}, bstring{L"abc"});
@@ -503,7 +503,7 @@ TEST(BinaryString_UT, equality_WhenComparedToStdStrings)
 	EXPECT_NE(bstring{L""}, std::wstring{L"abc"});
 }
 
-TEST(BinaryString_UT, equality_WhenComparedToWStrings) 
+TEST(BasicString_UT, equality_WhenComparedToWStrings) 
 {	
 	//! @test  Verify result when equal
 	EXPECT_EQ(bstring{L"abc"}, wstring{L"abc"});
@@ -513,7 +513,7 @@ TEST(BinaryString_UT, equality_WhenComparedToWStrings)
 	EXPECT_NE(bstring{L"ABC"}, wstring{L"abc"});
 }
 
-TEST(BinaryString_UT, equality_WhenComparedToStdStringViews) 
+TEST(BasicString_UT, equality_WhenComparedToStdStringViews) 
 {	
 	//! @test  Verify result when equal
 	EXPECT_EQ(std::wstring_view{L"abc"}, bstring{L"abc"});
@@ -524,13 +524,13 @@ TEST(BinaryString_UT, equality_WhenComparedToStdStringViews)
 	EXPECT_NE(bstring{L"abc"}, std::wstring_view{L""});
 }
 
-TEST(BinaryString_UT, equality_WhenEmptyBStr) 
+TEST(BasicString_UT, equality_WhenEmptyBStr) 
 {	
 	//! @test  Verify result is equal when both strings are @e empty @c BSTR
 	EXPECT_EQ(bstring{L""}, bstring{L""});
 }
 
-TEST(BinaryString_UT, equality_WhenNullBStr) 
+TEST(BasicString_UT, equality_WhenNullBStr) 
 {	
 	//! @test  Verify result is equal when both strings are @e null @c BSTR
 	EXPECT_EQ(bstring{}, bstring{});
@@ -538,7 +538,7 @@ TEST(BinaryString_UT, equality_WhenNullBStr)
 	EXPECT_EQ(bstring{}, bstring{(wchar_t const*)nullptr});
 }
 
-TEST(BinaryString_UT, equality_BetweenNullBStrAndEmptyBStr) 
+TEST(BasicString_UT, equality_BetweenNullBStrAndEmptyBStr) 
 {	
 	//! @test  Verify result is @e equality between @e null and @e empty @c BSTR
 	EXPECT_EQ(bstring{L""}, bstring{});
@@ -549,14 +549,14 @@ TEST(BinaryString_UT, equality_BetweenNullBStrAndEmptyBStr)
 	//! @remarks  This behaviour is consistent with Microsoft's @c BSTR wrapper @c _bstr_t
 }
 
-TEST(BinaryString_UT, Empty_TrueWhenNullBStr) 
+TEST(BasicString_UT, Empty_TrueWhenNullBStr) 
 {
 	//! @test  Verify result is @c true when a @e null @c BSTR
 	EXPECT_TRUE(bstring{}.empty());
 	EXPECT_TRUE(bstring{(wchar_t const*)nullptr}.empty());
 }
 
-TEST(BinaryString_UT, Empty_TrueWhenEmptyBStr) 
+TEST(BasicString_UT, Empty_TrueWhenEmptyBStr) 
 {
 	std::wstring const src{L"abc"};
 
@@ -565,32 +565,32 @@ TEST(BinaryString_UT, Empty_TrueWhenEmptyBStr)
 	EXPECT_TRUE(bstring(src.begin(), src.begin()).empty());
 }
 
-TEST(BinaryString_UT, Empty_FalseWhenNonEmpty) 
+TEST(BasicString_UT, Empty_FalseWhenNonEmpty) 
 {
 	//! @test  Verify result is @c false
 	EXPECT_FALSE(bstring{L"abc"}.empty());
 }
 
-TEST(BinaryString_UT, Front_ReturnsFirstCharacter) 
+TEST(BasicString_UT, Front_ReturnsFirstCharacter) 
 {
 	//! @test  Verify result is first character
 	EXPECT_EQ(L'a', bstring{L"abc"}.front());
 }
 
-TEST(BinaryString_UT, Front_ThrowsWhenEmpty) 
+TEST(BasicString_UT, Front_ThrowsWhenEmpty) 
 {
 	//! @test  Verify behaviour when string is @e empty @c BSTR
 	EXPECT_ANY_THROW(bstring{L""}.front());
 }
 
-TEST(BinaryString_UT, Front_ThrowsWhenNull) 
+TEST(BasicString_UT, Front_ThrowsWhenNull) 
 {
 	//! @test  Verify behaviour when string is a @e null @c BSTR
 	EXPECT_ANY_THROW(bstring{}.front());
 	EXPECT_ANY_THROW(bstring{(wchar_t const*)nullptr}.front());
 }
 
-TEST(BinaryString_UT, Size_ReturnsNumberOfCharsWhenNonEmpty) 
+TEST(BasicString_UT, Size_ReturnsNumberOfCharsWhenNonEmpty) 
 {
 	bstring src{L"abc"};
 
@@ -598,13 +598,13 @@ TEST(BinaryString_UT, Size_ReturnsNumberOfCharsWhenNonEmpty)
 	EXPECT_EQ(3u, src.size());
 }
 
-TEST(BinaryString_UT, Size_ReturnsZeroWhenEmpty) 
+TEST(BasicString_UT, Size_ReturnsZeroWhenEmpty) 
 {
 	//! @test  Verify result is zero when empty
 	EXPECT_EQ(0u, bstring{L""}.size());
 }
 
-TEST(BinaryString_UT, Size_ReturnsZeroWhenNull) 
+TEST(BasicString_UT, Size_ReturnsZeroWhenNull) 
 {
 	//! @test  Verify result is zero when a @e null @c BSTR
 	EXPECT_EQ(0u, bstring{}.size());
@@ -613,4 +613,4 @@ TEST(BinaryString_UT, Size_ReturnsZeroWhenNull)
 
 } // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-#endif	// DISABLE_BINARY_STRING_UNIT_TESTS
+#endif	// DISABLE_BASIC_STRING_UNIT_TESTS

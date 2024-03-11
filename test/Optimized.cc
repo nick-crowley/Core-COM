@@ -24,6 +24,6 @@
 * the projects which contain it.
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-#include "com/BinaryString_UnitTests.cpp"
+#include "com/BasicString_UnitTests.cpp"
 #include "com/SharedPtr_UnitTests.cpp"
 #include "com/Variant_UnitTests.cpp"

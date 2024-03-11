@@ -70,11 +70,11 @@ namespace core::com
 	 * @tparam  Allocator  [optional] Custom allocator
 	*/
 	template <typename Allocator = HeapAllocator<wchar_t>>
-	class BinaryString
+	class basic_string
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		using type = BinaryString<Allocator>;
+		using type = basic_string<Allocator>;
 		using base = void;
 		
 		using allocator_t = typename Allocator::template rebind<wchar_t>::other;
@@ -107,11 +107,11 @@ namespace core::com
 		 * @brief	Construct @e null string
 		*/
 		constexpr 
-		BinaryString() noexcept = default;
+		basic_string() noexcept = default;
 		
 		//! @brief	Unnecessary; use the default-constructor to create @e null string
 		constexpr 
-		BinaryString(nullptr_t) noexcept = delete;
+		basic_string(nullptr_t) noexcept = delete;
 		
 		/**
 		 * @brief	Construct with elements copied from a (possibly empty) input range
@@ -128,7 +128,7 @@ namespace core::com
 			requires nstd::IndirectlyConvertibleTo<BeginIterator, wchar_t>
 			      && nstd::IndirectlyConvertibleTo<EndIterator, wchar_t>
 		constexpr
-		BinaryString(BeginIterator pos, EndIterator end)
+		basic_string(BeginIterator pos, EndIterator end)
         {
 			if constexpr (std::is_pointer_v<BeginIterator> && std::is_pointer_v<EndIterator>) {
 				if (!pos != !end) {
@@ -149,10 +149,10 @@ namespace core::com
 		 * @throws std::bad_alloc      Out of memory
 		*/
 		constexpr explicit
-		BinaryString(gsl::cwzstring const str)
+		basic_string(gsl::cwzstring const str)
         {
 			if (str)
-				this->assign(str, str + BinaryString::measure(str));
+				this->assign(str, str + basic_string::measure(str));
 		}
 		
 		/**
@@ -162,7 +162,7 @@ namespace core::com
 		 * @param str	[optional] Null-terminated source buffer
 		*/
 		constexpr
-		BinaryString(meta::adopt_t, gsl::wzstring const str) noexcept
+		basic_string(meta::adopt_t, gsl::wzstring const str) noexcept
 		  : Buffer{str}
         {
 		}
@@ -175,8 +175,8 @@ namespace core::com
 		 * 
 		 * @throws std::bad_alloc		Out of memory
 		*/
-		explicit BinaryString(ATL::CSimpleStringT<wchar_t> const& str) 
-			: BinaryString(str.GetString(), str.GetString() + str.GetLength())
+		explicit basic_string(ATL::CSimpleStringT<wchar_t> const& str) 
+			: basic_string(str.GetString(), str.GetString() + str.GetLength())
 		{
 		}
 
@@ -184,7 +184,7 @@ namespace core::com
 		 * @brief	Prevent moving elements from ATL string
 		*/
 		constexpr 
-		BinaryString(ATL::CSimpleStringT<wchar_t>&&) noexcept = delete;
+		basic_string(ATL::CSimpleStringT<wchar_t>&&) noexcept = delete;
 #endif // 0
 
 		/**
@@ -196,14 +196,14 @@ namespace core::com
 		*/
 		template <typename C, typename T, typename A>
 		explicit constexpr 
-		BinaryString(std::basic_string<C,T,A> const& str)
-          : BinaryString(str.begin(), str.end())
+		basic_string(std::basic_string<C,T,A> const& str)
+          : basic_string(str.begin(), str.end())
         {
 		}
 		
 		//! @brief	De-allocate string buffer
 		constexpr 
-		~BinaryString() noexcept
+		~basic_string() noexcept
 		{
 			if (this->initialized())
 			{
@@ -220,8 +220,8 @@ namespace core::com
 		 * @throws std::bad_alloc		Out of memory
 		*/
 		constexpr
-		BinaryString(type const& r)
-          : BinaryString{r.begin(), r.end()}
+		basic_string(type const& r)
+          : basic_string{r.begin(), r.end()}
 		{
 		}
 		
@@ -234,8 +234,8 @@ namespace core::com
 		*/
 		template <typename Other>
 		constexpr explicit
-		BinaryString(BinaryString<Other> const& r)
-          : BinaryString{r.begin(), r.end()}
+		basic_string(basic_string<Other> const& r)
+          : basic_string{r.begin(), r.end()}
 		{
 		}
 
@@ -245,7 +245,7 @@ namespace core::com
 		 * @param r		Other string
 		*/
 		constexpr 
-		BinaryString(type&& r) noexcept
+		basic_string(type&& r) noexcept
 		{
 			r.swap(*this);
 		}
@@ -273,7 +273,7 @@ namespace core::com
 		*/
 		template <typename Other>
 		type constexpr&
-		operator=(BinaryString<Other> const& r)
+		operator=(basic_string<Other> const& r)
 		{
 			this->assign(r.begin(), r.end());
 			return *this;
@@ -417,7 +417,7 @@ namespace core::com
 		bool constexpr
 		empty() const noexcept
         {
-			return !this->Buffer || this->Buffer[0] == BinaryString::null;
+			return !this->Buffer || this->Buffer[0] == basic_string::null;
 		}
 		
 		/**
@@ -476,7 +476,7 @@ namespace core::com
 		*/
 		template <typename Other>
 		bool constexpr
-		operator==(BinaryString<Other> const& rhs) const noexcept {
+		operator==(basic_string<Other> const& rhs) const noexcept {
 			return this->wsv() == (std::wstring_view)rhs;
 		}
 		
@@ -615,18 +615,18 @@ namespace core::com
 	};
 	
 	//! @brief	Binary string (ie. @c BSTR) allocated using the @c SysAllocString() function
-	using bstring = BinaryString<BStrAllocator<wchar_t>>;
+	using bstring = basic_string<BStrAllocator<wchar_t>>;
 	
 	//! @brief	Wide-character string allocated on the COM heap using the @c CoTaskMemAlloc() function
-	using wstring = BinaryString<HeapAllocator<wchar_t>>;
+	using wstring = basic_string<HeapAllocator<wchar_t>>;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	//! @brief  Query whether @c BinaryString is @e empty
+	//! @brief  Query whether @c basic_string is @e empty
 	template <typename Alloc>
 	bool
-	empty(BinaryString<Alloc> const& str) {
+	empty(basic_string<Alloc> const& str) {
 		return str.empty();
 	}
 }
@@ -638,11 +638,11 @@ namespace core::com
 		inline namespace string_literals
 		{
 			/**
-			 * @brief	Construct @p com::BinaryString from string literal
+			 * @brief	Construct @p com::basic_string from string literal
 			 * 
 			 * @param ws	String literal
 			*/
-			BinaryString<NoopAllocator<wchar_t>> constexpr
+			basic_string<NoopAllocator<wchar_t>> constexpr
 			operator""_bstr(gsl::cwzstring ws, size_t) noexcept
 			{
 				return {adopt, const_cast<gsl::wzstring>(ws)};
@@ -668,9 +668,9 @@ namespace core::com::testing
 	//! @test  Verify @c core::com::wstring models @c meta::EmptyCompatible
 	static_assert(meta::EmptyCompatible<wstring>);
 	
-	//! @test  Verify @c core::com::BinaryString can be constructed at compile-time
-	static_assert(BinaryString<NoopAllocator<wchar_t>>{}.empty());
-	static_assert(BinaryString<NoopAllocator<wchar_t>>{adopt, (wchar_t*)L"abc"}.data());
+	//! @test  Verify @c core::com::basic_string can be constructed at compile-time
+	static_assert(basic_string<NoopAllocator<wchar_t>>{}.empty());
+	static_assert(basic_string<NoopAllocator<wchar_t>>{adopt, (wchar_t*)L"abc"}.data());
 	
 	//! @test  Verify @c core::com::operator""_bstr constructs object at compile-time
 	using namespace string_literals;
