@@ -650,6 +650,15 @@ namespace core::com
 			{
 				return {adopt, const_cast<gsl::wzstring>(ws)};
 			}
+			
+			/**
+			 * @brief	Construct @p com::wstring at runtime
+			*/
+			wstring
+			operator""_s(gsl::cwzstring ws, size_t) noexcept
+			{
+				return wstring{ws};
+			}
 		}
 	}
 }

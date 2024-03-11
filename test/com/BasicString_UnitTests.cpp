@@ -611,6 +611,13 @@ TEST(BasicString_UT, Size_ReturnsZeroWhenNull)
 	EXPECT_EQ(0u, bstr{(wchar_t const*)nullptr}.size());
 }
 
+TEST(BasicString_UT, Operator_s_ConstructsWString) 
+{
+	//! @test  Verify string contents are correct
+	EXPECT_EQ(L"", L""_s);
+	EXPECT_EQ(L"abc", L"abc"_s);
+}
+
 } // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #endif	// DISABLE_BASIC_STRING_UNIT_TESTS
