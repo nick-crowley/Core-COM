@@ -615,7 +615,7 @@ namespace core::com
 	};
 	
 	//! @brief	Binary string (ie. @c BSTR) allocated using the @c SysAllocString() function
-	using bstring = basic_string<BStrAllocator<wchar_t>>;
+	using bstr = basic_string<BStrAllocator<wchar_t>>;
 	
 	//! @brief	Wide-character string allocated on the COM heap using the @c CoTaskMemAlloc() function
 	using wstring = basic_string<HeapAllocator<wchar_t>>;
