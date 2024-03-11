@@ -641,12 +641,12 @@ namespace core::com
 		inline namespace string_literals
 		{
 			/**
-			 * @brief	Construct @p com::basic_string from string literal
+			 * @brief	Construct @p com::noopstring from string literal
 			 * 
 			 * @param ws	String literal
 			*/
 			noopstring constexpr
-			operator""_bstr(gsl::cwzstring ws, size_t) noexcept
+			operator""_ns(gsl::cwzstring ws, size_t) noexcept
 			{
 				return {adopt, const_cast<gsl::wzstring>(ws)};
 			}
@@ -675,24 +675,24 @@ namespace core::com::testing
 	static_assert(noopstring{}.empty());
 	static_assert(noopstring{adopt, (wchar_t*)L"abc"}.data());
 	
-	//! @test  Verify @c core::com::operator""_bstr constructs object at compile-time
+	//! @test  Verify @c core::com::operator""_ns constructs object at compile-time
 	using namespace string_literals;
 	using namespace std::string_literals;
 	using namespace std::string_view_literals;
-	static_assert(L""_bstr.empty());
-	static_assert(!L"abc"_bstr.empty());
-	static_assert(L""_bstr.size() == 0);
-	static_assert(L"abc"_bstr.size() == 3);
-	static_assert(L"abc"_bstr == L"abc"_bstr);
-	static_assert(L"abc"_bstr == L"abc"sv);
-	static_assert(L"abc"_bstr == L"abc"s);
-	static_assert(L"abc"_bstr == L"abc");
-	static_assert(L"abcde"_bstr.contains(L"bcd"));
-	static_assert(L"abcde"_bstr.starts_with(L"ab"));
-	static_assert(L"abcde"_bstr.ends_with(L"de"));
-	static_assert(L"abc"_bstr.front() == L'a');
-	static_assert(L"abc"_bstr.back() == L'c');
-	static_assert(L"abc"_bstr.c_str() != nullptr);
-	static_assert(L"abc"_bstr.data() != nullptr);
+	static_assert(L""_ns.empty());
+	static_assert(!L"abc"_ns.empty());
+	static_assert(L""_ns.size() == 0);
+	static_assert(L"abc"_ns.size() == 3);
+	static_assert(L"abc"_ns == L"abc"_ns);
+	static_assert(L"abc"_ns == L"abc"sv);
+	static_assert(L"abc"_ns == L"abc"s);
+	static_assert(L"abc"_ns == L"abc");
+	static_assert(L"abcde"_ns.contains(L"bcd"));
+	static_assert(L"abcde"_ns.starts_with(L"ab"));
+	static_assert(L"abcde"_ns.ends_with(L"de"));
+	static_assert(L"abc"_ns.front() == L'a');
+	static_assert(L"abc"_ns.back() == L'c');
+	static_assert(L"abc"_ns.c_str() != nullptr);
+	static_assert(L"abc"_ns.data() != nullptr);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

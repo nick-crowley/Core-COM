@@ -63,7 +63,7 @@ TEST(BasicString_UT, DefaultConstructor_ConstructsNullBSTR)
 TEST(BasicString_UT, CopyConstructor_ClonesConstexprBString) 
 {	
 	//! @test  Verify characters are copied from string with different allocator
-	EXPECT_EQ(L"abc", bstr{L"abc"_bstr});
+	EXPECT_EQ(L"abc", bstr{L"abc"_ns});
 }
 
 TEST(BasicString_UT, CopyConstructor_ClonesNonEmptyString) 
@@ -251,7 +251,7 @@ TEST(BasicString_UT, StdStringConstructor_ClonesNonEmptyWideString)
 TEST(BasicString_UT, CopyAssignment_ClonesConstexprBString) 
 {
 	bstr dest{L"abc"};
-	noopstring const lvalue{L"def"_bstr};
+	noopstring const lvalue{L"def"_ns};
 	
 	//! @test  Verify characters were copied
 	EXPECT_EQ(L"def", dest = lvalue);
@@ -262,7 +262,7 @@ TEST(BasicString_UT, CopyAssignment_ClonesConstexprBStringRValue)
 	bstr dest{L"abc"};
 
 	//! @test  Verify characters were copied
-	EXPECT_EQ(L"def", dest = L"def"_bstr);
+	EXPECT_EQ(L"def", dest = L"def"_ns);
 	EXPECT_FALSE(dest.empty());
 }
 
@@ -485,11 +485,11 @@ TEST(BasicString_UT, equality_WhenComparedToBStrings)
 TEST(BasicString_UT, equality_WhenComparedToConstexprBStrings) 
 {	
 	//! @test  Verify result when equal
-	EXPECT_EQ(bstr{L"abc"}, L"abc"_bstr);
+	EXPECT_EQ(bstr{L"abc"}, L"abc"_ns);
 
 	//! @test  Verify result when unequal
-	EXPECT_NE(bstr{L"abc"}, L""_bstr);
-	EXPECT_NE(bstr{L"ABC"}, L"abc"_bstr);
+	EXPECT_NE(bstr{L"abc"}, L""_ns);
+	EXPECT_NE(bstr{L"ABC"}, L"abc"_ns);
 }
 
 TEST(BasicString_UT, equality_WhenComparedToStdStrings) 
