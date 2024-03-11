@@ -84,7 +84,7 @@ TEST(Variant_UT, CopyConstructor_ClonesStrings)
 	variant const r{L"abc"}, s{r};
 	
 	//! @test  Verify value was copied
-	EXPECT_EQ(L"abc", (wstring)s);
+	EXPECT_EQ(L"abc", (bstring)s);
 	
 	//! @test  Verify runtime type was copied
 	EXPECT_EQ(VT_BSTR, s.kind());
@@ -133,7 +133,7 @@ TEST(Variant_UT, MoveConstructor_TransfersInput)
 	variant r{L"abc"}, s{std::move(r)};
 	
 	//! @test  Verify value was moved
-	EXPECT_EQ(L"abc", (wstring)s);
+	EXPECT_EQ(L"abc", (bstring)s);
 	EXPECT_EQ(variant{}, r);
 	
 	//! @test  Verify runtime type was transferred
@@ -846,7 +846,7 @@ TEST(Variant_UT, assignment_ValueChangedWhenString)
 	obj = "ac";
 
 	//! @test  Verify assignment changed value
-	EXPECT_EQ(L"ac", (wstring)obj);
+	EXPECT_EQ(L"ac", (bstring)obj);
 }
 
 TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotString)
@@ -855,7 +855,7 @@ TEST(Variant_UT, assignment_ValueAndTypeChangedWhenNotString)
 	obj = "43";
 
 	//! @test  Verify assignment changed value
-	EXPECT_EQ(L"43", (wstring)obj);
+	EXPECT_EQ(L"43", (bstring)obj);
 	
 	//! @test  Verify assignment changed runtime type
 	EXPECT_EQ(VT_BSTR, obj.kind());
@@ -1027,7 +1027,7 @@ TEST(Variant_UT, conversion_FloatingPointPromotionsSucceedWhenValueCanBeRepresen
 TEST(Variant_UT, conversion_IntegerToStringConversionsSucceedsWhenValueCanBeRepresented) 
 {
 	//! @test  Verify integer-to-string conversions succeed
-	EXPECT_EQ(L"42", (BinaryString)variant{42});
+	EXPECT_EQ(L"42", (bstring)variant{42});
 }
 
 TEST(Variant_UT, conversion_StringToIntegerSucceedsWhenValueCanBeRepresented) 
@@ -1377,13 +1377,13 @@ TEST(Variant_UT, roundtrip_DateValueIsUnchanged)
 TEST(Variant_UT, roundtrip_NarrowStringValueIsUnchanged) 
 {
 	//! @test  Verify value is unmodified
-	EXPECT_EQ(L"abc", (wstring)variant{"abc"});
+	EXPECT_EQ(L"abc", (bstring)variant{"abc"});
 }
 
 TEST(Variant_UT, roundtrip_WideStringValueIsUnchanged) 
 {
 	//! @test  Verify value is unmodified
-	EXPECT_EQ(L"wabc", (wstring)variant{L"wabc"});
+	EXPECT_EQ(L"wabc", (bstring)variant{L"wabc"});
 }
 
 TEST(Variant_UT, roundtrip_IUnknownValueIsUnchanged) 

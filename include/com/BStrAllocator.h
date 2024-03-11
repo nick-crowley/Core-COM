@@ -1,5 +1,5 @@
 /* o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o */ /*!
-* @copyright	Copyright (c) 2023, Nick Crowley. All rights reserved.
+* @copyright	Copyright (c) 2024, Nick Crowley. All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -38,14 +38,16 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com 
 {
-    //! @brief  Allocator which executes ctor/dtors only (all allocations are no-ops)
-    template <typename T>
-    class NoopAllocator 
+    //! @brief  Allocates Binary Strings (ie. @c BSTR) using the @c SysAlloc() family of functions
+    //! 
+    //! @remarks    Supports allocating elements of type @c wchar_t @e only
+    template <nstd::AnyCvOf<wchar_t> T>
+    class BStrAllocator
     {
         static_assert(!std::is_const_v<T>, "The C++ Standard forbids containers and allocators of const elements");
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     private:
-        using type = NoopAllocator<T>;
+        using type = BStrAllocator<wchar_t>;
 
     public:
         using value_type      = T;
@@ -58,9 +60,9 @@ namespace core::com
         using propagate_on_container_move_assignment = std::true_type;
         using is_always_equal = std::true_type;
         
-        template <typename U>
+        template <nstd::AnyCvOf<wchar_t> U>
         struct rebind {
-            using other = NoopAllocator<U>;
+            using other = BStrAllocator<U>;
         };
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
@@ -68,11 +70,12 @@ namespace core::com
     public:
         template <typename U>
         implicit constexpr
-        NoopAllocator(NoopAllocator<U> const&) noexcept 
+        BStrAllocator(const BStrAllocator<U>&) noexcept 
         {}
+
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
-        satisfies(NoopAllocator,
+        satisfies(BStrAllocator,
             constexpr IsDefaultConstructible noexcept,
             constexpr IsCopyConstructible noexcept,
             constexpr IsCopyAssignable noexcept,
@@ -90,29 +93,30 @@ namespace core::com
         }
 
         [[nodiscard]] 
-        const_pointer constexpr
+        const_pointer constexpr 
         address(const_reference obj) const noexcept 
         {
             return std::addressof(obj);
         }
     
-        [[nodiscard]] 
-        pointer constexpr
-        __declspec(allocator) allocate(size_type const /*count*/) const noexcept 
+        [[nodiscard]]
+        pointer 
+        __declspec(allocator) allocate(size_type const byteCount) const noexcept 
         {
-            return nullptr;
+            return static_cast<pointer>(::SysAllocStringByteLen(nullptr, static_cast<::UINT>(byteCount - sizeof(wchar_t))));
         }
         
-        [[nodiscard]] 
-        pointer constexpr
-        __declspec(allocator) allocate(size_type const /*count*/, void const*) const noexcept 
+        [[nodiscard]]
+        pointer 
+        __declspec(allocator) allocate(size_type const byteCount, void const*) const noexcept 
         {
-            return nullptr;
+            return static_cast<pointer>(::SysAllocStringByteLen(nullptr, byteCount));
         }
 
-        void constexpr 
-        deallocate(pointer const /*address*/, size_type const = (size_type)-1) const noexcept 
+        void 
+        deallocate(pointer const address, size_type const = (size_type)-1) const noexcept 
         {
+            ::SysFreeString(address);
         }
 
         template <typename... Params>
@@ -138,73 +142,16 @@ namespace core::com
         
         template <typename U>
         bool constexpr 
-        operator==(NoopAllocator<U> const&) noexcept {
+        operator==(BStrAllocator<U> const&) noexcept {
             return true;
         }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     };
-    
-    
-    //! @brief  Specialization which exposes (no-op) de-allocation of void-pointers
-    template <>
-    class NoopAllocator<void> 
-    {
-        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-    private:
-        using type = NoopAllocator<void>;
-    public:
-        using value_type      = void;
-        using pointer         = void*;
-        using const_pointer   = void const*;
-        using size_type       = std::size_t;
-        using difference_type = std::ptrdiff_t;
-        using propagate_on_container_move_assignment = std::true_type;
-        using is_always_equal = std::true_type;
-        
-        template <typename U>
-        struct rebind {
-            using other = NoopAllocator<U>;
-        };
-        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
-        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-    public:
-        template <typename U>
-        implicit constexpr
-        NoopAllocator(NoopAllocator<U> const& r) noexcept
-        {}
-        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-    public:
-        satisfies(NoopAllocator,
-            constexpr IsDefaultConstructible noexcept,
-            constexpr IsCopyConstructible noexcept,
-            constexpr IsCopyAssignable noexcept,
-            constexpr IsDestructible noexcept
-        );
-        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-
-        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-    public:
-        template <typename U>
-        bool constexpr 
-        operator==(NoopAllocator<U> const&) noexcept {
-            return true;
-        }
-        // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-    public:
-        pointer constexpr 
-        allocate(size_type const) const noexcept = delete;
-
-        void constexpr 
-        deallocate(pointer const /*address*/, size_type const = (size_type)-1) const noexcept 
-        {
-        }
-    };
-    
-    //! @brief  Convenience variable for all no-op allocators
-    NoopAllocator<void> constexpr
-    inline allocNoop;
-} // namespace core::com
+    //! @brief  Convenience variable for @c BSTR allocator
+    BStrAllocator<wchar_t> constexpr
+    inline allocBStr;
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

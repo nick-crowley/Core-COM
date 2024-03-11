@@ -241,7 +241,7 @@ namespace core::com
         variant(wchar_t const* wstr)
             : Value{VT_BSTR}
         {
-            this->Value.bstrVal = BinaryString{ThrowIfNull(wstr)}.detach();
+            this->Value.bstrVal = bstring{ThrowIfNull(wstr)}.detach();
         }
 
         //! @brief  Construct as @c VT_BSTR
@@ -255,7 +255,7 @@ namespace core::com
         variant(char const* str, CodePage page = CodePage::Latin1)
             : Value{VT_BSTR}
         {
-            this->Value.bstrVal = BinaryString{core::widen(ThrowIfNull(str), page)}.detach();
+            this->Value.bstrVal = bstring{core::widen(ThrowIfNull(str), page)}.detach();
         }
         
         //! @brief Construct as @c VT_UNKNOWN
@@ -855,12 +855,12 @@ namespace core::com
         
         //! @brief  Copy value or generate string representation
         implicit operator
-        BinaryString() const
+        bstring() const
         {
             if (this->kind() == VT_BSTR)
-                return BinaryString{this->Value.bstrVal};
+                return bstring{this->Value.bstrVal};
             
-            return BinaryString{adopt, type::cast<VT_BSTR>(*this).detach().bstrVal};
+            return bstring{adopt, type::cast<VT_BSTR>(*this).detach().bstrVal};
         }
 
         //! @brief  Extract value or convert to @c IUnknown

@@ -38,7 +38,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com 
 {
-    //! @brief  Allocates from the COM heap
+    //! @brief  Allocates from the COM heap using @c CoTaskMemAlloc() family of functions
     template <typename T>
     class HeapAllocator
     {
@@ -62,17 +62,14 @@ namespace core::com
         struct rebind {
             using other = HeapAllocator<U>;
         };
-        
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
-        template <class U>
-        constexpr 
-        implicit
-        HeapAllocator(const HeapAllocator<U>&) noexcept 
+        template <typename U>
+        implicit constexpr
+        HeapAllocator(HeapAllocator<U> const&) noexcept 
         {}
-
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
         satisfies(HeapAllocator,
@@ -101,16 +98,19 @@ namespace core::com
     
         [[nodiscard]]
         pointer 
-        __declspec(allocator) allocate(size_type const count) const noexcept 
+        __declspec(allocator) allocate(size_type const count) const 
         {
-            return static_cast<pointer>(::CoTaskMemAlloc(count));
+            if (pointer const buffer = static_cast<pointer>(::CoTaskMemAlloc(count)); !buffer)
+                throw std::bad_alloc{};
+            else
+                return buffer;
         }
         
         [[nodiscard]]
         pointer 
-        __declspec(allocator) allocate(size_type const count, void const*) const noexcept 
+        __declspec(allocator) allocate(size_type const count, void const*) const
         {
-            return static_cast<pointer>(::CoTaskMemAlloc(count));
+            return this->allocate(count);
         }
 
         void 
@@ -140,6 +140,11 @@ namespace core::com
             return size_type(-1) / sizeof(value_type);
         }
 
+        template <typename U>
+        bool constexpr 
+        operator==(HeapAllocator<U> const&) noexcept {
+            return true;
+        }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     };
     
@@ -168,9 +173,8 @@ namespace core::com
 
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
-        template <class U>
-        constexpr 
-        implicit
+        template <typename U>
+        implicit constexpr
         HeapAllocator(HeapAllocator<U> const& r) noexcept
         {}
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -193,37 +197,21 @@ namespace core::com
         {
             ::CoTaskMemFree(address);
         }
-
+        
+        template <typename U>
+        bool constexpr 
+        operator==(HeapAllocator<U> const&) noexcept {
+            return true;
+        }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     };
     
-
-    //! @brief  Standard-library equivalent name
-    template <class T>
-    using allocator = HeapAllocator<T>;
+    //! @brief  Convenience variable for COM allocator
+    HeapAllocator<void> constexpr
+    inline allocCom;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-namespace core::com 
-{
-    template <typename T, typename U>    
-    bool constexpr 
-    operator==(HeapAllocator<T> const&, HeapAllocator<U> const&) noexcept
-    {
-        return true;
-    }
-    
-    template <typename T, typename U>    
-    bool constexpr 
-    operator!=(HeapAllocator<T> const&, HeapAllocator<U> const&) noexcept
-    {
-        return false;
-    }
 
-    //! @brief  Convenience variable for COM allocator
-    HeapAllocator<void> constexpr
-    inline allocCom;
-
-} // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
