@@ -277,6 +277,17 @@ namespace core::com
           : Value{g}
         {}
 		
+        explicit constexpr
+		Guid(std::string_view str)
+          : Value{Parser{str.begin(), str.end()}.parse().Value}
+        {
+        }
+
+        explicit constexpr
+		Guid(std::wstring_view str)
+          : Value{Parser{str.begin(), str.end()}.parse().Value}
+        {
+        }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     public:
 		satisfies(Guid,
@@ -298,16 +309,6 @@ namespace core::com
 		Guid 
 		static fromProgId(std::wstring_view str);
 
-        Guid constexpr
-		static fromString(std::string_view str) {
-            return Parser{str.begin(), str.end()}.parse();
-        }
-
-        Guid constexpr
-		static fromString(std::wstring_view str) {
-            return Parser{str.begin(), str.end()}.parse();
-        }
-        
 		Guid 
 		static generate();
         
@@ -429,10 +430,13 @@ namespace core::com::testing
     
     //! @test  Verify @c com::Guid models @c meta::Stringable
     static_assert(core::meta::Stringable<Guid>);
-
-    //! @test  Verify @c core::com::Guid::fromString() correctly parses string representations
+    
+    //! @test  Verify @c core::com::Guid::Guid() correctly parses string representations
     static_assert(
-        com::Guid::fromString(L"{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}") == ::GUID{0xFE2C8ED8,0x98DA,0x4BF7,{0xBD,0x5E,0x0A,0xA1,0xD3,0x8F,0xB5,0xE6}}
+        Guid{"{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}"} == ::GUID{0xFE2C8ED8,0x98DA,0x4BF7,{0xBD,0x5E,0x0A,0xA1,0xD3,0x8F,0xB5,0xE6}}
+    );
+    static_assert(
+        Guid{L"{FE2C8ED8-98DA-4BF7-BD5E-0AA1D38FB5E6}"} == ::GUID{0xFE2C8ED8,0x98DA,0x4BF7,{0xBD,0x5E,0x0A,0xA1,0xD3,0x8F,0xB5,0xE6}}
     );
 
     //! @test  Verify @c core::com::operator""_guid produces the correct GUID

@@ -236,7 +236,7 @@ namespace core::com::testing
 	//! @test  Verify @c com::detail::coclass_guid_v is detected from static member variable
 	struct ClassWithMemberGuid{
 		Guid constexpr
-		static class_guid = Guid::fromString("1D61B23A-5A26-48DA-A280-CE743C1B53F1");
+		static class_guid = Guid{"1D61B23A-5A26-48DA-A280-CE743C1B53F1"};
 	};
 	static_assert(detail::coclass_guid_v<ClassWithMemberGuid> == "1D61B23A-5A26-48DA-A280-CE743C1B53F1"_guid);
 	

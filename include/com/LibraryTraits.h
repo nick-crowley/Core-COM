@@ -165,7 +165,7 @@ namespace core::com::testing
 	//! @test  Verify @c com::detail::library_guid_v is detected from static member variable
 	struct LibraryWithMemberGuid{
 		Guid constexpr
-		static library_guid = Guid::fromString("714C8163-8D3F-4247-8BA8-9C152F131E91");
+		static library_guid = Guid{"714C8163-8D3F-4247-8BA8-9C152F131E91"};
 	};
 	static_assert(detail::library_guid_v<LibraryWithMemberGuid> == "714C8163-8D3F-4247-8BA8-9C152F131E91"_guid);
 	
