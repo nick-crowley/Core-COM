@@ -68,13 +68,17 @@ namespace core::com
 	*/
 	template <meta::CoreCoClass CoClass>
 	win::HResult
-	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
-	{
+	getClassObject(Guid clsId, ::IID const& iid, void** ppv) noexcept
+	try {
 		if (clsId != coclass_guid_v<CoClass>)
 			return CLASS_E_CLASSNOTAVAILABLE;
 
 		shared_ptr<::IClassFactory> factory = make_shared<::IClassFactory,coclass_factory_t<CoClass>>();
 		return factory->QueryInterface(iid,ppv);
+	}
+	catch (std::exception const& e) {
+		clog << e;
+		return E_FAIL;
 	}
 
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
@@ -91,7 +95,7 @@ namespace core::com
 	*/
 	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
 	win::HResult
-	registerServer(std::wstring_view modulePath) 
+	registerServer(std::wstring_view modulePath) noexcept
 	try {
 		ThrowIfEmpty(modulePath);
 		using namespace core::win;
@@ -122,8 +126,8 @@ namespace core::com
 
 		return S_OK;
 	}
-	catch (std::exception const& /*e*/)
-	{
+	catch (std::exception const& e) {
+		clog << e;
 		return E_FAIL;
 	}
 
@@ -132,7 +136,7 @@ namespace core::com
 	*/
 	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
 	win::HResult
-	unregisterServer()
+	unregisterServer() noexcept
 	try {
 		using namespace core::win;
 		
@@ -157,8 +161,8 @@ namespace core::com
 		allClasses.removeKey(programId);
 		return S_OK;
 	}
-	catch (std::exception const& /*e*/)
-	{
+	catch (std::exception const& e) {
+		clog << e;
 		return E_FAIL;
 	}
 }
