@@ -79,6 +79,7 @@ extern "C"
 ::HRESULT 
 COMAPI DllGetClassObject(::CLSID const& clsId, ::IID const& iid, void** ppv)
 {
+	//! @bug  Not sure where @c clog output from this and @c Dll[Un]RegisterServer() functions will go
 	clog.attach(std::cout);
 	return com::getClassObject<InProcServer>(com::Guid{clsId}, iid, ppv);
 }
