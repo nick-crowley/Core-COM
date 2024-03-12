@@ -48,18 +48,20 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	namespace detail {
+	namespace detail 
+	{
 		std::wstring_view constexpr
-		keyNameFor(ServerLocation loc) noexcept 
+		keyNameFor(ServerLocation loc) noexcept
 		{
 			switch (loc) {
-			case ServerLocation::InProc:    return L"InProcServer32";
+			case ServerLocation::InProcess: return L"InProcServer32";
 			case ServerLocation::Local:     return L"LocalServer";
 			case ServerLocation::Service:   return L"Service";
 			default:                        std::unreachable();
 			}
 		}
 	}
+
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Retrieve a factory instance for any co-class
 	* @param[in]	clsId	Implementation ID
@@ -105,6 +107,7 @@ namespace core::com
 		auto constexpr programId = Traits::program_id.wstr();
 
 		// Insert class-id registration
+		clog << Important{"Registering {} {}", program_id_v<CoClass>, coclass_guid_v<CoClass>};
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		RegistryKey ourClassId = CLSID.subkey(create_new, classGuid);
 		ourClassId[use_default] = className;
@@ -144,6 +147,7 @@ namespace core::com
 		auto constexpr programId = Traits::program_id.wstr();
 
 		// Remove class-id registration
+		clog << Important{"Unregistering {} {}", program_id_v<CoClass>, coclass_guid_v<CoClass>};
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		scoped {
 			auto ourClassId = CLSID / classGuid;
@@ -164,6 +168,26 @@ namespace core::com
 	catch (std::exception const& e) {
 		clog << e;
 		return E_FAIL;
+	}
+	
+	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+	* @brief	Add/remove @p CoClass registration if @c /RegServer or @c /UnregServer present on command line
+	*/
+	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
+	bool
+	registrationRequested(std::wstring_view cmdline, std::wstring_view modulePath) noexcept
+	try {
+		if (nstd::wistring_view{cmdline}.contains(L"/RegServer"))
+			return (bool)registerServer<CoClass,Location>(win::currentProcess.path().native());
+
+		else if (nstd::wistring_view{cmdline}.contains(L"/UnregServer"))
+			return (bool)unregisterServer<CoClass,Location>();
+
+		return false;
+	}
+	catch (std::exception const& e) {
+		clog << e;
+		return false;
 	}
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

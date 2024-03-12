@@ -64,15 +64,9 @@ try {
 	clog.createLogFile("outProcServer.log");
 	startupBanner();
 
-	using enum com::ServerLocation;
-	if (nstd::wistring_view{cmdLine}.contains(L"/RegServer")) {
-		clog << Important{"Registering {} {}", com::program_id_v<OutProcServer>, com::coclass_guid_v<OutProcServer>};
-		return com::registerServer<OutProcServer,Local>(win::currentProcess.path().native());
-
-	} else if (nstd::wistring_view{cmdLine}.contains(L"/UnregServer")) {
-		clog << Important{"Unregistering {} {}", com::program_id_v<OutProcServer>, com::coclass_guid_v<OutProcServer>};
-		return com::unregisterServer<OutProcServer,Local>();
-	}
+	// Register/unregister server if requested on the command-line
+	if (com::registrationRequested<OutProcServer, com::ServerLocation::Local>(cmdLine, win::currentProcess.path().native()))
+		return 0;
 	
 	com::SharedApartment apartment;
 	com::coclass_factory_t<OutProcServer> factory;

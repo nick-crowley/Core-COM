@@ -95,7 +95,7 @@ extern "C"
 COMAPI DllRegisterServer()
 {
 	using enum com::ServerLocation;
-	return com::registerServer<InProcServer,InProc>(win::DllModule.path().native());
+	return com::registerServer<InProcServer,InProcess>(win::DllModule.path().native());
 }
 
 extern "C"
@@ -103,5 +103,5 @@ extern "C"
 COMAPI DllUnregisterServer()
 {
 	using enum com::ServerLocation;
-	return com::unregisterServer<InProcServer,InProc>();
+	return com::unregisterServer<InProcServer,InProcess>();
 }

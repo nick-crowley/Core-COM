@@ -38,7 +38,7 @@ namespace core::com
 {
 	enum class ServerLocation
 	{
-		InProc,     //!< Resides in in-process server
+		InProcess,  //!< Resides in in-process server
 		Local,      //!< Resides in out-of-process server
 		Service     //!< Resides in Win32 service
 	};
