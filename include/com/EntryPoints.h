@@ -67,7 +67,7 @@ namespace core::com
 	* @param[out]	ppv		Upon return, points to the instance
 	*/
 	template <meta::CoreCoClass CoClass>
-	::HRESULT 
+	win::HResult
 	getClassObject(Guid clsId, ::IID const& iid, void** ppv)
 	{
 		if (clsId != coclass_guid_v<CoClass>)
@@ -80,17 +80,17 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Query whether lifetime of all objects constructed by this module have expired
 	*/
-	::HRESULT 
-	canUnloadNow()
+	win::HResult
+	canUnloadNow() noexcept
 	{
-		return Boolean{GlobalRefCount::value() == 0};
+		return win::HResult{ Boolean{GlobalRefCount::value() == 0} };
 	}
 
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Populate all registry entries for @p CoClass co-classes
 	*/
 	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
-	::HRESULT
+	win::HResult
 	registerServer(std::wstring_view modulePath) 
 	try {
 		ThrowIfEmpty(modulePath);
@@ -131,7 +131,7 @@ namespace core::com
 	* @brief	Remove all registry entries for @p CoClass co-classes
 	*/
 	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
-	::HRESULT
+	win::HResult
 	unregisterServer()
 	try {
 		using namespace core::win;
