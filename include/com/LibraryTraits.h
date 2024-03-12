@@ -39,73 +39,85 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-namespace core::com
+namespace core::com::detail
 {
 	//! @brief	@c Library::library_guid if present, otherwise @c __uuidof(Library)
 	template <typename Library, typename = void>
-	com::Guid constexpr
+	Guid constexpr
 	library_guid_v;
 
-	template <typename Library> requires requires { Library::library_guid; }
-	com::Guid constexpr
+	template <typename Library> 
+		requires 
+			requires { Library::library_guid; }
+	Guid constexpr
 	library_guid_v<Library,void> = Library::library_guid;
 	
-	template <meta::HasGuid Library> requires (!requires { Library::library_guid; })
-	com::Guid constexpr
+	template <meta::HasGuid Library> 
+		requires 
+			(!requires { Library::library_guid; })
+	Guid constexpr
 	library_guid_v<Library,void> {__uuidof(Library)};
 
-	//! @brief	@c Library::class_name if present, otherwise unqualified class name
+
+	//! @brief	@c Library::library_name if present, otherwise unqualified class name
 	template <typename Library, typename = void> 
-	auto constexpr
+	LiteralString constexpr
 	library_name_v = LiteralString<char,unqualified_class_name_v<Library>.length()+1>{ unqualified_class_name_v<Library>.data() };
 	
-	template <typename Library> requires requires { Library::library_name; }
+	template <typename Library> 
+		requires 
+			requires { Library::library_name; }
 	LiteralString constexpr
 	library_name_v<Library,void> = Library::library_name;
 	
-	//! @brief	@c Library::class_version if present, otherwise @c core::com::Version{1,0}
-	template <typename Library, typename = void>
-	com::Version constexpr
-	library_version_v = com::Version{1,0};
 
-	template <typename Library> requires requires { Library::library_version; }
-	com::Version constexpr
+	//! @brief	@c Library::library_version if present, otherwise @c core::com::Version{1,0}
+	template <typename Library, typename = void>
+	Version constexpr
+	library_version_v = Version{1,0};
+
+	template <typename Library> 
+		requires 
+			requires { Library::library_version; }
+	Version constexpr
 	library_version_v<Library,void> = Library::library_version;
 }
 
 namespace core::meta::detail
 {	
-	//! @brief	Well-formed COM library declaration
+	//! @brief	Well-formed declaration containing mandatory minimum properties for a COM library
 	template <typename Library>
-	concept CoreLibraryDeclaration = requires {
-			{ com::library_name_v<Library> } -> std::convertible_to<std::string_view>;
-			com::library_name_v<Library> + '.';
-			com::library_name_v<Library> + com::library_name_v<Library>;
-		} 
-		&& com::library_name_v<Library> != std::string_view{}
-		&& com::library_guid_v<Library> != com::Guid{};
+	concept CoreLibraryDeclaration = 
+	  requires {
+		{ com::detail::library_name_v<Library> } -> std::convertible_to<std::string_view>;
+		com::detail::library_name_v<Library> + '.';
+		com::detail::library_name_v<Library> + com::detail::library_name_v<Library>;
+	  }
+	  && com::detail::library_name_v<Library> != std::string_view{}
+	  && com::detail::library_guid_v<Library> != com::Guid{}
+	  && com::detail::library_version_v<Library> >= com::Version{1,0};
 }
 
 namespace core::com
 {
-	//! @brief	Compile-time COM library metadata
+	//! @brief	Compile-time metadata for a COM library
 	template <meta::detail::CoreLibraryDeclaration Library>
 	metafunc library_traits
 	{
 		LiteralString constexpr 
-		static library_name = library_name_v<Library>;
+		static library_name = detail::library_name_v<Library>;
 
 		Version constexpr 
-		static library_version = library_version_v<Library>;
+		static library_version = detail::library_version_v<Library>;
 
 		Guid constexpr
-		static library_guid = library_guid_v<Library>; 
+		static library_guid = detail::library_guid_v<Library>; 
 	};
 }
 
 namespace core::meta
 {
-	//! @brief	Well-formed Core COM library (ie. one which possesses valid traits)
+	//! @brief	Well-formed COM library possessesing valid traits (either deduced or explicitly specialized)
 	template <typename T>
 	concept CoreLibrary = requires {
 		{ com::library_traits<T>::library_name } -> std::convertible_to<std::string_view>;
@@ -115,6 +127,24 @@ namespace core::meta
 	  && com::library_traits<T>::library_guid != com::Guid{}
 	  && com::library_traits<T>::library_version >= com::Version{1,0};
 }
+
+namespace core::com
+{
+	//! @brief	GUID for well-formed COM library @p Library
+	template <meta::CoreLibrary Library>
+	Guid constexpr
+	library_guid_v = library_traits<Library>::library_guid;
+	
+	//! @brief	Name string for well-formed COM library @p Library
+	template <meta::CoreLibrary Library>
+	LiteralString constexpr
+	library_name_v = library_traits<Library>::library_name;
+	
+	//! @brief	Version identifier for well-formed COM library @p Library
+	template <meta::CoreLibrary Library>
+	Version constexpr
+	library_version_v = library_traits<Library>::library_version;
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -122,59 +152,91 @@ namespace core::meta
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com::testing
 {
-	//! @test  Verify @c com::library_guid_v is empty string when GUID not present
+	//! @test  Verify @c com::detail::library_guid_v is empty string when GUID not present
 	struct LibraryWithoutGuid{};
-	static_assert(library_guid_v<LibraryWithoutGuid> == Guid{});
+	static_assert(detail::library_guid_v<LibraryWithoutGuid> == Guid{});
 
-	//! @test  Verify @c com::library_guid_v is detected from metadata
+	//! @test  Verify @c com::detail::library_guid_v is detected from metadata
+	using namespace guid_literals;
 	MIDL_INTERFACE("714C8163-8D3F-4247-8BA8-9C152F131E91")
-	LibraryWithGuidAttribute{};
-	static_assert(meta::CoreLibrary<LibraryWithGuidAttribute>);
-
-	//! @test  Verify @c com::library_guid_v is detected from static member variable
+	LibraryWithAttributeGuid{};
+	static_assert(detail::library_guid_v<LibraryWithAttributeGuid> == "714C8163-8D3F-4247-8BA8-9C152F131E91"_guid);
+	
+	//! @test  Verify @c com::detail::library_guid_v is detected from static member variable
 	struct LibraryWithMemberGuid{
 		Guid constexpr
 		static library_guid = Guid::fromString("714C8163-8D3F-4247-8BA8-9C152F131E91");
 	};
-	static_assert(meta::CoreLibrary<LibraryWithMemberGuid>);
+	static_assert(detail::library_guid_v<LibraryWithMemberGuid> == "714C8163-8D3F-4247-8BA8-9C152F131E91"_guid);
+	
+	//! @test  Verify @c com::detail::library_guid_v is the same whether detected from either source
+	static_assert(detail::library_guid_v<LibraryWithAttributeGuid> == detail::library_guid_v<LibraryWithMemberGuid>);
 
-	//! @test  Verify @c com::library_guid_v is the same whether detected from either source
-	static_assert(library_guid_v<LibraryWithGuidAttribute> == library_guid_v<LibraryWithMemberGuid>);
 
-
-	//! @test  Verify @c com::library_version_v is defaulted when not present
+	//! @test  Verify @c com::detail::library_version_v is defaulted when not present
 	struct LibraryWithoutVersion{};
-	static_assert(library_version_v<LibraryWithoutVersion> == Version{1,0});
+	static_assert(detail::library_version_v<LibraryWithoutVersion> == Version{1,0});
 
-	//! @test  Verify @c com::library_version_v is detected from member variable
+	//! @test  Verify @c com::detail::library_version_v is detected from member variable
 	struct LibraryWithVersion{
 		Version constexpr
 		static library_version = Version{1,0};
 	};
-	static_assert(library_version_v<LibraryWithVersion> == Version{1,0});
+	static_assert(detail::library_version_v<LibraryWithVersion> == Version{1,0});
 
-	//! @test  Verify @c com::library_version_v is the same whether detected from either source
-	static_assert(library_version_v<LibraryWithoutVersion> == library_version_v<LibraryWithVersion>);
+	//! @test  Verify @c com::detail::library_version_v is the same whether detected from either source
+	static_assert(detail::library_version_v<LibraryWithoutVersion> == detail::library_version_v<LibraryWithVersion>);
 
 	
-	//! @test  Verify library name is detected from member variable
+	//! @test  Verify @c com::detail::library_name_v is detected from member variable
 	struct LibraryWithName{
 		LiteralString constexpr
 		static library_name = "CustomName";
 	};
-	static_assert(library_name_v<LibraryWithName> == "CustomName");
+	static_assert(detail::library_name_v<LibraryWithName> == "CustomName");
 	
-	//! @test  Verify library name is defaulted via reflection
+	//! @test  Verify @c com::detail::library_name_v is defaulted via reflection
 	struct LibraryWithoutName{};
-	static_assert(library_name_v<LibraryWithoutName> == "LibraryWithoutName");
+	static_assert(detail::library_name_v<LibraryWithoutName> == "LibraryWithoutName");
 	
 
-	//! @test Verify library GUID is mandatory to model @c meta::CoreLibrary
+	//! @test Verify library name, GUID, and version are mandatory to model @c meta::detail::CoreLibraryDeclaration
+	struct LibraryWithEmptyGuid{
+		Guid constexpr
+		static library_guid;
+	};
+	struct LibraryWithEmptyName{
+		LiteralString constexpr
+		static library_name = "";
+	};
+	struct LibraryWithEmptyVersion{
+		Version constexpr
+		static library_version{0,0};
+	};
+	static_assert(meta::detail::CoreLibraryDeclaration<LibraryWithAttributeGuid>);
+	static_assert(meta::detail::CoreLibraryDeclaration<LibraryWithMemberGuid>);
+	static_assert(!meta::detail::CoreLibraryDeclaration<LibraryWithoutGuid>);
+	static_assert(!meta::detail::CoreLibraryDeclaration<LibraryWithEmptyGuid>);
+	static_assert(!meta::detail::CoreLibraryDeclaration<LibraryWithEmptyName>);
+	static_assert(!meta::detail::CoreLibraryDeclaration<LibraryWithEmptyVersion>);
+
+
+	//! @test Verify library name, GUID, and version are mandatory to model@c meta::CoreLibrary
 	MIDL_INTERFACE("E5C012CA-0A03-46C9-A996-2601DBEF465B")
 	ValidCoLibrary{};
 	static_assert(meta::CoreLibrary<ValidCoLibrary>);
 	static_assert(!meta::CoreLibrary<LibraryWithVersion>);
 	static_assert(!meta::CoreLibrary<LibraryWithName>);
 	static_assert(!meta::CoreLibrary<LibraryWithoutName>);
+	static_assert(!meta::CoreLibrary<LibraryWithoutGuid>);
+	static_assert(!meta::CoreLibrary<LibraryWithEmptyGuid>);
+	static_assert(!meta::CoreLibrary<LibraryWithEmptyName>);
+	static_assert(!meta::CoreLibrary<LibraryWithEmptyVersion>);
+
+
+	//! @test Verify trait accessors produce same values as their implementations
+	static_assert(library_guid_v<ValidCoLibrary> == detail::library_guid_v<ValidCoLibrary>);
+	static_assert(library_name_v<ValidCoLibrary> == detail::library_name_v<ValidCoLibrary>);
+	static_assert(library_version_v<ValidCoLibrary> == detail::library_version_v<ValidCoLibrary>);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

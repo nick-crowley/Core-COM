@@ -42,15 +42,17 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-namespace core::com
+namespace core::com::detail
 {
 	//! @brief	@c CoClass::apartment if present, otherwise @c core::com::ThreadingModel::Isolated
 	template <typename CoClass, typename = void>
-	com::ThreadingModel constexpr
+	ThreadingModel constexpr
 	coclass_apartment_v = com::ThreadingModel::Isolated;
 
-	template <typename CoClass> requires requires { CoClass::apartment; }
-	com::ThreadingModel constexpr
+	template <typename CoClass> 
+		requires 
+			requires { CoClass::apartment; }
+	ThreadingModel constexpr
 	coclass_apartment_v<CoClass,void> = CoClass::apartment;
 	
 
@@ -58,96 +60,112 @@ namespace core::com
 	template <typename CoClass, typename = void>
 	metafunc coclass_factory : std::type_identity<ClassFactory<CoClass>> {};
 
-	template <typename CoClass> requires requires { typename CoClass::factory_type; }
+	template <typename CoClass> 
+		requires 
+			requires { typename CoClass::factory_type; }
 	metafunc coclass_factory<CoClass,void> : std::type_identity<typename CoClass::factory_type> {};
 	
 
-	//! @brief	@c CoClass::class_guid if present, otherwise @c __uuidof(CoClass)
+	//! @brief	@c CoClass::class_guid if present, then @c __uuidof(CoClass) if present; otherwise empty guid
 	template <typename CoClass, typename = void>
-	com::Guid constexpr
-	coclass_guid_v { __uuidof(CoClass) };
+	Guid constexpr
+	coclass_guid_v;
 
-	template <typename CoClass> requires requires { CoClass::class_guid; }
-	com::Guid constexpr
+	template <typename CoClass> 
+		requires 
+			requires { CoClass::class_guid; }
+	Guid constexpr
 	coclass_guid_v<CoClass,void> = CoClass::class_guid;
 	
+	template <meta::HasGuid CoClass> 
+		requires 
+			(!requires { CoClass::class_guid; })
+	Guid constexpr
+	coclass_guid_v<CoClass,void> { __uuidof(CoClass) };
+
 
 	//! @brief	Always @c CoClass::library_type
-	template <typename CoClass> requires requires { typename CoClass::library_type; }
+	template <typename CoClass> 
+		requires 
+			requires { typename CoClass::library_type; }
 	metafunc coclass_library : std::type_identity<typename CoClass::library_type> {};
 	
+
 	//! @brief	@c CoClass::class_name if present, otherwise unqualified class name
 	template <typename CoClass, typename = void> 
 	auto constexpr
 	coclass_name_v = LiteralString<char,unqualified_class_name_v<CoClass>.length()+1>{ unqualified_class_name_v<CoClass>.data() };
 
-	template <typename CoClass> requires requires { CoClass::class_name; }
+	template <typename CoClass> 
+		requires 
+			requires { CoClass::class_name; }
 	LiteralString constexpr
 	coclass_name_v<CoClass,void> = CoClass::class_name;
 
+
 	//! @brief	@c CoClass::class_version if present, otherwise @c core::com::Version{1,0}
 	template <typename CoClass, typename = void>
-	com::Version constexpr
-	coclass_version_v = com::Version{1,0};
+	Version constexpr
+	coclass_version_v = Version{1,0};
 
-	template <typename CoClass> requires requires { CoClass::class_version; }
-	com::Version constexpr
+	template <typename CoClass>
+		requires 
+			requires { CoClass::class_version; }
+	Version constexpr
 	coclass_version_v<CoClass,void> = CoClass::class_version;
 }
 
 namespace core::meta::detail
 {
-	//! @brief	Well-formed co-class declaration
+	//! @brief	Well-formed declaration containing mandatory minimum properties for a COM class
 	template <typename T>
 	concept CoreCoClassDeclaration = CoClass<T> 
 		&& CoreLibraryDeclaration<typename T::library_type>
 		&& requires {
-			{ com::coclass_name_v<T> } -> std::convertible_to<std::string_view>;
-			com::coclass_name_v<T> + '.';
-			com::coclass_name_v<T> + com::coclass_name_v<T>;
+			{ com::detail::coclass_name_v<T> } -> std::convertible_to<std::string_view>;
+			com::detail::coclass_name_v<T> + '.';
+			com::detail::coclass_name_v<T> + com::detail::coclass_name_v<T>;
 		} 
-		&& com::coclass_name_v<T> != std::string_view{}
-		&& com::coclass_guid_v<T> != com::Guid{}
+		&& com::detail::coclass_name_v<T> != std::string_view{}
+		&& com::detail::coclass_guid_v<T> != com::Guid{}
+		&& com::detail::coclass_version_v<T> >= com::Version{1,0}
 		&& meta::ForwardSequence<typename T::interfaces>;
 }
 
 namespace core::com
 {
-	//! @brief	Compile-time co-class metadata
+	//! @brief	Compile-time metadata for a COM class
 	template <meta::detail::CoreCoClassDeclaration CoClass>
 	metafunc coclass_traits
 	{
-		using factory_type = typename coclass_factory<CoClass>::type;
+		using factory_type = typename detail::coclass_factory<CoClass>::type;
 
-		using library_type = typename coclass_library<CoClass>::type;
+		using library_type = typename detail::coclass_library<CoClass>::type;
 
 		ThreadingModel constexpr 
-		static apartment = coclass_apartment_v<CoClass>;
+		static apartment = detail::coclass_apartment_v<CoClass>;
 		
 		Guid constexpr 
-		static class_guid = coclass_guid_v<CoClass>;
+		static class_guid = detail::coclass_guid_v<CoClass>;
 		
 		LiteralString constexpr 
-		static class_name = coclass_name_v<CoClass>;
+		static class_name = detail::coclass_name_v<CoClass>;
 
 		Version constexpr 
-		static class_version = coclass_version_v<CoClass>;
+		static class_version = detail::coclass_version_v<CoClass>;
 
 		LiteralString constexpr 
-		static program_id = library_name_v<library_type> + '.' + coclass_name_v<CoClass>;
+		static program_id = library_name_v<library_type> + '.' + detail::coclass_name_v<CoClass>;
 	};
-	
-	//! @brief	Co-class program id string
-	template <meta::detail::CoreCoClassDeclaration CoClass>
-	LiteralString constexpr 
-	program_id_v = coclass_traits<CoClass>::program_id;
 }
 
 namespace core::meta
 {
-	//! @brief	Well-formed Core co-class (ie. one which possesses valid traits)
+	//! @brief	Well-formed COM class possessesing valid traits (either deduced or explicitly specialized)
 	template <typename T>
-	concept CoreCoClass = CoClass<T> && HasGuid<T> && requires {
+	concept CoreCoClass = CoClass<T>
+	  && HasGuid<T> 
+	  && requires {
 		{ com::coclass_traits<T>::apartment } -> std::convertible_to<com::ThreadingModel>;
 		{ com::coclass_traits<T>::class_name } -> std::convertible_to<std::string_view>;
 		{ com::coclass_traits<T>::class_guid } -> std::convertible_to<com::Guid>;
@@ -165,13 +183,38 @@ namespace core::meta
 
 namespace core::com
 {
-	//! @brief	Class factory type for @p CoClass
-	template <meta::CoreCoClass CoClass> 
-	using coclass_factory_t = typename coclass_factory<CoClass>::type;
+	//! @brief	Threading model for well-formed COM class @p CoClass
+	template <meta::CoreCoClass CoClass>
+	ThreadingModel constexpr 
+	coclass_apartment_v = coclass_traits<CoClass>::apartment;
 	
-	//! @brief	Library type for @p CoClass
-	template <meta::CoreCoClass CoClass> 
-	using coclass_library_t = typename coclass_library<CoClass>::type;
+	//! @brief	Factory class for well-formed COM class @p CoClass
+	template <meta::CoreCoClass CoClass>
+	using coclass_factory_t = typename coclass_traits<CoClass>::factory_type;
+	
+	//! @brief	GUID for well-formed COM class @p CoClass
+	template <meta::CoreCoClass CoClass>
+	Guid constexpr 
+	coclass_guid_v = coclass_traits<CoClass>::class_guid;
+	
+	//! @brief	COM library class for well-formed COM class @p CoClass
+	template <meta::CoreCoClass CoClass>
+	using coclass_library_t = typename coclass_traits<CoClass>::library_type;
+	
+	//! @brief	Name string for well-formed COM class @p CoClass
+	template <meta::CoreCoClass CoClass>
+	LiteralString constexpr 
+	coclass_name_v = coclass_traits<CoClass>::class_name;
+
+	//! @brief	Version identifier for well-formed COM class @p CoClass
+	template <meta::CoreCoClass CoClass>
+	Version constexpr 
+	coclass_version_v = coclass_traits<CoClass>::class_version;
+
+	//! @brief	Program id string for well-formed COM class @p CoClass
+	template <meta::CoreCoClass CoClass>
+	LiteralString constexpr 
+	program_id_v = coclass_traits<CoClass>::program_id;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
@@ -179,57 +222,196 @@ namespace core::com
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com::testing
-{
-	// Verify class GUID is detected from either source
+{	
+	//! @test  Verify @c com::detail::coclass_guid_v is empty when GUID not present
+	struct ClassWithoutGuid{};
+	static_assert(detail::coclass_guid_v<ClassWithoutGuid> == Guid{});
+
+	//! @test  Verify @c com::detail::coclass_guid_v is detected from metadata
+	using namespace guid_literals;
 	MIDL_INTERFACE("1D61B23A-5A26-48DA-A280-CE743C1B53F1")
-	ClassWithoutMemberGuid{};
+	ClassWithAttributeGuid{};
+	static_assert(detail::coclass_guid_v<ClassWithAttributeGuid> == "1D61B23A-5A26-48DA-A280-CE743C1B53F1"_guid);
+	
+	//! @test  Verify @c com::detail::coclass_guid_v is detected from static member variable
 	struct ClassWithMemberGuid{
 		Guid constexpr
 		static class_guid = Guid::fromString("1D61B23A-5A26-48DA-A280-CE743C1B53F1");
 	};
-	static_assert(coclass_guid_v<ClassWithoutMemberGuid> == coclass_guid_v<ClassWithMemberGuid>);
-	static_assert(!meta::CoreCoClass<ClassWithMemberGuid>);
+	static_assert(detail::coclass_guid_v<ClassWithMemberGuid> == "1D61B23A-5A26-48DA-A280-CE743C1B53F1"_guid);
 	
-	// Verify class apartment is detected or defaulted
+	//! @test  Verify @c com::detail::coclass_guid_v is the same whether detected from either source
+	static_assert(detail::coclass_guid_v<ClassWithAttributeGuid> == detail::coclass_guid_v<ClassWithMemberGuid>);
+
+	
+	//! @test  Verify @c com::detail::coclass_apartment_v is defaulted when not defined
 	struct ClassWithoutApartment{};
+	static_assert(detail::coclass_apartment_v<ClassWithoutApartment> == ThreadingModel::Isolated);
+
+	//! @test  Verify @c com::detail::coclass_apartment_v is detected from static member variable
 	struct ClassWithApartment{
 		ThreadingModel constexpr
-		static apartment = ThreadingModel::Isolated;
+		static apartment = ThreadingModel::Shared;
 	};
-	static_assert(coclass_apartment_v<ClassWithoutApartment> == coclass_apartment_v<ClassWithApartment>);
-	static_assert(!meta::CoreCoClass<ClassWithApartment>);
+	static_assert(detail::coclass_apartment_v<ClassWithApartment> == ThreadingModel::Shared);
+
+
 	
-	// Verify class version is detected or defaulted
+	//! @test  Verify @c com::detail::coclass_version_v is defaulted when not present
 	struct ClassWithoutVersion{};
+	static_assert(detail::coclass_version_v<ClassWithoutVersion> == Version{1,0});
+
+	//! @test  Verify @c com::detail::coclass_version_v is detected from member variable
 	struct ClassWithVersion{
 		Version constexpr
 		static class_version = Version{1,0};
 	};
-	static_assert(coclass_version_v<ClassWithoutVersion> == coclass_version_v<ClassWithVersion>);
-	static_assert(!meta::CoreCoClass<ClassWithVersion>);
+	static_assert(detail::coclass_version_v<ClassWithVersion> == Version{1,0});
+
+	//! @test  Verify @c com::detail::coclass_version_v is the same whether detected from either source
+	static_assert(detail::coclass_version_v<ClassWithoutVersion> == detail::coclass_version_v<ClassWithVersion>);
+
+
 	
-	// Verify class name is detected
-	struct ClassWithoutName{};
+	//! @test  Verify @c com::detail::coclass_name_v is detected from member variable
 	struct ClassWithName{
 		LiteralString constexpr
-		static class_name = "ClassWithName";
+		static class_name = "CustomName";
 	};
-	static_assert(coclass_name_v<ClassWithName> == "ClassWithName");
-	static_assert(!meta::CoreCoClass<ClassWithName>);
+	static_assert(detail::coclass_name_v<ClassWithName> == "CustomName");
+	
+	//! @test  Verify @c com::detail::coclass_name_v is defaulted via reflection
+	struct ClassWithoutName{};
+	static_assert(detail::coclass_name_v<ClassWithoutName> == "ClassWithoutName");
+	
 
-	// Verify class concept
-	MIDL_INTERFACE("8F33278E-EF80-42E2-8C90-1749DBCD7836") 
-	ValidCoClass : com::implements<IUnknown> {
+	
+	//! @test Verify @c meta::detail::CoreCoClassDeclaration requires library, class-name, GUID, and base-class
+	struct CoClassMissingGuid : implements<IUnknown> {
+		using library_type = ValidCoLibrary;
+	};
+	[uuid("C0CB0FB2-7507-4EEF-8848-E2CF40983741")]
+	struct CoClassMissingLibraryType : implements<IUnknown> {
+	};
+	[uuid("504E8D6A-D8C3-42F2-A341-98B79FCC16BE")]
+	struct CoClassMissingIUnknownBase {
+		using library_type = ValidCoLibrary;
+	};
+	static_assert(!meta::detail::CoreCoClassDeclaration<CoClassMissingGuid>);
+	static_assert(!meta::detail::CoreCoClassDeclaration<CoClassMissingLibraryType>);
+	static_assert(!meta::detail::CoreCoClassDeclaration<CoClassMissingIUnknownBase>);
+	
+	//! @test Verify @c meta::detail::CoreCoClassDeclaration validates required properties aren't empty
+	struct ClassWithEmptyGuid : implements<IUnknown> {
+		using library_type = ValidCoLibrary;
+
+		Guid constexpr
+		static class_guid;
+	};
+	[uuid("5A07BAE8-62C3-478A-9F48-6A23E514AD27")]
+	struct ClassWithEmptyName : implements<IUnknown> {
 		using library_type = ValidCoLibrary;
 
 		LiteralString constexpr
-		static class_name = "ValidCoClass";
+		static class_name = "";
 	};
+	[uuid("4A3E768F-8744-43D8-9718-A06E21111DC5")]
+	struct ClassWithEmptyVersion : implements<IUnknown> {
+		using library_type = ValidCoLibrary;
+
+		Version constexpr
+		static class_version{0,0};
+	};
+	static_assert(!meta::detail::CoreCoClassDeclaration<ClassWithEmptyGuid>);
+	static_assert(!meta::detail::CoreCoClassDeclaration<ClassWithEmptyName>);
+	static_assert(!meta::detail::CoreCoClassDeclaration<ClassWithEmptyVersion>);
+
+
+	//! @test Verify @c meta::CoreCoClass additionally requires valid apartment, factory-type, and program-id
+#pragma region Define coclasses with missing traits
+	[uuid("E5C012CA-0A03-46C9-A996-2601DBEF465B")]
+	struct ValidCoClass : implements<IUnknown> {
+		using library_type = ValidCoLibrary;
+	};
+	[uuid("A696C014-6B8C-4994-BF76-724C9B91C536")]
+	struct CoClassMissingApartment : ValidCoClass
+	{};
+	[uuid("1F692D8E-330E-4EFB-AB1C-DB8632BFADB6")]
+	struct CoClassMissingFactoryType : ValidCoClass
+	{};
+	[uuid("60BD3841-6C96-4F41-893E-26F67DB119E2")]
+	struct CoClassMissingProgramId : ValidCoClass
+	{};
+	struct CoClassStockTraits {
+		using library_type = typename detail::coclass_library<ValidCoClass>::type;
+
+		Guid constexpr 
+		static class_guid = detail::coclass_guid_v<ValidCoClass>;
+		
+		LiteralString constexpr 
+		static class_name = detail::coclass_name_v<ValidCoClass>;
+
+		Version constexpr 
+		static class_version = detail::coclass_version_v<ValidCoClass>;
+	};
+}
+namespace core::com
+{
+	template <>
+	struct coclass_traits<testing::CoClassMissingApartment> : testing::CoClassStockTraits
+	{
+		using factory_type = typename detail::coclass_factory<testing::CoClassMissingApartment>::type;
+
+		LiteralString constexpr 
+		static program_id = library_name_v<library_type> + '.' + detail::coclass_name_v<testing::CoClassMissingApartment>;
+	};
+
+	template <>
+	struct coclass_traits<testing::CoClassMissingFactoryType> : testing::CoClassStockTraits
+	{
+		ThreadingModel constexpr 
+		static apartment = detail::coclass_apartment_v<testing::CoClassMissingFactoryType>;
+		
+		LiteralString constexpr 
+		static program_id = library_name_v<library_type> + '.' + detail::coclass_name_v<testing::CoClassMissingFactoryType>;
+	};
+
+	template <>
+	struct coclass_traits<testing::CoClassMissingProgramId> : testing::CoClassStockTraits
+	{
+		using factory_type = typename detail::coclass_factory<testing::CoClassMissingApartment>::type;
+
+	ThreadingModel constexpr 
+	static apartment = detail::coclass_apartment_v<testing::CoClassMissingProgramId>;
+};
+}
+namespace core::com::testing
+{
+#pragma endregion
 	static_assert(meta::CoreCoClass<ValidCoClass>);
+	static_assert(!meta::CoreCoClass<CoClassMissingApartment>);
+	static_assert(!meta::CoreCoClass<CoClassMissingFactoryType>);
+	static_assert(!meta::CoreCoClass<CoClassMissingProgramId>);
+	static_assert(!meta::CoreCoClass<CoClassMissingGuid>);
+	static_assert(!meta::CoreCoClass<CoClassMissingLibraryType>);
+	static_assert(!meta::CoreCoClass<CoClassMissingIUnknownBase>);
+	static_assert(!meta::CoreCoClass<ClassWithEmptyGuid>);
+	static_assert(!meta::CoreCoClass<ClassWithEmptyName>);
+	static_assert(!meta::CoreCoClass<ClassWithEmptyVersion>);
 	
 	
 	//! @test  Verify program ID is correct
 	static_assert(coclass_traits<ValidCoClass>::program_id == "ValidCoLibrary.ValidCoClass");
 	static_assert(program_id_v<ValidCoClass> == "ValidCoLibrary.ValidCoClass");
+
+
+	//! @test Verify trait accessors produce same values as their implementations
+	static_assert(coclass_apartment_v<ValidCoClass> == detail::coclass_apartment_v<ValidCoClass>);
+	static_assert(std::is_same_v<coclass_factory_t<ValidCoClass>, coclass_traits<ValidCoClass>::factory_type>);
+	static_assert(std::is_same_v<coclass_library_t<ValidCoClass>, coclass_traits<ValidCoClass>::library_type>);
+	static_assert(coclass_guid_v<ValidCoClass> == detail::coclass_guid_v<ValidCoClass>);
+	static_assert(coclass_name_v<ValidCoClass> == detail::coclass_name_v<ValidCoClass>);
+	static_assert(coclass_version_v<ValidCoClass> == detail::coclass_version_v<ValidCoClass>);
+	static_assert(program_id_v<ValidCoClass> == coclass_traits<ValidCoClass>::program_id);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
