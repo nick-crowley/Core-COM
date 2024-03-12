@@ -32,6 +32,7 @@
 #include "com/Function.h"
 #include "com/GlobalRefCount.h"
 #include "com/SharedPtr.h"
+#include "com/ServerLocation.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -47,6 +48,18 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
+	namespace detail {
+		std::wstring_view constexpr
+		keyNameFor(ServerLocation loc) noexcept 
+		{
+			switch (loc) {
+			case ServerLocation::InProc:    return L"InProcServer32";
+			case ServerLocation::Local:     return L"LocalServer";
+			case ServerLocation::Service:   return L"Service";
+			default:                        std::unreachable();
+			}
+		}
+	}
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Retrieve a factory instance for any co-class
 	* @param[in]	clsId	Implementation ID
@@ -76,7 +89,7 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Populate all registry entries for @p CoClass co-classes
 	*/
-	template <meta::CoreCoClass CoClass, typename Traits = coclass_traits<CoClass>>
+	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
 	::HRESULT
 	registerServer(std::wstring_view modulePath) 
 	try {
@@ -91,7 +104,7 @@ namespace core::com
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		RegistryKey ourClassId = CLSID.subkey(create_new, classGuid);
 		ourClassId[use_default] = className;
-		RegistryKey ourServerPath = ourClassId.subkey(create_new, L"InProcServer32");
+		RegistryKey ourServerPath = ourClassId.subkey(create_new, detail::keyNameFor(Location));
 		ourServerPath[use_default] = modulePath;
 		switch (Traits::apartment) {
 		case ThreadingModel::Isolated: ourServerPath[L"ThreadingModel"] = L"Apartment"sv; break;
@@ -117,9 +130,9 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Remove all registry entries for @p CoClass co-classes
 	*/
-	template <meta::CoreCoClass CoClass, typename Traits = coclass_traits<CoClass>>
+	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
 	::HRESULT
-	unregisterServer() 
+	unregisterServer()
 	try {
 		using namespace core::win;
 		
@@ -131,7 +144,7 @@ namespace core::com
 		scoped {
 			auto ourClassId = CLSID / classGuid;
 			ourClassId.removeKey(L"ProgId");
-			ourClassId.removeKey(L"InProcServer32");
+			ourClassId.removeKey(detail::keyNameFor(Location));
 		}
 		CLSID.removeKey(classGuid);
 		

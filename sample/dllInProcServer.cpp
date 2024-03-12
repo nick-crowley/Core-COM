@@ -94,12 +94,14 @@ extern "C"
 ::HRESULT 
 COMAPI DllRegisterServer()
 {
-	return com::registerServer<InProcServer>(win::DllModule.path().native());
+	using enum com::ServerLocation;
+	return com::registerServer<InProcServer,InProc>(win::DllModule.path().native());
 }
 
 extern "C"
 ::HRESULT 
 COMAPI DllUnregisterServer()
 {
-	return com::unregisterServer<InProcServer>();
+	using enum com::ServerLocation;
+	return com::unregisterServer<InProcServer,InProc>();
 }
