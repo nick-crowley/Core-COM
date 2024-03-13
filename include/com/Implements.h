@@ -32,6 +32,7 @@
 #include "../../src/library/ComExport.h"
 #include "com/Concepts.h"
 #include "com/traits/distinct_interfaces.h"
+#include "com/traits/interface_sequence.h"
 #include "win/HResult.h"
 #include "core/FunctionLogging.h"
 #include "com/GlobalRefCount.h"

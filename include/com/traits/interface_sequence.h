@@ -1,5 +1,5 @@
 /* o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o */ /*!
-* @copyright	Copyright (c) 2023, Nick Crowley. All rights reserved.
+* @copyright	Copyright (c) 2024, Nick Crowley. All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -25,11 +25,11 @@
 */
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Preprocessor Directives o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #pragma once
+#ifndef CoreCom_h_included
+#	error Including this header directly may cause a circular dependency; include <core.COM.h> directly
+#endif
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-#include "library/core.COM.h"
-#include "com/Guid.h"
-#include "com/CoClassTraits.h"
-#include "nstd/OutPtr.h"
+#include "com/Concepts.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -41,56 +41,14 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
-	* @brief	Sets the exception for current logical COM thread
-	*/
-	template <meta::CoreCoClass CoClass, meta::ComInterface Interface = mpl::front_t<interface_sequence_t<CoClass>>>
-	class SetLastError
-	{
-		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-	private:
-		using traits = coclass_traits<CoClass>;
-		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-	private:
-		::HRESULT m_result;
-		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-	public:
-		SetLastError(::HRESULT result, std::string_view const msg) noexcept
-		  : SetLastError(result, std::wstring{msg.begin(), msg.end()})
-		{}
-
-		SetLastError(::HRESULT result, std::wstring_view const msg) noexcept
-		  : m_result(result)
-		{
-			shared_ptr<::ICreateErrorInfo> info;	
-			if (auto hr = ::CreateErrorInfo(std::out_ptr(info)); FAILED(hr))	// BUG: double-AddRef
-				this->m_result = hr;
-			else
-			{
-				info->SetDescription(const_cast<wchar_t*>(msg.data()));					// TODO: Check this works
-				info->SetSource(const_cast<wchar_t*>(traits::program_id.wstr().c_str()));
-				info->SetGUID(guid_v<Interface>);
-				
-				if (hr = ::SetErrorInfo(0, shared_ptr<::IErrorInfo>{info}); FAILED(hr))
-					this->m_result = hr;
-			}
-		}
-		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-
-		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-
-		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-	public:
-		implicit operator 
-		::HRESULT() const noexcept
-		{
-			return this->m_result;
-		}
-		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-	};
+	//! @brief	Sequence of COM interfaces implemented by @c CoClass
+	template <meta::CoClass CoClass>
+	using interface_sequence_t = typename CoClass::interfaces;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

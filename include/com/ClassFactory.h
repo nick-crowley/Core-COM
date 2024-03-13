@@ -76,7 +76,7 @@ namespace core::com
 	 * @tparam	Product		Type produced by factory
 	*/
 	template <meta::CoClass Product>
-		requires meta::ForwardSequence<typename Product::interfaces>
+		requires meta::ForwardSequence<interface_sequence_t<Product>>
 	class ClassFactory : public implements<::IClassFactory,::IUnknown>
 	{	
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -109,7 +109,7 @@ namespace core::com
 			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
 
 			// Since boost::mpl is C++03 library, we need to remove the placeholder args here
-			using interfaceSeq = mpl::remove_if_t<typename Product::interfaces,mpl::same_as<mpl::na>>;
+			using interfaceSeq = mpl::remove_if_t<interface_sequence_t<Product>,mpl::same_as<mpl::na>>;
 			return hr = detail::CreateInstanceImpl<Product,interfaceSeq>{}(nullptr, iid, ppv);
 		}
 
