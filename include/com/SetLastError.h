@@ -52,7 +52,7 @@ namespace core::com
 		using traits = coclass_traits<CoClass>;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		::HRESULT m_result;
+		::HRESULT Result;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		SetLastError(::HRESULT result, std::string_view const msg) noexcept
@@ -60,11 +60,11 @@ namespace core::com
 		{}
 
 		SetLastError(::HRESULT result, std::wstring_view const msg) noexcept
-		  : m_result(result)
+		  : Result(result)
 		{
 			shared_ptr<::ICreateErrorInfo> info;	
 			if (auto hr = ::CreateErrorInfo(std::out_ptr(info)); FAILED(hr))	// BUG: double-AddRef
-				this->m_result = hr;
+				this->Result = hr;
 			else
 			{
 				info->SetDescription(const_cast<wchar_t*>(msg.data()));					// TODO: Check this works
@@ -72,7 +72,7 @@ namespace core::com
 				info->SetGUID(guid_v<Interface>);
 				
 				if (hr = ::SetErrorInfo(0, shared_ptr<::IErrorInfo>{info}); FAILED(hr))
-					this->m_result = hr;
+					this->Result = hr;
 			}
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -84,7 +84,7 @@ namespace core::com
 		implicit operator 
 		::HRESULT() const noexcept
 		{
-			return this->m_result;
+			return this->Result;
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
