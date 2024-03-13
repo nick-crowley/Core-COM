@@ -56,7 +56,7 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		SetLastError(::HRESULT result, std::string_view const msg) noexcept
-		  : SetLastError(result, std::wstring{msg.begin(), msg.end()})
+		  : SetLastError(result, core::cwiden(msg))
 		{}
 
 		SetLastError(::HRESULT result, std::wstring_view const msg) noexcept
