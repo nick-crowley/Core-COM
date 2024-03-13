@@ -16,7 +16,7 @@ using namespace com::literals;
 
 // Library must supply same properties provided by [module] block
 //  -> permits concepts to discover them at compile-time
-struct __declspec(uuid("A10C8092-3549-4C2E-95D7-F264286720B9"))  // Alt syntax; COM attributes cause duplicate symbol error
+struct __declspec(uuid("A10C8092-3549-4C2E-95D7-F264286720B9"))  // @c uuid attribute causes duplicate symbol error :(
 InProcServerLib
 {
 	// [optional] Library version of v1.0 is defined implicitly, by omission  (see com::library_traits)
