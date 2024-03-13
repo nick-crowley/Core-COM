@@ -109,7 +109,7 @@ namespace core::com
 			logFunctionArgs(iid,ppv).withRetVals(hr,*ppv);
 
 			// Since boost::mpl is C++03 library, we need to remove the placeholder args here
-			using interfaceSeq = typename mpl::remove_if<typename Product::interfaces,mpl::same_as<mpl::na>>::type;
+			using interfaceSeq = mpl::remove_if_t<typename Product::interfaces,mpl::same_as<mpl::na>>;
 			return hr = detail::CreateInstanceImpl<Product,interfaceSeq>{}(nullptr, iid, ppv);
 		}
 
