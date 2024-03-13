@@ -21,7 +21,7 @@ __interface IInProcServer : IUnknown
 	Method1(long idx);
 
 	::HRESULT 
-	Method2(long idx, [retval] long* out);
+	Method2(long idx, [out, retval] long* out);
 };
 
 [coclass, default(IInProcServer), uuid("E46E39ED-E221-4F71-8E7A-6FBF30FA7692")]
