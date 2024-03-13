@@ -174,29 +174,20 @@ namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com::testing
 {
+	//! @test  Verify @c com::detail::is_strict_base_of<T> removes types derived from @c T but not @c T itself
 	using TestVector = mpl::vector<IClassFactory,IUnknown,ITypeInfo>;
-	using TestVector_WithoutIUnknown = typename mpl::remove_if<TestVector, detail::is_strict_base_of<IClassFactory>>::type;
-	static_assert(mpl::size<TestVector_WithoutIUnknown>::value == 2);
-	static_assert(mpl::contains<TestVector_WithoutIUnknown,IClassFactory>::value);
-	static_assert(!mpl::contains<TestVector_WithoutIUnknown,IUnknown>::value);
-	static_assert(mpl::contains<TestVector_WithoutIUnknown,ITypeInfo>::value);
+	using IClassFactoryAndITypeInfo = typename mpl::remove_if<TestVector, detail::is_strict_base_of<IClassFactory>>::type;
+	static_assert(mpl::size<IClassFactoryAndITypeInfo>::value == 2);
+	static_assert(!mpl::contains<IClassFactoryAndITypeInfo,IUnknown>::value);
+	static_assert(mpl::contains<IClassFactoryAndITypeInfo,IClassFactory>::value);
+	static_assert(mpl::contains<IClassFactoryAndITypeInfo,ITypeInfo>::value);
 
+	//! @test  Verify @c com::detail::is_strict_base_of<T> removes types derived from @c T but not @c T itself
 	using TestVector2 = mpl::vector<IClassFactory2,IClassFactory,IDispatch>;
-	using TestVector2_WithoutIClassFactory = typename mpl::remove_if<TestVector2, detail::is_strict_base_of<IClassFactory2>>::type;
-	static_assert(mpl::size<TestVector2_WithoutIClassFactory>::value == 2);
-	static_assert(mpl::contains<TestVector2_WithoutIClassFactory,IClassFactory2>::value);
-	static_assert(!mpl::contains<TestVector2_WithoutIClassFactory,IClassFactory>::value);
-	static_assert(mpl::contains<TestVector2_WithoutIClassFactory,IDispatch>::value);
-	
-	using TestVector3 = distinct_interfaces_t<IClassFactory,IUnknown>;
-	static_assert(mpl::size<TestVector3>::value == 1);
-	static_assert(mpl::contains<TestVector3,IClassFactory>::value);
-	static_assert(!mpl::contains<TestVector3,IUnknown>::value);
-
-	using TestVector4 = distinct_interfaces_t<IClassFactory,IDispatch,IUnknown>;
-	static_assert(mpl::size<TestVector4>::value == 2);
-	static_assert(mpl::contains<TestVector4,IClassFactory>::value);
-	static_assert(mpl::contains<TestVector4,IDispatch>::value);
-	static_assert(!mpl::contains<TestVector4,IUnknown>::value);
+	using IClassFactory2AndIDispatch = typename mpl::remove_if<TestVector2, detail::is_strict_base_of<IClassFactory2>>::type;
+	static_assert(mpl::size<IClassFactory2AndIDispatch>::value == 2);
+	static_assert(!mpl::contains<IClassFactory2AndIDispatch,IClassFactory>::value);
+	static_assert(mpl::contains<IClassFactory2AndIDispatch,IClassFactory2>::value);
+	static_assert(mpl::contains<IClassFactory2AndIDispatch,IDispatch>::value);
 }  // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o

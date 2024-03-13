@@ -85,4 +85,20 @@ namespace core::com
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Global Functions o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::com::testing
+{
+	//! @test  Verify @c com::distinct_interfaces_t<T...> removes child when passed two types in a parent-child relationship
+	using JustIClassFactory = distinct_interfaces_t<IClassFactory,IUnknown>;
+	static_assert(mpl::size<JustIClassFactory>::value == 1);
+	static_assert(mpl::contains<JustIClassFactory,IClassFactory>::value);
+	static_assert(!mpl::contains<JustIClassFactory,IUnknown>::value);
+	
+	//! @test  Verify @c com::distinct_interfaces_t<T...> removes common roots from the inheritance hierarchy
+	using IClassFactoryAndIDispatch = distinct_interfaces_t<IClassFactory,IDispatch,IUnknown>;
+	static_assert(mpl::size<IClassFactoryAndIDispatch>::value == 2);
+	static_assert(mpl::contains<IClassFactoryAndIDispatch,IClassFactory>::value);
+	static_assert(mpl::contains<IClassFactoryAndIDispatch,IDispatch>::value);
+	static_assert(!mpl::contains<IClassFactoryAndIDispatch,IUnknown>::value);
+}  // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
