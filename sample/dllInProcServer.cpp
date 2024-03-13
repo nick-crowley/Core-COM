@@ -7,13 +7,24 @@
 using namespace core;
 using namespace com::literals;
 
-// Tells Visual Studio to auto-generate an IDL from the attributes in the source file(s)
-[module(unspecified, name="InProcServerLib", version="1.0", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
+// Auto-generate an IDL from the attributes in this source file
+// Inserts @c library block into IDL with specified @c name and @c uuid
+[module(unspecified, name="InProcServerLib", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
 
 // Prevent code-injection into attributed types
 [no_injected_text(true)];
 
-// COM interfaces must be declared using non-standard `__interface` keyword
+// Library must supply same properties provided by [module] block
+//  -> permits concepts to discover them at compile-time
+struct __declspec(uuid("A10C8092-3549-4C2E-95D7-F264286720B9"))  // Alt syntax; COM attributes cause duplicate symbol error
+InProcServerLib
+{
+	// [optional] Library version of v1.0 is defined implicitly, by omission  (see com::library_traits)
+	// [mandatory] For any version other than v1.0
+};
+
+// Interfaces must be declared using non-standard `__interface` keyword
+// Inserts @c interface block into IDL with specified @c uuid
 [object, uuid("9E66A290-4365-11D2-A997-00C04FA37DDB")]
 __interface IInProcServer : IUnknown
 {
@@ -24,30 +35,24 @@ __interface IInProcServer : IUnknown
 	Method2(long idx, [out, retval] long* out);
 };
 
+// Inserts @c coclass block into IDL with specified @c uuid and @c default
 [coclass, default(IInProcServer), uuid("E46E39ED-E221-4F71-8E7A-6FBF30FA7692")]
 class InProcServer : public com::implements<IInProcServer,::IUnknown>
 {
 public:
-	struct library_type {
-		// COM classes must have a member type named `library_type` but we must explicitly
-		// override the library name which would otherwise be obtained via reflection
-		LiteralString constexpr
-		static library_name {"InProcServerLib"};
+	// [mandatory] Library containing this coclass
+	using library_type = InProcServerLib;
 
-		// COM attributes aren't supported on nested classes so this is required
-		com::Guid constexpr
-		static library_guid = "A10C8092-3549-4C2E-95D7-F264286720B9"_guid;
+	// [optional] Coclass name of 'InProcServer' is obtained via reflection  (see com::coclass_traits)
 
-		// [VERSION] Library version of v1.0 is defined implicitly, by omission  (see library traits)
-	};
+	// [optional] Coclass threading-model of 'Apartment' is defined implicitly, by omission  (see com::coclass_traits)
 
-	// [NAME] Class name of 'InProcServer' is obtained via reflection  (see coclass traits)
+	// [optional] Coclass GUID is obtained from the COM attributes  (see com::coclass_traits)
 
-	// [THREADING] Class threading-model of 'Apartment' is defined implicitly, by omission  (see coclass traits)
+	// [optional] Coclass version of v1.0 is defined implicitly, by omission  (see com::coclass_traits)
+	// [mandatory] For any version other than v1.0
 
-	// [GUID] Class GUID is obtained from the COM attributes  (see coclass traits)
-
-	// [VERSION] Class version of v1.0 is defined implicitly, by omission  (see coclass traits)
+	// [NOTE] Stock ::IClassFactory implementation provided by `ClassFactory<InProcServer>`  (see com::ClassFactory)
 	
 public:
 	::HRESULT 
@@ -67,8 +72,6 @@ public:
 		return S_OK;
 	}
 };
-
-// [FACTORY] Complete ::IClassFactory implementation is provided by `ClassFactory<InProcServer>`  (see ClassFactory)
 
 
 extern "C"
