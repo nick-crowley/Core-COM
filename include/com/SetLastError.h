@@ -42,7 +42,7 @@
 namespace core::com
 {
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
-	* @brief	Sets the exception for current logical COM thread
+	* @brief	Sets the exception for current thread (logical COM thread)
 	*/
 	template <meta::CoreCoClass CoClass, meta::ComInterface Interface = mpl::front_t<interface_sequence_t<CoClass>>>
 	class SetLastError
