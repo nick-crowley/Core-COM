@@ -21,7 +21,7 @@ __interface IInProcServer : IUnknown
 	Method2(long idx, com::retval_t<long> out);
 };
 
-[uuid("E46E39ED-E221-4F71-8E7A-6FBF30FA7692")]
+[coclass, default(IInProcServer), uuid("E46E39ED-E221-4F71-8E7A-6FBF30FA7692")]
 class InProcServer : public com::implements<IInProcServer,::IUnknown>
 {
 public:
