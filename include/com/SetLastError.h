@@ -51,18 +51,18 @@ namespace core::com
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		::HRESULT Result;
+		win::HResult Result;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		SetLastError(::HRESULT result, std::string_view const msg) noexcept
+		SetLastError(win::HResult result, std::string_view const msg) noexcept
 		  : SetLastError(result, core::cwiden(msg))
 		{}
 
-		SetLastError(::HRESULT result, std::wstring_view const msg) noexcept
+		SetLastError(win::HResult result, std::wstring_view const msg) noexcept
 		  : Result(result)
 		{
 			shared_ptr<::ICreateErrorInfo> info;	
-			if (auto hr = ::CreateErrorInfo(std::out_ptr(info,adopt)); FAILED(hr))
+			if (win::HResult hr = ::CreateErrorInfo(std::out_ptr(info,adopt)); !hr)
 				this->Result = hr;
 			else
 			{
@@ -70,7 +70,7 @@ namespace core::com
 				info->SetSource(const_cast<wchar_t*>(program_id_v<CoClass>.wstr().c_str()));
 				info->SetGUID(guid_v<Interface>);
 				
-				if (hr = ::SetErrorInfo(0, shared_ptr<::IErrorInfo>{info}); FAILED(hr))
+				if (hr = ::SetErrorInfo(win::Unused<ULONG>, shared_ptr<::IErrorInfo>{info}); !hr)
 					this->Result = hr;
 			}
 		}
