@@ -53,16 +53,16 @@ namespace core::com
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		DWORD m_cookie;
+		DWORD Cookie;
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		ClassObject(::IUnknown& instance, ::CLSCTX context, ::REGCLS usage)
-			: m_cookie{coRegisterClassObject(guid_v<Factory>, &instance, context, usage)}
+			: Cookie{coRegisterClassObject(guid_v<Factory>, &instance, context, usage)}
 		{}
 
 		~ClassObject() {
-			::CoRevokeClassObject(this->m_cookie);
+			::CoRevokeClassObject(this->Cookie);
 		}
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o

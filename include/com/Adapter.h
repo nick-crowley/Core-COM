@@ -60,13 +60,13 @@ namespace core::com
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		com::shared_ptr<Interface> m_object;
+		com::shared_ptr<Interface> Object;
 	
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	protected:
-		adapter(com::shared_ptr<Interface> ptr) : m_object{std::move(ptr)}
+		adapter(com::shared_ptr<Interface> ptr) : Object{std::move(ptr)}
 		{}
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -75,19 +75,19 @@ namespace core::com
 	public:
 		com::shared_ptr<Interface>
 		ptr() const {
-			return this->m_object;
+			return this->Object;
 		}
 
 		implicit operator
 		interface_type*() const {
-			return this->m_object;
+			return this->Object;
 		}
 		
 	protected:
 		template <unsigned NumReturnParams = 0, typename... Parameters>
 		auto
 		method(method_pointer_t<Interface,Parameters...> method) const {
-			return std::bind_front(com::method<NumReturnParams>(method), std::ref(const_cast<Interface&>(*this->m_object)));
+			return std::bind_front(com::method<NumReturnParams>(method), std::ref(const_cast<Interface&>(*this->Object)));
 		}
 
 		// FIXME: This cannot preceed the above declaration because of its auto return-type
@@ -97,13 +97,13 @@ namespace core::com
 		template <typename ValueType>
 		const_property_t<ValueType>
 		property(method_pointer_t<Interface,ValueType*> get) const {
-			return com::property(get)(*this->m_object);
+			return com::property(get)(*this->Object);
 		}
 		
 		template <typename ValueType>
 		mutable_property_t<ValueType> 
 		property(method_pointer_t<Interface,ValueType*> get, method_pointer_t<Interface,ValueType> set) const {
-			return com::property(get, set)(*this->m_object);
+			return com::property(get, set)(*this->Object);
 		}
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o

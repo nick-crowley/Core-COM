@@ -56,16 +56,16 @@ namespace core::com::detail
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		Interface& m_object;
-		GetMethod  m_get;
-		SetMethod  m_set;
+		Interface& Object;
+		GetMethod  GetFunc;
+		SetMethod  SetFunc;
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		constexpr
 		explicit
 		MutablePropertyProxy(Interface& obj, GetMethod get, SetMethod set)
-		  : m_object{obj}, m_get{get}, m_set{set}
+		  : Object{obj}, GetFunc{get}, SetFunc{set}
 		{}
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -82,14 +82,14 @@ namespace core::com::detail
 	public:
 		implicit operator
 		ValueType() const {
-			return this->m_get(this->m_object);
+			return this->GetFunc(this->Object);
 		}
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		type&
 		operator=(ValueType v) {
-			this->m_set(this->m_object, v);
+			this->SetFunc(this->Object, v);
 			return *this;
 		}
 	};
@@ -105,14 +105,14 @@ namespace core::com::detail
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		GetMethod  m_get;
-		SetMethod  m_set;
+		GetMethod  GetFunc;
+		SetMethod  SetFunc;
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		constexpr
 		MutablePropertyFunctor(GetMethod get, SetMethod set)
-		  : m_get{get}, m_set{set}
+		  : GetFunc{get}, SetFunc{set}
 		{}
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -129,7 +129,7 @@ namespace core::com::detail
 	public:
 		auto constexpr
 		operator()(Interface& obj) const {
-			return MutablePropertyProxy<ValueType,Interface>{obj, this->m_get, this->m_set};
+			return MutablePropertyProxy<ValueType,Interface>{obj, this->GetFunc, this->SetFunc};
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
@@ -144,15 +144,15 @@ namespace core::com::detail
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		Interface& m_object;
-		GetMethod  m_get;
+		Interface& Object;
+		GetMethod  GetFunc;
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		constexpr
 		explicit
 		ReadOnlyPropertyProxy(Interface& obj, GetMethod get)
-		  : m_object{obj}, m_get{get}
+		  : Object{obj}, GetFunc{get}
 		{}
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -172,7 +172,7 @@ namespace core::com::detail
 
 		implicit operator
 		ValueType() const {
-			return this->m_get(this->m_object);
+			return this->GetFunc(this->Object);
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
@@ -187,14 +187,14 @@ namespace core::com::detail
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		GetMethod m_get;
+		GetMethod GetFunc;
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		constexpr
 		explicit
 		ReadOnlyPropertyFunctor(GetMethod get)
-		  : m_get{get}
+		  : GetFunc{get}
 		{}
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -211,7 +211,7 @@ namespace core::com::detail
 	public:
 		auto constexpr
 		operator()(Interface& obj) const {
-			return ReadOnlyPropertyProxy<ValueType,Interface>{obj, this->m_get};
+			return ReadOnlyPropertyProxy<ValueType,Interface>{obj, this->GetFunc};
 		}
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o

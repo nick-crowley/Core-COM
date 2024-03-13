@@ -52,7 +52,7 @@ namespace core::com
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		std::function<::HRESULT ()> m_action;
+		std::function<::HRESULT ()> Action;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -66,7 +66,7 @@ namespace core::com
 		template <std::invocable<> Callable>
 		Boundary&
 		operator=(Callable&& fx) {
-			this->m_action = fx;
+			this->Action = fx;
 			return *this;
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -76,10 +76,10 @@ namespace core::com
 		implicit operator 
 		::HRESULT() const 
 		try {
-			if (!this->m_action)
+			if (!this->Action)
 				return E_NOTIMPL;
 
-			return this->m_action();
+			return this->Action();
 		}
 		catch (std::invalid_argument const& e) {
 			return SetLastError<CoClass>{E_INVALIDARG, e.what()};

@@ -61,13 +61,13 @@ namespace core::com
 
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
     private:
-		shared_ptr<::ITypeInfo> m_typeInfo;
+		shared_ptr<::ITypeInfo> Info;
         
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
         template <meta::CoreCoClass CoClass>
         Dispatch(CoClass const&) 
-          : m_typeInfo{TypeLibrary<CoClass>{}.typeInfo(guid_v<interface_t>)}
+          : Info{TypeLibrary<CoClass>{}.typeInfo(guid_v<interface_t>)}
 		{
         }
         // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
@@ -105,7 +105,7 @@ namespace core::com
             if (idx != 0) 
                 return hr = DISP_E_BADINDEX;
 
-            return hr = this->m_typeInfo->QueryInterface(guid_v<::ITypeInfo>, std::out_ptr(*ppv));
+            return hr = this->Info->QueryInterface(guid_v<::ITypeInfo>, std::out_ptr(*ppv));
         }
         
         ::HRESULT
@@ -119,7 +119,7 @@ namespace core::com
             std::span const names{szNames,cNames};
             logFunctionArgs(iid,names,locale).withRetVals(hr,*arrDispId);
 
-            return hr = this->m_typeInfo->GetIDsOfNames(szNames,cNames,arrDispId);
+            return hr = this->Info->GetIDsOfNames(szNames,cNames,arrDispId);
         }
         
         ::HRESULT 
@@ -136,7 +136,7 @@ namespace core::com
             //! @todo   @c ::VARIANT, @c ::EXCEPTINFO, @c ::DISPPARAMS should model @c core::Stringable
 			logFunctionArgs(dispIdMember,iid,locale,wFlags).withRetVals(hr, *puArgErr /* *pDispParams, *pVarResult, *pExcepInfo */);
 
-            return hr = this->m_typeInfo->Invoke(static_cast<interface_t*>(this), dispIdMember, wFlags,
+            return hr = this->Info->Invoke(static_cast<interface_t*>(this), dispIdMember, wFlags,
                 pDispParams, pVarResult, pExcepInfo, puArgErr);
         }
 	};
