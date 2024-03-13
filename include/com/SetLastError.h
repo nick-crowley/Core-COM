@@ -63,7 +63,7 @@ namespace core::com
 		  : Result(result)
 		{
 			shared_ptr<::ICreateErrorInfo> info;	
-			if (auto hr = ::CreateErrorInfo(std::out_ptr(info)); FAILED(hr))	// BUG: double-AddRef
+			if (auto hr = ::CreateErrorInfo(std::out_ptr(info,adopt)); FAILED(hr))
 				this->Result = hr;
 			else
 			{
