@@ -150,7 +150,7 @@ namespace core::com
 				// we're casting via the _first_ interface in the list.
 				if constexpr (!std::is_convertible_v<type const*, Interface const*>)
 					*ppv = static_cast<Interface*>(
-						static_cast<typename mpl::front<interfaces>::type*>(this)
+						static_cast<mpl::front_t<interfaces>*>(this)
 					);
 					// FIXME: Only works for common case, we should select the path dynamically by searching the
 					//        type-list for the first common base eg. std::common_with
@@ -176,7 +176,7 @@ namespace core::com::testing
 {
 	//! @test  Verify @c com::detail::is_strict_base_of<T> removes types derived from @c T but not @c T itself
 	using TestVector = mpl::vector<IClassFactory,IUnknown,ITypeInfo>;
-	using IClassFactoryAndITypeInfo = typename mpl::remove_if<TestVector, detail::is_strict_base_of<IClassFactory>>::type;
+	using IClassFactoryAndITypeInfo = mpl::remove_if_t<TestVector, detail::is_strict_base_of<IClassFactory>>;
 	static_assert(mpl::size<IClassFactoryAndITypeInfo>::value == 2);
 	static_assert(!mpl::contains<IClassFactoryAndITypeInfo,IUnknown>::value);
 	static_assert(mpl::contains<IClassFactoryAndITypeInfo,IClassFactory>::value);
@@ -184,7 +184,7 @@ namespace core::com::testing
 
 	//! @test  Verify @c com::detail::is_strict_base_of<T> removes types derived from @c T but not @c T itself
 	using TestVector2 = mpl::vector<IClassFactory2,IClassFactory,IDispatch>;
-	using IClassFactory2AndIDispatch = typename mpl::remove_if<TestVector2, detail::is_strict_base_of<IClassFactory2>>::type;
+	using IClassFactory2AndIDispatch = mpl::remove_if_t<TestVector2, detail::is_strict_base_of<IClassFactory2>>;
 	static_assert(mpl::size<IClassFactory2AndIDispatch>::value == 2);
 	static_assert(!mpl::contains<IClassFactory2AndIDispatch,IClassFactory>::value);
 	static_assert(mpl::contains<IClassFactory2AndIDispatch,IClassFactory2>::value);
