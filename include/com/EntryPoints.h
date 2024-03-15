@@ -187,7 +187,7 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Add/remove @p CoClass registration if @c /RegServer or @c /UnregServer present on command line
 	*/
-	template <meta::CoreCoClass CoClass, Location Location, typename Traits = coclass_traits<CoClass>>
+	template <meta::CoreCoClass CoClass, Location Location>
 	bool
 	cmdLineRegistrationRequested(std::wstring_view cmdline, std::wstring_view modulePath) noexcept
 	try {
