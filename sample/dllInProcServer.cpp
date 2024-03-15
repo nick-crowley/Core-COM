@@ -7,9 +7,9 @@
 using namespace core;
 using namespace com::literals;
 
-// Auto-generate an IDL from the attributes in this source file
-// Inserts @c library block into IDL with specified @c name and @c uuid
-[module(unspecified, name="InProcServerLib", uuid="A10C8092-3549-4C2E-95D7-F264286720B9")];
+// Define program meta-data
+metadata std::string_view meta::Settings<program_name> = "In-process COM server demo";
+metadata std::string_view meta::Settings<program_version> = "1.0";
 
 // Prevent code-injection into attributed types
 [no_injected_text(true)];
@@ -81,12 +81,20 @@ COMAPI DllCanUnloadNow()
 	return com::canUnloadNow();
 }
 
+void
+intern InitializeLogFile() {
+	std::once_flag f;
+	std::call_once(f, []{ 
+		clog.createLogFile("InProcServer.log"); 
+		startupBanner();
+	});
+}
+
 extern "C"
 ::HRESULT 
 COMAPI DllGetClassObject(::CLSID const& clsId, ::IID const& iid, void** ppv)
 {
-	//! @bug  Not sure where @c clog output from this and @c Dll[Un]RegisterServer() functions will go
-	clog.attach(std::cout);
+	InitializeLogFile();
 	return com::getClassObject<InProcServer>(com::Guid{clsId}, iid, ppv);
 }
 
@@ -101,6 +109,7 @@ extern "C"
 ::HRESULT 
 COMAPI DllRegisterServer()
 {
+	InitializeLogFile();
 	using enum com::ServerLocation;
 	return com::registerServer<InProcServer,InProcess>(win::DllModule.path().native());
 }
@@ -109,6 +118,7 @@ extern "C"
 ::HRESULT 
 COMAPI DllUnregisterServer()
 {
+	InitializeLogFile();
 	using enum com::ServerLocation;
 	return com::unregisterServer<InProcServer,InProcess>();
 }
