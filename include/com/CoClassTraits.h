@@ -32,6 +32,7 @@
 #include "com/ClassFactory.h"
 #include "com/Version.h"
 #include "com/ThreadingModel.h"
+#include "com/ApplicationTraits.h"
 #include "com/LibraryTraits.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
@@ -54,6 +55,16 @@ namespace core::com::detail
 			requires { CoClass::apartment; }
 	ThreadingModel constexpr
 	coclass_apartment_v<CoClass,void> = CoClass::apartment;
+	
+
+	//! @brief	@c CoClass::application_type if present, otherwise @c meta::undefined_t
+	template <typename CoClass, typename = void>
+	metafunc coclass_application : std::type_identity<meta::undefined_t> {};
+
+	template <typename CoClass> 
+		requires 
+			requires { typename CoClass::application_type; }
+	metafunc coclass_application<CoClass,void> : std::type_identity<typename CoClass::application_type> {};
 	
 
 	//! @brief	@c CoClass::factory_type if present, otherwise @c core::com::ClassFactory<CoClass>
@@ -117,10 +128,16 @@ namespace core::com::detail
 
 namespace core::meta::detail
 {
+	template <typename T>
+	concept OptionalApplicationDeclaration = 
+	    (requires { typename T::application_type; } == false)
+	 || CoreApplicationDeclaration<typename T::application_type>;
+
 	//! @brief	Well-formed declaration containing mandatory minimum properties for a COM class
 	template <typename T>
 	concept CoreCoClassDeclaration = CoClass<T> 
 		&& CoreLibraryDeclaration<typename T::library_type>
+		&& OptionalApplicationDeclaration<T>
 		&& requires {
 			{ com::detail::coclass_name_v<T> } -> std::convertible_to<std::string_view>;
 			com::detail::coclass_name_v<T> + '.';
@@ -138,6 +155,8 @@ namespace core::com
 	template <meta::detail::CoreCoClassDeclaration CoClass>
 	metafunc coclass_traits
 	{
+		using application_type = typename detail::coclass_application<CoClass>::type;
+
 		using factory_type = typename detail::coclass_factory<CoClass>::type;
 
 		using library_type = typename detail::coclass_library<CoClass>::type;
@@ -171,6 +190,7 @@ namespace core::meta
 		{ com::coclass_traits<T>::class_guid } -> std::convertible_to<com::Guid>;
 		{ com::coclass_traits<T>::class_version } -> std::convertible_to<com::Version>;
 		{ com::coclass_traits<T>::program_id } -> std::convertible_to<std::string_view>;
+		typename com::coclass_traits<T>::application_type;
 		typename com::coclass_traits<T>::factory_type;
 		typename com::coclass_traits<T>::library_type;
 	} && CoreLibrary<typename com::coclass_traits<T>::library_type>
@@ -187,6 +207,10 @@ namespace core::com
 	template <meta::CoreCoClass CoClass>
 	ThreadingModel constexpr 
 	coclass_apartment_v = coclass_traits<CoClass>::apartment;
+	
+	//! @brief	[optional] Application class for well-formed COM class @p CoClass, if any, otherwise @c core::undefined_t
+	template <meta::CoreCoClass CoClass>
+	using coclass_application_t = typename coclass_traits<CoClass>::application_type;
 	
 	//! @brief	Factory class for well-formed COM class @p CoClass
 	template <meta::CoreCoClass CoClass>
@@ -285,6 +309,21 @@ namespace core::com::testing
 	static_assert(detail::coclass_name_v<ClassWithoutName> == "ClassWithoutName");
 	
 
+	//! @test Verify @c com::detail::coclass_application detects @c application_type when present
+	[uuid("C0CB0FB2-7507-4EEF-8848-E2CF40983741")]
+	struct CoClassWithApplicationType : implements<IUnknown> {
+		using application_type = ValidCoApplication;
+		using library_type = ValidCoLibrary;
+	};
+	static_assert(std::is_same_v<typename detail::coclass_application<CoClassWithApplicationType>::type, ValidCoApplication>);
+
+	//! @test Verify @c com::detail::coclass_application is undefined when omitted
+	[uuid("C0CB0FB2-7507-4EEF-8848-E2CF40983741")]
+	struct CoClassWithoutApplicationType : implements<IUnknown> {
+		using library_type = ValidCoLibrary;
+	};
+	static_assert(std::is_same_v<typename detail::coclass_application<CoClassWithoutApplicationType>::type, meta::undefined_t>);
+
 	
 	//! @test Verify @c meta::detail::CoreCoClassDeclaration requires library, class-name, GUID, and base-class
 	struct CoClassMissingGuid : implements<IUnknown> {
@@ -325,9 +364,14 @@ namespace core::com::testing
 	static_assert(!meta::detail::CoreCoClassDeclaration<ClassWithEmptyGuid>);
 	static_assert(!meta::detail::CoreCoClassDeclaration<ClassWithEmptyName>);
 	static_assert(!meta::detail::CoreCoClassDeclaration<ClassWithEmptyVersion>);
+	
+
+	//! @test Verify @c meta::detail::CoreCoClassDeclaration accepts @c application_type when present or when omitted
+	static_assert(meta::detail::CoreCoClassDeclaration<CoClassWithApplicationType>);
+	static_assert(meta::detail::CoreCoClassDeclaration<CoClassWithoutApplicationType>);
 
 
-	//! @test Verify @c meta::CoreCoClass additionally requires valid apartment, factory-type, and program-id
+	//! @test Verify @c meta::CoreCoClass requires all traits to be valid
 #pragma region Define coclasses with missing traits
 	[uuid("E5C012CA-0A03-46C9-A996-2601DBEF465B")]
 	struct ValidCoClass : implements<IUnknown> {
@@ -335,6 +379,9 @@ namespace core::com::testing
 	};
 	[uuid("A696C014-6B8C-4994-BF76-724C9B91C536")]
 	struct CoClassMissingApartment : ValidCoClass
+	{};
+	[uuid("C382E1F1-6B99-4F93-B459-829D8C209697")]
+	struct CoClassMissingApplicationType : ValidCoClass
 	{};
 	[uuid("1F692D8E-330E-4EFB-AB1C-DB8632BFADB6")]
 	struct CoClassMissingFactoryType : ValidCoClass
@@ -365,6 +412,18 @@ namespace core::com
 		LiteralString constexpr 
 		static program_id = library_name_v<library_type> + '.' + detail::coclass_name_v<testing::CoClassMissingApartment>;
 	};
+	
+	template <>
+	struct coclass_traits<testing::CoClassMissingApplicationType> : testing::CoClassStockTraits
+	{
+		using factory_type = typename detail::coclass_factory<testing::CoClassMissingApartment>::type;
+
+		ThreadingModel constexpr 
+		static apartment = detail::coclass_apartment_v<testing::CoClassMissingApplicationType>;
+		
+		LiteralString constexpr 
+		static program_id = library_name_v<library_type> + '.' + detail::coclass_name_v<testing::CoClassMissingApplicationType>;
+	};
 
 	template <>
 	struct coclass_traits<testing::CoClassMissingFactoryType> : testing::CoClassStockTraits
@@ -390,6 +449,7 @@ namespace core::com::testing
 #pragma endregion
 	static_assert(meta::CoreCoClass<ValidCoClass>);
 	static_assert(!meta::CoreCoClass<CoClassMissingApartment>);
+	static_assert(!meta::CoreCoClass<CoClassMissingApplicationType>);
 	static_assert(!meta::CoreCoClass<CoClassMissingFactoryType>);
 	static_assert(!meta::CoreCoClass<CoClassMissingProgramId>);
 	static_assert(!meta::CoreCoClass<CoClassMissingGuid>);
@@ -407,6 +467,7 @@ namespace core::com::testing
 
 	//! @test Verify trait accessors produce same values as their implementations
 	static_assert(coclass_apartment_v<ValidCoClass> == detail::coclass_apartment_v<ValidCoClass>);
+	static_assert(std::is_same_v<coclass_application_t<ValidCoClass>, coclass_traits<ValidCoClass>::application_type>);
 	static_assert(std::is_same_v<coclass_factory_t<ValidCoClass>, coclass_traits<ValidCoClass>::factory_type>);
 	static_assert(std::is_same_v<coclass_library_t<ValidCoClass>, coclass_traits<ValidCoClass>::library_type>);
 	static_assert(coclass_guid_v<ValidCoClass> == detail::coclass_guid_v<ValidCoClass>);
