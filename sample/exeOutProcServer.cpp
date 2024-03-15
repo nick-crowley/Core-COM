@@ -11,16 +11,29 @@ using namespace com::literals;
 metadata std::string_view meta::Settings<program_name> = "Out-of-process COM server demo";
 metadata std::string_view meta::Settings<program_version> = "1.0";
 
-// Auto-generate an IDL from the attributes in this source file
-// Inserts @c library block into IDL with specified @c name and @c uuid
-[module(unspecified, name="OutProcServerLib", uuid="DD45780C-AFD6-45B6-8028-F22A7C8EECCD")];
-
-// Prevent code-injection into attributed types
+// Disable code injection
 [no_injected_text(true)];
+
+// Inserts @c library block into IDL with specified @c name and @c uuid
+//  NB: CORE properties must supply same values as [attributes] or type-library content will differ from code
+[
+	module(unspecified, name="OutProcServerLib", uuid="DD45780C-AFD6-45B6-8028-F22A7C8EECCD"),
+	uuid="DD45780C-AFD6-45B6-8028-F22A7C8EECCD"
+]
+struct OutProcServerLib
+{
+	// [optional] Library version of v1.0 is defined implicitly, by omission  (see com::library_traits)
+	// [mandatory] For any version other than v1.0
+};
+
+
 
 // Interfaces must be declared using non-standard `__interface` keyword
 // Inserts @c interface block into IDL with specified @c uuid
-[object, uuid("AB4CB84C-CDCC-4525-AFB0-0B0D5798078D")]
+[
+	object, 
+	uuid("AB4CB84C-CDCC-4525-AFB0-0B0D5798078D")
+]
 __interface IOutProcServer : IUnknown
 {
 	::HRESULT 
@@ -32,22 +45,20 @@ __interface IOutProcServer : IUnknown
 win::ManualResetEvent
 intern g_InstancesDestroyed{false};
 
+
 // Inserts @c coclass block into IDL with specified @c uuid and @c default
-[coclass, default(IOutProcServer), uuid("04944F50-6F92-4F77-B405-E04BEED469F8")]
+//  NB: CORE properties must supply same values as [attributes] or type-library content will differ from code
+[
+	coclass, 
+	default(IOutProcServer), 
+	uuid("04944F50-6F92-4F77-B405-E04BEED469F8")
+]
 class OutProcServer : public com::implements<IOutProcServer,::IUnknown>
 {
 public:
-	// [mandatory] Library must supply same properties provided by [module] block
-	//  -> permits concepts to discover them at compile-time
-	struct __declspec(uuid("DD45780C-AFD6-45B6-8028-F22A7C8EECCD"))   // @c uuid attribute causes duplicate symbol error :(
-	library_type {
-		LiteralString constexpr
-		static library_name {"OutProcServerLib"};
+	// [mandatory] Library containing this coclass
+	using library_type = OutProcServerLib;
 
-		com::Guid constexpr
-		static library_guid = "DD45780C-AFD6-45B6-8028-F22A7C8EECCD"_guid;
-	};
-	
 public:
 	~OutProcServer() {
 		g_InstancesDestroyed.signal();

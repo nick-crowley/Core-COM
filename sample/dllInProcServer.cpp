@@ -11,21 +11,28 @@ using namespace com::literals;
 metadata std::string_view meta::Settings<program_name> = "In-process COM server demo";
 metadata std::string_view meta::Settings<program_version> = "1.0";
 
-// Prevent code-injection into attributed types
+// Disable code injection
 [no_injected_text(true)];
 
-// Library must supply same properties provided by [module] block
-//  -> permits concepts to discover them at compile-time
-struct __declspec(uuid("A10C8092-3549-4C2E-95D7-F264286720B9"))  // @c uuid attribute causes duplicate symbol error :(
-InProcServerLib
+// Inserts @c library block into IDL with specified @c name and @c uuid
+//  NB: CORE properties must supply same values as [attributes] or type-library content will differ from code
+[
+	module(unspecified, name="InProcServerLib", uuid="A10C8092-3549-4C2E-95D7-F264286720B9"),
+	uuid="A10C8092-3549-4C2E-95D7-F264286720B9"
+]
+struct InProcServerLib
 {
 	// [optional] Library version of v1.0 is defined implicitly, by omission  (see com::library_traits)
 	// [mandatory] For any version other than v1.0
 };
 
+
 // Interfaces must be declared using non-standard `__interface` keyword
 // Inserts @c interface block into IDL with specified @c uuid
-[object, uuid("9E66A290-4365-11D2-A997-00C04FA37DDB")]
+[
+	object,
+	uuid("9E66A290-4365-11D2-A997-00C04FA37DDB")
+]
 __interface IInProcServer : IUnknown
 {
 	::HRESULT 
@@ -35,8 +42,14 @@ __interface IInProcServer : IUnknown
 	Method2(long idx, [out, retval] long* out);
 };
 
+
 // Inserts @c coclass block into IDL with specified @c uuid and @c default
-[coclass, default(IInProcServer), uuid("E46E39ED-E221-4F71-8E7A-6FBF30FA7692")]
+//  NB: CORE properties must supply same values as [attributes] or type-library content will differ from code
+[
+	coclass, 
+	default(IInProcServer),
+	uuid("E46E39ED-E221-4F71-8E7A-6FBF30FA7692")
+]
 class InProcServer : public com::implements<IInProcServer,::IUnknown>
 {
 public:
