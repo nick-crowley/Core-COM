@@ -102,6 +102,7 @@ namespace core::com
 		ThrowIfEmpty(modulePath);
 		using namespace core::win;
 		
+		auto constexpr appName = application_name_v<CoClass>;
 		auto constexpr appGuid = application_guid_v<CoClass>;
 		auto constexpr apartment = coclass_apartment_v<CoClass>;
 		auto constexpr classGuid = coclass_guid_v<CoClass>;
@@ -126,7 +127,7 @@ namespace core::com
 			ourClassId[L"AppId"] = appGuid.wstr();
 			RegistryKey AppId{win::ClassesRoot, L"AppId", KeyRight::All};
 			RegistryKey ourAppId = AppId.subkey(create_new, appGuid.wstr());
-			ourAppId[use_default] = L"ApplicationName"sv;  //! @todo  Create @c application_name trait
+			ourAppId[use_default] = appName.wstr();
 		}
 		
 		// Insert program-id registration
