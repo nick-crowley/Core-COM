@@ -41,7 +41,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com::detail
 {
-	//! @brief	@c Library::library_guid if present, otherwise @c __uuidof(Library)
+	//! @brief	@c Library::library_guid if present, then @c __uuidof(Library) if valid; otherwise @c com::Guid{}
 	template <typename Library, typename = void>
 	Guid constexpr
 	library_guid_v;
