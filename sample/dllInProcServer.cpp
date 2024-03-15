@@ -86,14 +86,6 @@ public:
 	}
 };
 
-
-extern "C"
-::HRESULT 
-COMAPI DllCanUnloadNow()
-{
-	return com::canUnloadNow();
-}
-
 void
 intern InitializeLogFile() {
 	std::once_flag f;
@@ -101,6 +93,14 @@ intern InitializeLogFile() {
 		clog.createLogFile("InProcServer.log"); 
 		startupBanner();
 	});
+}
+
+
+extern "C"
+::HRESULT 
+COMAPI DllCanUnloadNow()
+{
+	return com::canUnloadNow();
 }
 
 extern "C"
