@@ -101,7 +101,8 @@ namespace core::com
 	try {
 		ThrowIfEmpty(modulePath);
 		using namespace core::win;
-
+		
+		auto constexpr appGuid = application_guid_v<CoClass>.wstr();
 		auto constexpr classGuid = Traits::class_guid.wstr();
 		auto constexpr className = Traits::class_name.wstr();
 		auto constexpr programId = Traits::program_id.wstr();
@@ -117,6 +118,14 @@ namespace core::com
 		case ThreadingModel::Isolated: ourServerPath[L"ThreadingModel"] = L"Apartment"sv; break;
 		case ThreadingModel::Shared:   ourServerPath[L"ThreadingModel"] = L"Free"sv;      break;
 		case ThreadingModel::Any:      ourServerPath[L"ThreadingModel"] = L"Both"sv;      break;
+		}
+
+		// [OPTIONAL] Insert application-id registration
+		if constexpr (application_guid_v<CoClass> != Guid{}) {
+			ourClassId[L"AppId"] = appGuid;
+			RegistryKey AppId{win::ClassesRoot, L"AppId", KeyRight::All};
+			RegistryKey ourAppId = AppId.subkey(create_new, appGuid);
+			ourAppId[use_default] = L"ApplicationName"sv;  //! @todo  Create @c application_name trait
 		}
 		
 		// Insert program-id registration
@@ -151,6 +160,9 @@ namespace core::com
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		scoped {
 			auto ourClassId = CLSID / classGuid;
+		
+			if constexpr (application_guid_v<CoClass> != Guid{})
+				ourClassId.removeKey(L"AppId");
 			ourClassId.removeKey(L"ProgId");
 			ourClassId.removeKey(detail::keyNameFor(Location));
 		}
