@@ -57,6 +57,19 @@ namespace core::com::detail
 			(!requires { Application::application_guid; })
 	Guid constexpr
 	application_guid_v<Application,void> {__uuidof(Application)};
+
+	
+	//! @brief	@c Application::application_name if present, otherwise unqualified class name
+	template <typename Application, typename = void> 
+	LiteralString constexpr
+	application_name_v = LiteralString<char,unqualified_class_name_v<Application>.length()+1>{ unqualified_class_name_v<Application>.data() };
+	
+	template <typename Application> 
+		requires 
+			requires { Application::application_name; }
+	LiteralString constexpr
+	application_name_v<Application,void> = Application::application_name;
+	
 }
 
 namespace core::meta::detail
@@ -64,7 +77,13 @@ namespace core::meta::detail
 	//! @brief	Well-formed declaration containing mandatory minimum properties for a COM application
 	template <typename Application>
 	concept CoreApplicationDeclaration = 
-	  com::detail::application_guid_v<Application> != com::Guid{};
+	  requires {
+		{ com::detail::application_name_v<Application> } -> std::convertible_to<std::string_view>;
+		com::detail::application_name_v<Application> + '.';
+		com::detail::application_name_v<Application> + com::detail::application_name_v<Application>;
+	  }
+	  && com::detail::application_name_v<Application> != std::string_view{}
+	  && com::detail::application_guid_v<Application> != com::Guid{};
 }
 
 namespace core::com
@@ -73,6 +92,9 @@ namespace core::com
 	template <meta::detail::CoreApplicationDeclaration Application>
 	metafunc application_traits
 	{
+		LiteralString constexpr 
+		static application_name = detail::application_name_v<Application>;
+
 		Guid constexpr
 		static application_guid = detail::application_guid_v<Application>; 
 	};
@@ -82,8 +104,11 @@ namespace core::meta
 {
 	//! @brief	Well-formed COM application possessesing valid traits (either deduced or explicitly specialized)
 	template <typename T>
-	concept CoreApplication = 
-	  com::application_traits<T>::application_guid != com::Guid{};
+	concept CoreApplication = requires {
+		{ com::application_traits<T>::application_name } -> std::convertible_to<std::string_view>;
+		{ com::application_traits<T>::application_guid } -> std::convertible_to<com::Guid>;
+	} && com::application_traits<T>::application_name != std::string_view{}
+	  && com::application_traits<T>::application_guid != com::Guid{};
 }
 
 namespace core::com
@@ -92,6 +117,11 @@ namespace core::com
 	template <meta::CoreApplication Application>
 	Guid constexpr
 	application_guid_v = application_traits<Application>::application_guid;
+	
+	//! @brief	Name string for well-formed COM application @p Application
+	template <meta::CoreApplication Application>
+	LiteralString constexpr
+	application_name_v = application_traits<Application>::application_name;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
@@ -120,26 +150,48 @@ namespace core::com::testing
 	//! @test  Verify @c com::detail::application_guid_v is the same whether detected from either source
 	static_assert(detail::application_guid_v<ApplicationWithAttributeGuid> == detail::application_guid_v<ApplicationWithMemberGuid>);
 
-	//! @test Verify application GUID is mandatory to model @c meta::detail::CoreApplicationDeclaration
+
+	//! @test  Verify @c com::detail::application_name_v is detected from member variable
+	struct ApplicationWithMemberName{
+		LiteralString constexpr
+		static application_name = "CustomName";
+	};
+	static_assert(detail::application_name_v<ApplicationWithMemberName> == "CustomName");
+	
+	//! @test  Verify @c com::detail::application_name_v is defaulted via reflection
+	struct ApplicationWithReflectedName{};
+	static_assert(detail::application_name_v<ApplicationWithReflectedName> == "ApplicationWithReflectedName");
+
+
+	//! @test Verify application name and GUID are mandatory to model @c meta::detail::CoreApplicationDeclaration
 	struct ApplicationWithEmptyGuid{
 		Guid constexpr
 		static application_guid;
+	};
+	[uuid("C5CFD7C1-E402-4D17-9344-ABA03E360B0E")]
+	struct ApplicationWithEmptyName{
+		LiteralString constexpr
+		static application_name = "";
 	};
 	static_assert(meta::detail::CoreApplicationDeclaration<ApplicationWithAttributeGuid>);
 	static_assert(meta::detail::CoreApplicationDeclaration<ApplicationWithMemberGuid>);
 	static_assert(!meta::detail::CoreApplicationDeclaration<ApplicationWithoutGuid>);
 	static_assert(!meta::detail::CoreApplicationDeclaration<ApplicationWithEmptyGuid>);
+	static_assert(!meta::detail::CoreApplicationDeclaration<ApplicationWithEmptyName>);
 
 
-	//! @test Verify application GUID is mandatory to model@c meta::CoreApplication
+	//! @test Verify application name and GUID are mandatory to model@c meta::CoreApplication
 	[uuid("2DBFB846-5F59-4039-8E60-80870F63BC94")]
 	struct ValidCoApplication{};
 	static_assert(meta::CoreApplication<ValidCoApplication>);
 	static_assert(!meta::CoreApplication<ApplicationWithoutGuid>);
 	static_assert(!meta::CoreApplication<ApplicationWithEmptyGuid>);
+	static_assert(!meta::CoreApplication<ApplicationWithEmptyName>);
+	static_assert(!meta::CoreApplication<ApplicationWithReflectedName>);  // has no GUID
 
 
 	//! @test Verify trait accessors produce same values as their implementations
 	static_assert(application_guid_v<ValidCoApplication> == detail::application_guid_v<ValidCoApplication>);
+	static_assert(application_name_v<ValidCoApplication> == detail::application_name_v<ValidCoApplication>);
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
