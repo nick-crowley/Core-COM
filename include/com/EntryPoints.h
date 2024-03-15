@@ -189,7 +189,7 @@ namespace core::com
 	*/
 	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
 	bool
-	registrationRequested(std::wstring_view cmdline, std::wstring_view modulePath) noexcept
+	cmdLineRegistrationRequested(std::wstring_view cmdline, std::wstring_view modulePath) noexcept
 	try {
 		if (nstd::wistring_view{cmdline}.contains(L"/RegServer"))
 			return (bool)registerServer<CoClass,Location>(win::currentProcess.path().native());
