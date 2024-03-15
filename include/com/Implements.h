@@ -123,15 +123,21 @@ namespace core::com
 		::ULONG
 		COMAPI Release() override
 		{
-			logFunctionArgs().withRetVals(this->refCount, this->globalRefCount);
+			// We cannot log the reference counts after the object has been deleted so created
+			//  copies here with names suitable for reflection
+			struct LocalRefCountCopyBugFix {
+				long refCount;
+				long globalRefCount;
+			} local{this->refCount, this->globalRefCount}, *_this = &local;
+			logFunctionArgs().withRetVals(_this->refCount, _this->globalRefCount);
 
 			if (this->refCount <= 0)
-				clog << Warning{"Coclass has an invalid reference count of {}", this->refCount.load()};
+				clog << Warning{"Coclass has an invalid reference count of {}", _this->refCount};
 
-			if (--this->refCount <= 0)
+			if (_this->refCount = --this->refCount; this->refCount <= 0)
 			{
 				delete this;
-				GlobalRefCount::decrement();
+				_this->globalRefCount = GlobalRefCount::decrement();
 				return 0;
 			}
 
