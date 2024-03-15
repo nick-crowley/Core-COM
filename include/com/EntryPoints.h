@@ -95,46 +95,47 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Populate all registry entries for @p CoClass co-classes
 	*/
-	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
+	template <meta::CoreCoClass CoClass, ServerLocation Location>
 	win::HResult
 	registerServer(std::wstring_view modulePath) noexcept
 	try {
 		ThrowIfEmpty(modulePath);
 		using namespace core::win;
 		
-		auto constexpr appGuid = application_guid_v<CoClass>.wstr();
-		auto constexpr classGuid = Traits::class_guid.wstr();
-		auto constexpr className = Traits::class_name.wstr();
-		auto constexpr programId = Traits::program_id.wstr();
+		auto constexpr appGuid = application_guid_v<CoClass>;
+		auto constexpr apartment = coclass_apartment_v<CoClass>;
+		auto constexpr classGuid = coclass_guid_v<CoClass>;
+		auto constexpr className = coclass_name_v<CoClass>;
+		auto constexpr programId = program_id_v<CoClass>;
 
 		// Insert class-id registration
-		clog << Important{"Registering {} {}", program_id_v<CoClass>, coclass_guid_v<CoClass>};
+		clog << Important{"Registering {} {}", programId, classGuid};
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
-		RegistryKey ourClassId = CLSID.subkey(create_new, classGuid);
-		ourClassId[use_default] = className;
+		RegistryKey ourClassId = CLSID.subkey(create_new, classGuid.wstr());
+		ourClassId[use_default] = className.wstr();
 		RegistryKey ourServerPath = ourClassId.subkey(create_new, detail::keyNameFor(Location));
 		ourServerPath[use_default] = modulePath;
-		switch (Traits::apartment) {
+		switch (apartment) {
 		case ThreadingModel::Isolated: ourServerPath[L"ThreadingModel"] = L"Apartment"sv; break;
 		case ThreadingModel::Shared:   ourServerPath[L"ThreadingModel"] = L"Free"sv;      break;
 		case ThreadingModel::Any:      ourServerPath[L"ThreadingModel"] = L"Both"sv;      break;
 		}
 
 		// [OPTIONAL] Insert application-id registration
-		if constexpr (application_guid_v<CoClass> != Guid{}) {
-			ourClassId[L"AppId"] = appGuid;
+		if constexpr (appGuid != Guid{}) {
+			ourClassId[L"AppId"] = appGuid.wstr();
 			RegistryKey AppId{win::ClassesRoot, L"AppId", KeyRight::All};
-			RegistryKey ourAppId = AppId.subkey(create_new, appGuid);
+			RegistryKey ourAppId = AppId.subkey(create_new, appGuid.wstr());
 			ourAppId[use_default] = L"ApplicationName"sv;  //! @todo  Create @c application_name trait
 		}
 		
 		// Insert program-id registration
-		RegistryKey ourProgId{create_new, win::ClassesRoot, programId, KeyRight::All};
-		ourProgId[use_default] = className;
+		RegistryKey ourProgId{create_new, win::ClassesRoot, programId.wstr(), KeyRight::All};
+		ourProgId[use_default] = className.wstr();
 		
 		// Link the two ids
-		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[use_default] = programId;
-		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[use_default] = classGuid;
+		RegistryKey{create_new, ourClassId, L"ProgId", KeyRight::All}[use_default] = programId.wstr();
+		RegistryKey{create_new, ourProgId, L"CLSID", KeyRight::All}[use_default] = classGuid.wstr();
 
 		return S_OK;
 	}
@@ -146,35 +147,36 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Remove all registry entries for @p CoClass co-classes
 	*/
-	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
+	template <meta::CoreCoClass CoClass, ServerLocation Location>
 	win::HResult
 	unregisterServer() noexcept
 	try {
 		using namespace core::win;
 		
-		auto constexpr classGuid = Traits::class_guid.wstr();
-		auto constexpr programId = Traits::program_id.wstr();
+		auto constexpr appGuid = application_guid_v<CoClass>;
+		auto constexpr classGuid = coclass_guid_v<CoClass>;
+		auto constexpr programId = program_id_v<CoClass>;
 
 		// Remove class-id registration
-		clog << Important{"Unregistering {} {}", program_id_v<CoClass>, coclass_guid_v<CoClass>};
+		clog << Important{"Unregistering {} {}", programId, classGuid};
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		scoped {
-			auto ourClassId = CLSID / classGuid;
+			auto ourClassId = CLSID / classGuid.wstr();
 		
-			if constexpr (application_guid_v<CoClass> != Guid{})
+			if constexpr (appGuid != Guid{})
 				ourClassId.removeKey(L"AppId");
 			ourClassId.removeKey(L"ProgId");
 			ourClassId.removeKey(detail::keyNameFor(Location));
 		}
-		CLSID.removeKey(classGuid);
+		CLSID.removeKey(classGuid.wstr());
 		
 		// Remove program-id registration
 		RegistryKey allClasses{win::ClassesRoot, KeyRight::All};
 		scoped {
-			RegistryKey ourProgId = allClasses / programId;
+			RegistryKey ourProgId = allClasses / programId.wstr();
 			ourProgId.removeKey(L"CLSID");
 		}
-		allClasses.removeKey(programId);
+		allClasses.removeKey(programId.wstr());
 		return S_OK;
 	}
 	catch (std::exception const& e) {
