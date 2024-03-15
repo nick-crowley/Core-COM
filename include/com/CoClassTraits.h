@@ -390,16 +390,16 @@ namespace core::com::testing
 	struct CoClassMissingProgramId : ValidCoClass
 	{};
 	struct CoClassStockTraits {
-		using library_type = typename detail::coclass_library<ValidCoClass>::type;
+		using library_type = long long;
 
 		Guid constexpr 
-		static class_guid = detail::coclass_guid_v<ValidCoClass>;
+		static class_guid {"D99400A8-9975-4DAC-9C8C-E2E7B3A0C049"};
 		
 		LiteralString constexpr 
-		static class_name = detail::coclass_name_v<ValidCoClass>;
+		static class_name = "abc";
 
 		Version constexpr 
-		static class_version = detail::coclass_version_v<ValidCoClass>;
+		static class_version = Version{4,2};
 	};
 }
 namespace core::com
@@ -407,42 +407,42 @@ namespace core::com
 	template <>
 	struct coclass_traits<testing::CoClassMissingApartment> : testing::CoClassStockTraits
 	{
-		using factory_type = typename detail::coclass_factory<testing::CoClassMissingApartment>::type;
+		using factory_type = long long;
 
 		LiteralString constexpr 
-		static program_id = library_name_v<library_type> + '.' + detail::coclass_name_v<testing::CoClassMissingApartment>;
+		static program_id = "abc";
 	};
 	
 	template <>
 	struct coclass_traits<testing::CoClassMissingApplicationType> : testing::CoClassStockTraits
 	{
-		using factory_type = typename detail::coclass_factory<testing::CoClassMissingApartment>::type;
+		using factory_type = long long;
 
 		ThreadingModel constexpr 
-		static apartment = detail::coclass_apartment_v<testing::CoClassMissingApplicationType>;
+		static apartment = ThreadingModel::Any;
 		
 		LiteralString constexpr 
-		static program_id = library_name_v<library_type> + '.' + detail::coclass_name_v<testing::CoClassMissingApplicationType>;
+		static program_id = "abc";
 	};
 
 	template <>
 	struct coclass_traits<testing::CoClassMissingFactoryType> : testing::CoClassStockTraits
 	{
 		ThreadingModel constexpr 
-		static apartment = detail::coclass_apartment_v<testing::CoClassMissingFactoryType>;
+		static apartment = ThreadingModel::Any;
 		
 		LiteralString constexpr 
-		static program_id = library_name_v<library_type> + '.' + detail::coclass_name_v<testing::CoClassMissingFactoryType>;
+		static program_id = "abc";
 	};
 
 	template <>
 	struct coclass_traits<testing::CoClassMissingProgramId> : testing::CoClassStockTraits
 	{
-		using factory_type = typename detail::coclass_factory<testing::CoClassMissingApartment>::type;
+		using factory_type = long long;
 
-	ThreadingModel constexpr 
-	static apartment = detail::coclass_apartment_v<testing::CoClassMissingProgramId>;
-};
+		ThreadingModel constexpr 
+		static apartment = ThreadingModel::Any;
+	};
 }
 namespace core::com::testing
 {
