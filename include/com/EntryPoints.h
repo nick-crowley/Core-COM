@@ -89,7 +89,7 @@ namespace core::com
 	win::HResult
 	canUnloadNow() noexcept
 	{
-		return win::HResult{ Boolean{GlobalRefCount::value() == 0} };
+		return Boolean{GlobalRefCount::value() == 0};
 	}
 
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!

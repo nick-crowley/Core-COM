@@ -75,6 +75,12 @@ namespace core::com
 			return this->Value ? S_OK : S_FALSE;
 		}
 		
+		implicit constexpr
+		operator win::HResult() const noexcept
+		{
+			return this->Value ? S_OK : S_FALSE;
+		}
+		
 		template <nstd::AnyArithmeticExcept<::HRESULT> Unwanted>
 		constexpr implicit
 		operator Unwanted() const noexcept = delete;
