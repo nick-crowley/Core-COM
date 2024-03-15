@@ -32,7 +32,7 @@
 #include "com/Function.h"
 #include "com/GlobalRefCount.h"
 #include "com/SharedPtr.h"
-#include "com/ServerLocation.h"
+#include "com/Location.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -51,13 +51,13 @@ namespace core::com
 	namespace detail 
 	{
 		std::wstring_view constexpr
-		keyNameFor(ServerLocation loc) noexcept
+		keyNameFor(Location loc) noexcept
 		{
 			switch (loc) {
-			case ServerLocation::InProcess: return L"InProcServer32";
-			case ServerLocation::Local:     return L"LocalServer";
-			case ServerLocation::Service:   return L"Service";
-			default:                        std::unreachable();
+			case Location::InProcess: return L"InProcServer32";
+			case Location::Local:     return L"LocalServer";
+			case Location::Service:   return L"Service";
+			default:                  std::unreachable();
 			}
 		}
 	}
@@ -95,7 +95,7 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Populate all registry entries for @p CoClass co-classes
 	*/
-	template <meta::CoreCoClass CoClass, ServerLocation Location>
+	template <meta::CoreCoClass CoClass, Location Server>
 	win::HResult
 	registerServer(std::wstring_view modulePath) noexcept
 	try {
@@ -113,7 +113,7 @@ namespace core::com
 		RegistryKey CLSID{win::ClassesRoot, L"CLSID", KeyRight::All};
 		RegistryKey ourClassId = CLSID.subkey(create_new, classGuid.wstr());
 		ourClassId[use_default] = className.wstr();
-		RegistryKey ourServerPath = ourClassId.subkey(create_new, detail::keyNameFor(Location));
+		RegistryKey ourServerPath = ourClassId.subkey(create_new, detail::keyNameFor(Server));
 		ourServerPath[use_default] = modulePath;
 		switch (apartment) {
 		case ThreadingModel::Isolated: ourServerPath[L"ThreadingModel"] = L"Apartment"sv; break;
@@ -147,7 +147,7 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Remove all registry entries for @p CoClass co-classes
 	*/
-	template <meta::CoreCoClass CoClass, ServerLocation Location>
+	template <meta::CoreCoClass CoClass, Location Server>
 	win::HResult
 	unregisterServer() noexcept
 	try {
@@ -166,7 +166,7 @@ namespace core::com
 			if constexpr (appGuid != Guid{})
 				ourClassId.removeKey(L"AppId");
 			ourClassId.removeKey(L"ProgId");
-			ourClassId.removeKey(detail::keyNameFor(Location));
+			ourClassId.removeKey(detail::keyNameFor(Server));
 		}
 		CLSID.removeKey(classGuid.wstr());
 		
@@ -187,7 +187,7 @@ namespace core::com
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Add/remove @p CoClass registration if @c /RegServer or @c /UnregServer present on command line
 	*/
-	template <meta::CoreCoClass CoClass, ServerLocation Location, typename Traits = coclass_traits<CoClass>>
+	template <meta::CoreCoClass CoClass, Location Location, typename Traits = coclass_traits<CoClass>>
 	bool
 	cmdLineRegistrationRequested(std::wstring_view cmdline, std::wstring_view modulePath) noexcept
 	try {

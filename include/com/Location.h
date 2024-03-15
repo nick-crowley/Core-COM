@@ -36,7 +36,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	enum class ServerLocation
+	enum class Location
 	{
 		InProcess,  //!< Resides in in-process server
 		Local,      //!< Resides in out-of-process server

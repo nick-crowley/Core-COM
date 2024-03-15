@@ -81,7 +81,7 @@ try {
 	startupBanner();
 
 	// Register/unregister server if requested on the command-line
-	if (com::cmdLineRegistrationRequested<OutProcServer, com::ServerLocation::Local>(cmdLine, win::currentProcess.path().native()))
+	if (com::cmdLineRegistrationRequested<OutProcServer, com::Location::Local>(cmdLine, win::currentProcess.path().native()))
 		return 0;
 	
 	com::SharedApartment apartment;
