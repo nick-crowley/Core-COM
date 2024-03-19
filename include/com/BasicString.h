@@ -623,6 +623,22 @@ namespace core::com
 	//! @brief	Wide-character string allocated on the COM heap using the @c CoTaskMemAlloc() function
 	using wstring = basic_string<HeapAllocator<wchar_t>>;
 }
+namespace std 
+{
+	template <typename Alloc>
+	struct formatter<core::com::basic_string<Alloc>, wchar_t> 
+    {
+		auto constexpr
+		parse(basic_format_parse_context<wchar_t>& ctx) {
+            return ranges::find(ctx, '}');
+        }
+
+		auto 
+		format(core::com::basic_string<Alloc> const& s, wformat_context& ctx) const {
+			return format_to(ctx.out(), L"{}", std::wstring_view(s));
+		}
+	};
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
