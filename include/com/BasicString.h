@@ -717,7 +717,7 @@ namespace core::com
 			 * @brief	Construct @p com::wstring at runtime
 			*/
 			wstring
-			operator""_s(gsl::cwzstring ws, size_t) noexcept
+			inline operator""_s(gsl::cwzstring ws, size_t) noexcept
 			{
 				return wstring{ws};
 			}
