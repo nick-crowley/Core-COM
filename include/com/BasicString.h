@@ -468,7 +468,7 @@ namespace core::com
 		*/
 		bool constexpr
 		operator==(type const& rhs) const noexcept {
-			return this->wsv() == (std::wstring_view)rhs;
+			return this->wsv() == rhs.wsv();
 		}
 		
 		/**
@@ -477,7 +477,7 @@ namespace core::com
 		template <typename Other>
 		bool constexpr
 		operator==(basic_string<Other> const& rhs) const noexcept {
-			return this->wsv() == (std::wstring_view)rhs;
+			return this->wsv() == rhs.wsv();
 		}
 		
 		/**
