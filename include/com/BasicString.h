@@ -167,6 +167,18 @@ namespace core::com
         {
 		}
 		
+		/**
+		 * @brief	Take ownership of elements within a null-terminated buffer
+		 * @details	If @p src is @c nullptr then a @e null string is created
+		 * 
+		 * @param str	[optional] Null-terminated source buffer
+		*/
+		constexpr
+		basic_string(gsl::wzstring str, meta::adopt_t) noexcept
+		  : Buffer{str}
+        {
+		}
+		
 #if SUPPORT_ATL_STRING
 		/**
 		 * @brief	Construct with elements copied from an ATL string
