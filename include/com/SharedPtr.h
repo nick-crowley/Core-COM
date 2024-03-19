@@ -29,6 +29,9 @@
 #include "library/core.COM.h"
 #include "com/Guid.h"
 #include "com/Function.h"
+#include "com/AuthLevel.h"
+#include "com/TokenAccess.h"
+#include "com/BasicString.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -50,6 +53,13 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
 		using type = shared_ptr<Interface>;
+
+	public:
+		struct Proxy { 
+			wstring     Username; 
+			AuthLevel   Authentication; 
+			TokenAccess Rights; 
+		};
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
 		Interface* Object = nullptr;
@@ -137,6 +147,21 @@ namespace core::com
 		{
 			return this->Object == nullptr;
 		}
+		
+		Proxy
+		proxy() const {
+			wstring username{};
+			DWORD   auth{};
+			DWORD   imp{};
+			win::HResult hr = ::CoQueryProxyBlanket(this->Object, 
+				nullptr, nullptr, 
+				std::out_ptr<wchar_t*>(username, adopt),
+				&auth, &imp,
+				nullptr, nullptr
+			);
+			hr.throwIfError("::CoQueryProxyBlanket() failed");
+			return { username, static_cast<AuthLevel>(auth), static_cast<TokenAccess>(imp) };
+		}
 
 		Interface*
 		operator->() const noexcept
@@ -169,6 +194,19 @@ namespace core::com
 		Interface*
 		detach() noexcept {
 			return std::exchange(this->Object, nullptr);
+		}
+		
+		void
+		proxy(TokenAccess imp, AuthLevel auth) {
+			win::HResult hr = ::CoSetProxyBlanket(this->Object, 
+				RPC_C_AUTHN_DEFAULT, 
+				win::Unused<DWORD>, 
+				win::Unused<wchar_t*>,
+				std::to_underlying(auth), std::to_underlying(imp),
+				win::Unused<RPC_AUTH_IDENTITY_HANDLE*>, 
+				EOAC_NONE
+			);
+			hr.throwIfError("::CoSetProxyBlanket() failed");
 		}
 
 		void

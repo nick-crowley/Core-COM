@@ -27,6 +27,8 @@
 #pragma once
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
+#include "com/TokenAccess.h"
+#include "com/AuthLevel.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -36,25 +38,27 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-namespace core::com
+namespace core::com::detail
 {
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 	* @brief	Apartment containing only this thread
 	*/
-	class ComExport IsolatedApartment
+	class IsolatedApartment
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-
+		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		IsolatedApartment();
+		IsolatedApartment() {
+			win::HResult hr = ::CoInitializeEx(win::Unused<void*>, COINIT_APARTMENTTHREADED);
+			hr.throwIfError("CoInitializeEx({}) failed", COINIT_APARTMENTTHREADED);
+		}
 
 		~IsolatedApartment() {
 			::CoUninitialize();
 		}
-
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		satisfies(IsolatedApartment,
@@ -71,9 +75,9 @@ namespace core::com
 	};
 	
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
-	* @brief	Apartment shared between this thread and others
+	* @brief	Apartment containing this thread and potentially others
 	*/
-	class ComExport SharedApartment
+	class SharedApartment
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
@@ -81,12 +85,14 @@ namespace core::com
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		SharedApartment();
+		SharedApartment() {
+			win::HResult hr = ::CoInitializeEx(win::Unused<void*>, COINIT_MULTITHREADED);
+			hr.throwIfError("CoInitializeEx({}) failed", COINIT_MULTITHREADED);
+		}
 
 		~SharedApartment() {
 			::CoUninitialize();
 		}
-		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		satisfies(SharedApartment,
@@ -101,6 +107,64 @@ namespace core::com
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	};
+	
+	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+	* @brief	Apartment with security enabled
+	*/
+	template <nstd::AnyOf<IsolatedApartment, SharedApartment> Apartment>
+	class SecuredApartment : private Apartment
+	{
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	public:
+		//! @brief  Construct with @e impersonation and @e authentication settings
+		//! @param imp   [optional] If unspecified, impersonation is disabled
+		//! @param auth  [optional] If unspecified, connection is encrypted
+		SecuredApartment(TokenAccess imp = TokenAccess::Anonymous, 
+		                 AuthLevel auth = AuthLevel::Privacy)
+		{
+			::DWORD constexpr Capabilities{};
+			::DWORD constexpr NumAuthServices{};
+			::PVOID constexpr AuthProperties{};
+			::PSOLE_AUTHENTICATION_SERVICE constexpr AuthServices{};
+			win::HResult hr = ::CoInitializeSecurity(
+				win::Unsecured,
+				NumAuthServices,
+				AuthServices,
+				win::Unused<void*>,
+				std::to_underlying(auth),
+				std::to_underlying(imp),
+				AuthProperties,
+				Capabilities,
+				win::Unused<void*>
+			);
+			hr.throwIfError("::CoInitializeSecurity() failed");
+		}
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	public:
+		satisfies(SecuredApartment,
+			NotCopyable,
+			NotMovable,
+			NotEqualityComparable,
+			NotSortable
+		);
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Static Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
+	};
+}
+namespace core::com
+{
+	//! @brief  Apartment containing only one thread
+	using IsolatedApartment = detail::SecuredApartment<detail::IsolatedApartment>;
+
+	//! @brief  Apartment potentially containing multiple threads
+	using SharedApartment = detail::SecuredApartment<detail::SharedApartment>;
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
