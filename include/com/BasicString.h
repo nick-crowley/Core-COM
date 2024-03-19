@@ -670,6 +670,11 @@ namespace std
 			return format_to(ctx.out(), L"{}", std::wstring_view(s));
 		}
 	};
+	
+	template <typename Alloc, typename T>
+	struct _Pointer_of_or_helper<core::com::basic_string<Alloc>, T> {
+		using type = T;
+	};
 }
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
