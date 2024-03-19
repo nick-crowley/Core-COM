@@ -149,7 +149,7 @@ namespace core::com
 		 * @throws std::bad_alloc      Out of memory
 		*/
 		constexpr explicit
-		basic_string(gsl::cwzstring const str)
+		basic_string(gsl::cwzstring str)
         {
 			if (str)
 				this->assign(str, str + basic_string::measure(str));
@@ -162,7 +162,7 @@ namespace core::com
 		 * @param str	[optional] Null-terminated source buffer
 		*/
 		constexpr
-		basic_string(meta::adopt_t, gsl::wzstring const str) noexcept
+		basic_string(meta::adopt_t, gsl::wzstring str) noexcept
 		  : Buffer{str}
         {
 		}
