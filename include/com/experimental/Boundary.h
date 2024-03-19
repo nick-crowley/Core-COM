@@ -85,7 +85,7 @@ namespace core::com
 			return SetLastError<CoClass>{E_INVALIDARG, e.what()};
 		}
 		catch (std::system_error const& e) {
-			return SetLastError<CoClass>{e.code().value(), e.what()};
+			return SetLastError<CoClass>{static_cast<::HRESULT>(e.code().value()), e.what()};
 		}
 		catch (std::bad_alloc const& e) {
 			return SetLastError<CoClass>{E_OUTOFMEMORY, e.what()};
