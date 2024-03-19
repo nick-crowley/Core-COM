@@ -49,13 +49,14 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Class Declarations o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
-	//! @brief	Realizes an arbitrary set COM interfaces
+	//! @brief	Realizes an arbitrary set of COM interfaces
 	template <meta::ForwardSequence ForwardSequence>
-	class MultipleRealization; 
+	struct MultipleRealization; 
 
 	template <template<typename...> typename Sequence, meta::ComInterface... Interfaces>
-	class MultipleRealization<Sequence<Interfaces...>> : public Interfaces...
+	struct MultipleRealization<Sequence<Interfaces...>> : public Interfaces...
 	{
+		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 		satisfies(MultipleRealization,
 			IsInterface,
 			NotCopyable,
