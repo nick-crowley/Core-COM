@@ -476,6 +476,15 @@ namespace core::com
 		}
 		
 		/**
+		 * @brief	Convert to wide-character string
+		*/
+		implicit constexpr 
+		operator std::wstring() const noexcept
+		{
+			return std::wstring{this->wsv()};
+		}
+		
+		/**
 		 * @brief	Compare against another instance
 		*/
 		bool constexpr
