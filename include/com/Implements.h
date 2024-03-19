@@ -37,8 +37,7 @@
 #include "win/HResult.h"
 #include "core/FunctionLogging.h"
 #include "com/GlobalRefCount.h"
-#include "com/AuthLevel.h"
-#include "com/BasicString.h"
+#include "com/ComApi.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -78,19 +77,13 @@ namespace core::com
 		using type = implements<Interfaces...>;
 		using base = MultipleRealization<distinct_interfaces_t<Interfaces...>>;
 
-	protected:
-		struct Client { 
-			wstring   Username; 
-			AuthLevel Authentication; 
-		};
-
 	public:
 		using interfaces = mpl::vector<Interfaces...>;
 		
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
 		std::atomic_long refCount = 1;
-
+		SharedComApi     api = com_api();
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		implements() noexcept {
@@ -108,17 +101,9 @@ namespace core::com
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	protected:
-		Client
+		ClientBlanket
 		client() const {
-			wstring      username{};
-			DWORD        auth{};
-			win::HResult hr = ::CoQueryClientBlanket(
-				nullptr, nullptr, 
-				std::out_ptr<wchar_t*>(username, adopt), &auth, win::Unused<DWORD*>, 
-				nullptr, nullptr
-			);
-			hr.throwIfError("::CoQueryClientBlanket() failed");
-			return { username, static_cast<AuthLevel>(auth) };
+			return this->api->queryClientBlanket();
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:

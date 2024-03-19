@@ -29,9 +29,7 @@
 #include "library/core.COM.h"
 #include "com/Guid.h"
 #include "com/Function.h"
-#include "com/AuthLevel.h"
-#include "com/TokenAccess.h"
-#include "com/BasicString.h"
+#include "com/ComApi.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -54,15 +52,10 @@ namespace core::com
 	private:
 		using type = shared_ptr<Interface>;
 
-	public:
-		struct Proxy { 
-			wstring     Username; 
-			AuthLevel   Authentication; 
-			TokenAccess Rights; 
-		};
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		Interface* Object = nullptr;
+		Interface*   Object = nullptr;
+		SharedComApi Api = com_api();
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		//! @brief  Use the default constructor instead
@@ -148,19 +141,9 @@ namespace core::com
 			return this->Object == nullptr;
 		}
 		
-		Proxy
+		ProxyBlanket
 		proxy() const {
-			wstring username{};
-			DWORD   auth{};
-			DWORD   imp{};
-			win::HResult hr = ::CoQueryProxyBlanket(this->Object, 
-				nullptr, nullptr, 
-				std::out_ptr<wchar_t*>(username, adopt),
-				&auth, &imp,
-				nullptr, nullptr
-			);
-			hr.throwIfError("::CoQueryProxyBlanket() failed");
-			return { username, static_cast<AuthLevel>(auth), static_cast<TokenAccess>(imp) };
+			return this->Api->queryProxyBlanket(*this);
 		}
 
 		Interface*
@@ -198,15 +181,7 @@ namespace core::com
 		
 		void
 		proxy(TokenAccess imp, AuthLevel auth) {
-			win::HResult hr = ::CoSetProxyBlanket(this->Object, 
-				RPC_C_AUTHN_DEFAULT, 
-				win::Unused<DWORD>, 
-				win::Unused<wchar_t*>,
-				std::to_underlying(auth), std::to_underlying(imp),
-				win::Unused<RPC_AUTH_IDENTITY_HANDLE*>, 
-				EOAC_NONE
-			);
-			hr.throwIfError("::CoSetProxyBlanket() failed");
+			return this->Api->setProxyBlanket(*this, imp, auth);
 		}
 
 		void

@@ -27,8 +27,7 @@
 #pragma once
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.COM.h"
-#include "com/TokenAccess.h"
-#include "com/AuthLevel.h"
+#include "com/ComApi.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -117,31 +116,19 @@ namespace core::com::detail
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
-
+	private:
+		SharedComApi  Api = com_api();
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		//! @brief  Construct with @e impersonation and @e authentication settings
 		//! @param imp   [optional] If unspecified, impersonation is disabled
 		//! @param auth  [optional] If unspecified, connection is encrypted
+		//! 
+		//! @throws  std::system_error  Operation failed
 		SecuredApartment(TokenAccess imp = TokenAccess::Anonymous, 
 		                 AuthLevel auth = AuthLevel::Privacy)
 		{
-			::DWORD constexpr Capabilities{};
-			::DWORD constexpr NumAuthServices{};
-			::PVOID constexpr AuthProperties{};
-			::PSOLE_AUTHENTICATION_SERVICE constexpr AuthServices{};
-			win::HResult hr = ::CoInitializeSecurity(
-				win::Unsecured,
-				NumAuthServices,
-				AuthServices,
-				win::Unused<void*>,
-				std::to_underlying(auth),
-				std::to_underlying(imp),
-				AuthProperties,
-				Capabilities,
-				win::Unused<void*>
-			);
-			hr.throwIfError("::CoInitializeSecurity() failed");
+			this->Api->initializeSecurity(imp, auth);
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
