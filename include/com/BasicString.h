@@ -615,6 +615,26 @@ namespace core::com
 		}
 
 		/**
+		 * @brief	Release existing string, if any, and replace with copy of @p wstr
+		*/
+		void constexpr
+		reset(std::wstring_view wstr) noexcept 
+		{	
+			this->reset();
+			this->assign(wstr);
+		}
+		
+		/**
+		 * @brief	Release existing string, if any, and adopt @p wstr instead
+		*/
+		void constexpr
+		reset(gsl::wzstring str, meta::adopt_t) noexcept 
+		{	
+			this->reset();
+			this->Buffer = str;
+		}
+
+		/**
 		 * @brief	Swap with another string
 		 * 
 		 * @param r	Other string
