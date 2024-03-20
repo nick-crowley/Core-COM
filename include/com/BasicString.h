@@ -67,17 +67,21 @@ namespace core::com
 	/**
 	 * @brief	Wide-character basic string supporting attach/detach operations and different allocators
 	 * 
+	 * @tparam  Character  Must be @c wchar_t  (Parameter required for compatibility with @c std::out_ptr())
+	 * @tparam  Traits     [optional] Character traits
 	 * @tparam  Allocator  [optional] Custom allocator
 	*/
-	template <typename Allocator = HeapAllocator<wchar_t>>
+	template <nstd::AnyOf<wchar_t> Character, typename Traits = std::char_traits<Character>, typename Allocator = HeapAllocator<Character>>
 	class basic_string
 	{
+		template <nstd::AnyOf<wchar_t>, typename, typename>
+		friend class basic_string;
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	private:
-		using type = basic_string<Allocator>;
+		using type = basic_string<Character, Traits, Allocator>;
 		using base = void;
 		
-		using allocator_t = typename Allocator::template rebind<wchar_t>::other;
+		using allocator_t = typename Allocator::template rebind<Character>::other;
 
 		template <typename Self, typename T, typename F>
 		using if_const_then_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, T, F>; 
@@ -152,7 +156,7 @@ namespace core::com
 		basic_string(gsl::cwzstring str)
         {
 			if (str)
-				this->assign(str, str + basic_string::measure(str));
+				this->assign(str, str + type::measure(str));
 		}
 		
 		/**
@@ -244,9 +248,9 @@ namespace core::com
 		 * 
 		 * @throws std::bad_alloc		Out of memory
 		*/
-		template <typename Other>
+		template <typename OtherAlloc>
 		constexpr explicit
-		basic_string(basic_string<Other> const& r)
+		basic_string(basic_string<Character,Traits,OtherAlloc> const& r)
           : basic_string{r.begin(), r.end()}
 		{
 		}
@@ -283,9 +287,9 @@ namespace core::com
 		 * 
 		 * @throws std::bad_alloc		Out of memory
 		*/
-		template <typename Other>
+		template <typename OtherAlloc>
 		type constexpr&
-		operator=(basic_string<Other> const& r)
+		operator=(basic_string<Character,Traits,OtherAlloc> const& r)
 		{
 			this->assign(r.begin(), r.end());
 			return *this;
@@ -429,7 +433,7 @@ namespace core::com
 		bool constexpr
 		empty() const noexcept
         {
-			return !this->Buffer || this->Buffer[0] == basic_string::null;
+			return !this->Buffer || this->Buffer[0] == type::null;
 		}
 		
 		/**
@@ -495,9 +499,9 @@ namespace core::com
 		/**
 		 * @brief	Compare against string with different allocator
 		*/
-		template <typename Other>
+		template <typename OtherAlloc>
 		bool constexpr
-		operator==(basic_string<Other> const& rhs) const noexcept {
+		operator==(basic_string<Character,Traits,OtherAlloc> const& rhs) const noexcept {
 			return this->wsv() == rhs.wsv();
 		}
 		
@@ -656,18 +660,18 @@ namespace core::com
 	};
 	
 	//! @brief	Binary string (ie. @c BSTR) allocated using the @c SysAllocString() function
-	using bstr = basic_string<BStrAllocator<wchar_t>>;
+	using bstr = basic_string<wchar_t, std::char_traits<wchar_t>, BStrAllocator<wchar_t>>;
 	
 	//! @brief	Wide-character string-literal which is never deallocated
-	using noopstring = basic_string<NoopAllocator<wchar_t>>;
+	using noopstring = basic_string<wchar_t, std::char_traits<wchar_t>, NoopAllocator<wchar_t>>;
 
 	//! @brief	Wide-character string allocated on the COM heap using the @c CoTaskMemAlloc() function
-	using wstring = basic_string<HeapAllocator<wchar_t>>;
+	using wstring = basic_string<wchar_t, std::char_traits<wchar_t>, HeapAllocator<wchar_t>>;
 }
 namespace std 
 {
-	template <typename Alloc>
-	struct formatter<core::com::basic_string<Alloc>, wchar_t> 
+	template <typename Traits, typename Alloc>
+	struct formatter<core::com::basic_string<wchar_t, Traits, Alloc>, wchar_t> 
     {
 		auto constexpr
 		parse(basic_format_parse_context<wchar_t>& ctx) {
@@ -675,23 +679,17 @@ namespace std
         }
 
 		auto 
-		format(core::com::basic_string<Alloc> const& s, wformat_context& ctx) const {
+		format(core::com::basic_string<wchar_t, Traits, Alloc> const& s, wformat_context& ctx) const {
 			return format_to(ctx.out(), L"{}", std::wstring_view(s));
 		}
 	};
-	
-	template <typename Alloc, typename T>
-	struct _Pointer_of_or_helper<core::com::basic_string<Alloc>, T> {
-		using type = T;
-	};
-}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
 	//! @brief  Query whether @c basic_string is @e empty
-	template <typename Alloc>
+	template <typename C, typename T, typename A>
 	bool
-	empty(basic_string<Alloc> const& str) {
+	empty(basic_string<C,T,A> const& str) {
 		return str.empty();
 	}
 }
