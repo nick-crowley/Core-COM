@@ -7,10 +7,6 @@
 using namespace core;
 using namespace com::literals;
 
-// Define program meta-data
-metadata std::string_view meta::Settings<program_name> = "Out-of-process COM server demo";
-metadata std::string_view meta::Settings<program_version> = "1.0";
-
 // Disable code injection
 [no_injected_text(true)];
 
@@ -103,6 +99,8 @@ catch (std::exception const& e)
 
 int 
 WINAPI wWinMain(::HINSTANCE hInstance, ::HINSTANCE, wchar_t* szCmdLine, int nCmdShow) {
+	meta::Settings<program_name> = "Out-of-process COM server demo";
+	meta::Settings<program_version> = "1.0";
 	auto const r = ::run(szCmdLine);
 	clog << Important{"Process terminating"};
 	return r;
