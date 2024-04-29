@@ -158,13 +158,13 @@ namespace core::com
 			return *this->Object;
 		}
 		
-		implicit operator 
+		operator implicit
 		Interface*() const noexcept
 		{
 			return this->Object;
 		}
 
-		explicit operator 
+		operator explicit
 		bool() const noexcept
 		{
 			return this->Object != nullptr;
