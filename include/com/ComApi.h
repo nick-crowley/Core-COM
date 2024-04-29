@@ -108,6 +108,30 @@ namespace core::com
 			);
 			hr.throwIfError("::CoInitializeSecurity() failed");
 		}
+		
+		/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+		* @brief	Impersonate the client
+		*
+		* @throws	std::system_error	Operation failed
+		*/
+		void
+		virtual impersonate() const 
+		{
+			win::HResult hr = ::CoImpersonateClient();
+			hr.throwIfError("::CoImpersonateClient() failed");
+		}
+
+		/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+		* @brief	Stop impersonating the client
+		*
+		* @throws	std::system_error	Operation failed
+		*/
+		void
+		virtual revertToSelf() const 
+		{
+			win::HResult hr = ::CoRevertToSelf();
+			hr.throwIfError("::CoRevertToSelf() failed");
+		}
 
 		/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 		* @brief	Retrieve client security blanket

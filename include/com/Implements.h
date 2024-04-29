@@ -104,6 +104,16 @@ namespace core::com
 		client() const {
 			return this->api->queryClientBlanket();
 		}
+		
+		void
+		impersonate() const {
+			this->api->impersonate();
+		}
+
+		void
+		revertToSelf() const {
+			this->api->revertToSelf();
+		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Mutator Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		::HRESULT
