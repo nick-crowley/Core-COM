@@ -73,7 +73,7 @@ public:
 int16_t
 intern run(std::wstring_view const cmdLine)
 try {
-	clog.createLogFile("outProcServer.log");
+	clog.createLogFile("outProcServer.rtf");
 	startupBanner();
 
 	// Register/unregister server if requested on the command-line
