@@ -683,6 +683,7 @@ namespace std
 			return format_to(ctx.out(), L"{}", std::wstring_view(s));
 		}
 	};
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Non-member Methods o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 namespace core::com
 {
