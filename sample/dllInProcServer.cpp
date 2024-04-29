@@ -43,6 +43,13 @@ __interface IInProcServer : IUnknown
 };
 
 
+[
+	uuid("E6365639-4B3F-4406-85FF-3D71783A6D79")
+]
+struct InProcServerApp
+{};
+
+
 // Inserts @c coclass block into IDL with specified @c uuid and @c default
 //  NB: CORE properties must supply same values as [attributes] or type-library content will differ from code
 [
@@ -53,6 +60,9 @@ __interface IInProcServer : IUnknown
 class InProcServer : public com::implements<IInProcServer,::IUnknown>
 {
 public:
+	// [optional] Application containing common security settings for this coclass
+	using application_type = InProcServerApp;
+
 	// [mandatory] Library containing this coclass
 	using library_type = InProcServerLib;
 
