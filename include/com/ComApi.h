@@ -28,8 +28,12 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.Com.h"
 #include "com/AuthLevel.h"
+#include "com/AuthService.h"
+#include "com/Authorization.h"
+#include "com/Function.h"
 #include "com/BasicString.h"
 #include "com/TokenAccess.h"
+#include "security/Descriptor.h"
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -43,14 +47,24 @@ namespace core::com
 {	
 	struct ClientBlanket
 	{
-		wstring   Username; 
-		AuthLevel Authentication; 
+		wstring       Username;
+		AuthLevel     Strength;
+		AuthService   Authenticator;
+		Authorization Mechanism;
 	};
 
 	struct ProxyBlanket { 
-		wstring     Username; 
-		AuthLevel   Authentication; 
-		TokenAccess Rights; 
+		wstring       Username;
+		AuthLevel     Strength;
+		AuthService   Authenticator;
+		Authorization Mechanism;
+		TokenAccess   Rights; 
+	};
+
+	struct OleAuthService {
+		std::optional<wstring> Username;
+		AuthLevel              Strength;
+		AuthService            Authenticator;
 	};
 
 	/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
@@ -63,7 +77,21 @@ namespace core::com
 	class ComExport ComApi
 	{
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Types & Constants o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-	
+	private:
+		auto constexpr
+		inline static fromOleAuthService = [](OleAuthService& s) -> SOLE_AUTHENTICATION_SERVICE {
+			return { 
+				.dwAuthnSvc = std::to_underlying(s.Authenticator), 
+				.dwAuthzSvc = std::to_underlying(s.Strength), 
+				.pPrincipalName = s.Username.value_or(wstring{}).data(),
+				.hr = S_OK
+			}; 
+		};
+
+		auto constexpr
+		inline static authRegistrationFailed = [](SOLE_AUTHENTICATION_SERVICE& s) {
+			return FAILED(s.hr);
+		};
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Representation o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 	
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -80,32 +108,59 @@ namespace core::com
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Observer Methods & Operators o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 	public:
 		/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
-		* @brief	Set default security blanket
+		* @brief	Set process-wide security for a client
 		*
-		* @param[in] imp   Impersonation level
-		* @param[in] auth  Authentication level
+		* @param[in] rights  Impersonation level
+		* @param[in] auth    Authentication level
 		* 
 		* @throws	std::system_error	Operation failed
 		*/
-		[[nodiscard]]
 		void
-		virtual initializeSecurity(TokenAccess imp, AuthLevel auth) const 
+		virtual initializeSecurity(TokenAccess rights, AuthLevel auth) const 
 		{
-			::DWORD constexpr Capabilities{};
-			::DWORD constexpr NumAuthServices{};
-			::PVOID constexpr AuthProperties{};
-			::PSOLE_AUTHENTICATION_SERVICE constexpr AuthServices{};
 			win::HResult hr = ::CoInitializeSecurity(
 				win::Unsecured,
-				NumAuthServices,
-				AuthServices,
-				win::Unused<void*>,
+				win::Unused<DWORD>,
+				win::Unused<PSOLE_AUTHENTICATION_SERVICE>,
+				win::Reserved<void*>,
 				std::to_underlying(auth),
-				std::to_underlying(imp),
-				AuthProperties,
-				Capabilities,
-				win::Unused<void*>
+				std::to_underlying(rights),
+				win::Unused<DWORD>,
+				win::Unused<DWORD>,
+				win::Reserved<void*>
 			);
+			hr.throwIfError("::CoInitializeSecurity() failed");
+		}
+		
+		/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
+		* @brief	Set process-wide security for a server
+		*
+		* @param[in] access    Access permissions used to receive calls
+		* @param[in] strength  Authentication level
+		* @param[in] services  [optional] Permitted authentication services
+		* 
+		* @throws	std::system_error	Operation failed
+		*/
+		void
+		virtual initializeSecurity(security::Descriptor access, AuthLevel strength, std::vector<OleAuthService> services) const
+		{
+			std::vector  _services{std::from_range, services | views::transform(ComApi::fromOleAuthService)};
+			win::HResult hr = ::CoInitializeSecurity(
+				access,
+				_services.size() ? (DWORD)_services.size() : (DWORD)AuthService::Default,
+				_services.data(),
+				win::Reserved<void*>,
+				std::to_underlying(strength),
+				win::Unused<DWORD>,
+				win::Unused<void*>,
+				win::Unused<DWORD>,
+				win::Reserved<void*>
+			);
+			if (auto failure = ranges::find_if(_services, ComApi::authRegistrationFailed); failure != _services.cend())
+				win::HResult{failure->hr}.throwAlways("::CoInitializeSecurity() failed to register {} for '{}'", 
+					static_cast<AuthService>(failure->dwAuthnSvc),
+					core::cnarrow(failure->pPrincipalName ? failure->pPrincipalName : L"current-user")
+				);
 			hr.throwIfError("::CoInitializeSecurity() failed");
 		}
 		
@@ -140,25 +195,31 @@ namespace core::com
 		*
 		* @throws	std::system_error	Operation failed
 		*/
-		[[nodiscard]]
 		ClientBlanket
 		virtual queryClientBlanket() const 
 		{
-			using win::Unused;
-
-			wstring      username{};
-			DWORD        auth{};
+			DWORD             authService{};
+			DWORD             authorization{};
+			wstring           username{};
+			DWORD             authLevel{};
+			RPC_AUTHZ_HANDLE  privileges{};
+			DWORD             capabilities{};
 			win::HResult hr = ::CoQueryClientBlanket(
-				Unused<DWORD*>,
-				Unused<DWORD*>,
+				&authService,
+				&authorization,
 				std::out_ptr<wchar_t*>(username, adopt),
-				&auth,
-				Unused<DWORD*>,
-				Unused<RPC_AUTHZ_HANDLE*>,
-				Unused<DWORD*>
+				&authLevel,
+				win::Unused<DWORD*>,
+				&privileges,
+				&capabilities
 			);
 			hr.throwIfError("::CoQueryClientBlanket() failed");
-			return { username, static_cast<AuthLevel>(auth) };
+			return ClientBlanket{
+				.Username = username,
+				.Strength = static_cast<AuthLevel>(authLevel),
+				.Authenticator = static_cast<AuthService>(authService),
+				.Mechanism = static_cast<Authorization>(authorization)
+			};
 		}
 		
 		/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
@@ -166,55 +227,59 @@ namespace core::com
 		*
 		* @returns	Proxy properties
 		*
-		* @throws	std::system_error	Operation failed
+		* @throws	std::invalid_argument  Missing argument
+		* @throws	std::system_error      Operation failed
 		*/
-		[[nodiscard]]
 		ProxyBlanket
 		virtual queryProxyBlanket(::IUnknown* proxy) const 
 		{
 			ThrowIfNull(proxy);
 
-			using win::Unused;
-			wstring username{};
-			DWORD   auth{};
-			DWORD   imp{};
-			win::HResult hr = ::CoQueryProxyBlanket(
-				proxy,
-				Unused<DWORD*>,
-				Unused<DWORD*>,
-				std::out_ptr<wchar_t*>(username, adopt),
-				&auth,
-				&imp,
-				Unused<RPC_AUTH_IDENTITY_HANDLE*>,
-				Unused<DWORD*>
-			);
-			hr.throwIfError("::CoQueryProxyBlanket() failed");
-			return { username, static_cast<AuthLevel>(auth), static_cast<TokenAccess>(imp) };
+			// NB: std::tuple<DWORD,DWORD,wchar_t*,DWORD,DWORD,RPC_AUTH_IDENTITY_HANDLE,DWORD>
+			auto [
+				authenticationService, 
+				authorizationService, 
+				serverPrincipal, 
+				authenticationLevel, 
+				impersonationLevel,
+				clientIdentity,
+				capabilities
+			] = com::function<7>(::CoQueryProxyBlanket)(proxy);
+
+			return ProxyBlanket{
+				.Username = com::wstring{serverPrincipal, adopt},
+				.Strength = static_cast<AuthLevel>(authenticationLevel),
+				.Authenticator = static_cast<AuthService>(authenticationService),
+				.Mechanism = static_cast<Authorization>(authorizationService),
+				.Rights = static_cast<TokenAccess>(impersonationLevel)
+			};
 		}
 		
 		/* ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` */ /*!
 		* @brief	Manipulate proxy security blanket
 		*
-		* @param[in] proxy 
-		* @param[in] imp
-		* @param[in] auth
+		* @param[in] proxy    
+		* @param[in] rights   Impersonation level
+		* @param[in] auth.....Authentication service
+		* @param[in] strength Authentication level
+		* @param[in] authz    Authorization service
+		* @param[in] user     [optional] Principal used for authentication
 		* 
-		* @throws	std::system_error	Operation failed
+		* @throws	std::invalid_argument  Missing argument
+		* @throws	std::system_error      Operation failed
 		*/
-		[[nodiscard]]
 		void
-		virtual setProxyBlanket(::IUnknown* proxy, TokenAccess imp, AuthLevel auth) const 
+		virtual setProxyBlanket(::IUnknown* proxy, TokenAccess rights, AuthService auth, AuthLevel strength, Authorization authz, std::optional<wstring> user) const 
 		{
 			ThrowIfNull(proxy);
-
-			using win::Unused;
+			
 			win::HResult hr = ::CoSetProxyBlanket(proxy,
-				RPC_C_AUTHN_DEFAULT, 
-				Unused<::DWORD>, 
-				Unused<wchar_t*>,
-				std::to_underlying(auth), 
-				std::to_underlying(imp),
-				Unused<::RPC_AUTH_IDENTITY_HANDLE*>, 
+				std::to_underlying(auth),
+				std::to_underlying(authz),
+				user ? user->data() : COLE_DEFAULT_PRINCIPAL,
+				std::to_underlying(strength), 
+				std::to_underlying(rights),
+				win::Unused<::RPC_AUTH_IDENTITY_HANDLE*>, 
 				EOAC_NONE
 			);
 			hr.throwIfError("::CoSetProxyBlanket() failed");

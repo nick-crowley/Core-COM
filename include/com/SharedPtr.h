@@ -180,8 +180,8 @@ namespace core::com
 		}
 		
 		void
-		proxy(TokenAccess imp, AuthLevel auth) {
-			return this->Api->setProxyBlanket(*this, imp, auth);
+		proxy(TokenAccess rights, AuthLevel strength, AuthService auth = com::AuthService::Default, std::optional<wstring> user = nullopt, Authorization authz = com::Authorization::Default) {
+			return this->Api->setProxyBlanket(*this, rights, auth, strength, authz, user);
 		}
 
 		void

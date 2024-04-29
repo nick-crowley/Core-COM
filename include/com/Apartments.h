@@ -120,15 +120,28 @@ namespace core::com::detail
 		SharedComApi  Api = com_api();
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
-		//! @brief  Construct with @e impersonation and @e authentication settings
-		//! @param imp   [optional] If unspecified, impersonation is disabled
-		//! @param auth  [optional] If unspecified, connection is encrypted
+		//! @brief  Construct client apartment
+		//! 
+		//! @param rights    [optional] Impersonation level
+		//! @param strength  [optional] Authentication level
 		//! 
 		//! @throws  std::system_error  Operation failed
-		SecuredApartment(TokenAccess imp = TokenAccess::Anonymous, 
-		                 AuthLevel auth = AuthLevel::Privacy)
+		SecuredApartment(TokenAccess rights = TokenAccess::Anonymous, 
+		                 AuthLevel strength = AuthLevel::Privacy)
 		{
-			this->Api->initializeSecurity(imp, auth);
+			this->Api->initializeSecurity(rights, strength);
+		}
+		
+		//! @brief  Construct server apartment
+		//! 
+		//! @param[in] access    Access permissions used to receive calls
+		//! @param[in] strength  Authentication level
+		//! @param[in] services  [optional] Permitted authentication services
+		//! 
+		//! @throws  std::system_error  Operation failed
+		SecuredApartment(security::Descriptor access, AuthLevel strength, std::vector<OleAuthService> services = {})
+		{
+			this->Api->initializeSecurity(access, strength, services);
 		}
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Copy & Move Semantics o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
