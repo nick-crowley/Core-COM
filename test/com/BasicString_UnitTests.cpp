@@ -524,6 +524,20 @@ TEST(BasicString_UT, equality_WhenComparedToStdStringViews)
 	EXPECT_NE(bstr{L"abc"}, std::wstring_view{L""});
 }
 
+TEST(BasicString_UT, equality_WhenConstexprBStringsComparedToStdStrings) 
+{	
+	using namespace std::literals;
+
+	//! @test  Verify result when equal
+	EXPECT_EQ(L"abc", L"abc"_ns);
+	EXPECT_EQ(L"abc"s, L"abc"_ns);
+	EXPECT_EQ(L"abc"sv, L"abc"_ns);
+	
+	EXPECT_EQ(L"abc"_ns, L"abc");
+	EXPECT_EQ(L"abc"_ns, L"abc"s);
+	EXPECT_EQ(L"abc"_ns, L"abc"sv);
+}
+
 TEST(BasicString_UT, equality_WhenEmptyBStr) 
 {	
 	//! @test  Verify result is equal when both strings are @e empty @c BSTR
