@@ -33,7 +33,6 @@
 #include "com/Concepts.h"
 #include "com/traits/distinct_interfaces.h"
 #include "com/traits/interface_sequence.h"
-//! @todo  Check whether implements.h introduces a circular dependency within Core.Com library header
 #include "win/HResult.h"
 #include "core/FunctionLogging.h"
 #include "com/GlobalRefCount.h"
