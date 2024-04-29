@@ -52,7 +52,7 @@ namespace core::com::detail
 	public:
 		IsolatedApartment() {
 			win::HResult hr = ::CoInitializeEx(win::Reserved<void*>, COINIT_APARTMENTTHREADED);
-			hr.throwIfError("CoInitializeEx({}) failed", COINIT_APARTMENTTHREADED);
+			hr.throwIfError("CoInitializeEx() failed");
 		}
 
 		~IsolatedApartment() {
@@ -86,7 +86,7 @@ namespace core::com::detail
 	public:
 		SharedApartment() {
 			win::HResult hr = ::CoInitializeEx(win::Reserved<void*>, COINIT_MULTITHREADED);
-			hr.throwIfError("CoInitializeEx({}) failed", COINIT_MULTITHREADED);
+			hr.throwIfError("CoInitializeEx() failed");
 		}
 
 		~SharedApartment() {
