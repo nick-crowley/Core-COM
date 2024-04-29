@@ -240,8 +240,6 @@ namespace core::com
 	* @related	core::com::IComApi
 	*/
 	SharedComApi
-	inline com_api() {
-		return std::make_shared<ComApi>();
-	}
+	ComExport com_api();
 }   // namespace core::com
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
