@@ -81,4 +81,36 @@ namespace core::com
 	using method_t = decltype(method<NumResults>(std::declval<method_pointer_t<Interface,Parameters...>>()));
 
 }  // namespace core::com
+// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-~o Test Code o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
+namespace core::detail::testing 
+{
+	//! @test  Verify @c AdaptedSignature_t<7,decltype(::CoQueryProxyBlanket)) produces expected return types
+	static_assert(
+		std::is_same_v<
+			SignatureReturnTypes_t<AdaptedSignature_t<7,DeduceSignature_t<decltype(::CoQueryProxyBlanket)>>>,
+			mpl::vector<DWORD, DWORD, wchar_t*, DWORD, DWORD, RPC_AUTH_IDENTITY_HANDLE, DWORD>
+		>
+	);
+
+	//! @test  Verify @c com::function<7>(::CoQueryProxyBlanket()) produces expected @c core::detail::FunctionSignature
+	static_assert(
+		std::is_same_v<
+			AdaptedSignature_t<7,DeduceSignature_t<decltype(::CoQueryProxyBlanket)>>,
+			FunctionSignature<nstd::make_indexed_tuple_t<DWORD, DWORD, wchar_t*, DWORD, DWORD, RPC_AUTH_IDENTITY_HANDLE, DWORD>, nstd::unary_indexed_tuple_t<IUnknown*>>
+		>
+	);
+
+	//! @test  Verify @c com::function<7>(::CoQueryProxyBlanket()) produces a type which can be called with an @c IUnknown* argument
+	static_assert(
+		std::is_invocable_v<decltype(com::function<7>(::CoQueryProxyBlanket)), IUnknown*>
+	);
+
+	//! @test  Verify @c com::function<7>(::CoQueryProxyBlanket()) produces a type which returns the expected 7-tuple when invoked with an @c IUnknown* argument
+	static_assert(
+		std::is_same_v<
+			std::invoke_result_t<decltype(com::function<7>(::CoQueryProxyBlanket)), IUnknown*>,
+			std::tuple<DWORD,DWORD,wchar_t*,DWORD,DWORD,RPC_AUTH_IDENTITY_HANDLE,DWORD>
+		>
+	);
+}
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=-o End of File o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
