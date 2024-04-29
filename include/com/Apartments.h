@@ -51,7 +51,7 @@ namespace core::com::detail
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		IsolatedApartment() {
-			win::HResult hr = ::CoInitializeEx(win::Unused<void*>, COINIT_APARTMENTTHREADED);
+			win::HResult hr = ::CoInitializeEx(win::Reserved<void*>, COINIT_APARTMENTTHREADED);
 			hr.throwIfError("CoInitializeEx({}) failed", COINIT_APARTMENTTHREADED);
 		}
 
@@ -85,7 +85,7 @@ namespace core::com::detail
 		// o~=~-~=~-~=~-~=~-~=~-~=~-~=~-o Construction & Destruction o=~-~=~-~=~-~=~-~=~-~=~-~=~-~o
 	public:
 		SharedApartment() {
-			win::HResult hr = ::CoInitializeEx(win::Unused<void*>, COINIT_MULTITHREADED);
+			win::HResult hr = ::CoInitializeEx(win::Reserved<void*>, COINIT_MULTITHREADED);
 			hr.throwIfError("CoInitializeEx({}) failed", COINIT_MULTITHREADED);
 		}
 
