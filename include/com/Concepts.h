@@ -34,11 +34,7 @@
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Name Imports o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Forward Declarations o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
-namespace core::com {
-	enum class ThreadingModel;
-	class Guid;
-	class Version;
-}
+
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Macro Definitions o-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~o Constants & Enumerations o~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
@@ -55,24 +51,6 @@ namespace core::meta
 		typename mpl::size<T>::type;
 	};
 
-	template <typename T>
-	concept HasGuid = requires { __uuidof(T); };
-
-	//! @brief	Any interface decorated with ::GUID and derived from ::IUnknown
-	template <typename T>
-	concept ComInterface = HasGuid<T>
-	                  && std::derived_from<T,::IUnknown>
-	                  && std::is_class_v<T> && std::is_abstract_v<T>;
-
-	//! @brief	Any concrete class which realizes ::IUnknown
-	template <typename T>
-	concept CoClass = std::is_base_of_v<::IUnknown,T>
-	              && std::is_class_v<T> && !std::is_abstract_v<T>;
-	
-	//! @brief	Any co-class which realizes a specific interface
-	template <typename T, typename ComInterface>
-	concept CoClassOf = CoClass<T> && std::is_base_of_v<ComInterface,T>;
-	
 	//! @brief	Any interface derived from ::IDispatch
 	template <typename T>
 	concept DispInterface = std::derived_from<T,::IDispatch>;

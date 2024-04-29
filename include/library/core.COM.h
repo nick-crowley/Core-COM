@@ -29,21 +29,12 @@
 #	define CoreCom_h_included
 #endif
 
-#ifdef _INC_WINDOWS
-#	error <Windows.h> has been included prior <core.COM.h>
-#endif
 // o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o Header Files o~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~o
 #include "library/core.Platform.h"
 
 #include "../../src/PlatformSdk.h"
 #include "../../src/libBoost.h"
 #include "../../src/library/ComExport.h"
-
-#ifdef COMAPI
-#	error COMAPI macro is already in use
-#else
-#	define COMAPI __stdcall
-#endif
 
 #include "com/Concepts.h"
 #include "com/Boolean.h"
