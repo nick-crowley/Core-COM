@@ -671,7 +671,7 @@ namespace core::com
 namespace std 
 {
 	template <typename Traits, typename Alloc>
-	struct formatter<core::com::basic_string<wchar_t, Traits, Alloc>, wchar_t> 
+	struct formatter<::core::com::basic_string<wchar_t, Traits, Alloc>, wchar_t> 
     {
 		auto constexpr
 		parse(basic_format_parse_context<wchar_t>& ctx) {
